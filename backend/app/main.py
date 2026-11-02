@@ -1,6 +1,7 @@
 import asyncio
 import hmac
 import json
+import logging
 import time
 from collections import Counter
 from contextlib import asynccontextmanager
@@ -17,9 +18,12 @@ from fastapi.staticfiles import StaticFiles
 from .config import ROOT, load_settings
 from .provider import ModelAdapter
 from .retrieval import Retriever, read_records, validate_records
+from .reservations import SQLiteReservations, Verification, reservation_router
 from .schemas import ChatRequest, ChatResponse, ConsentRequest, DispositionRequest
 from .service import Concierge
 from .sessions import Sessions
+
+logger = logging.getLogger("gatorgo.http")
 
 
 class BodyLimit:
@@ -101,6 +105,7 @@ def create_app(settings=None, records=None, provider=None):
     @app.middleware("http")
     async def boundary(request: Request, call_next):
         request_id = str(uuid4())
+        started = time.monotonic()
         if request.method not in {"GET", "HEAD", "OPTIONS"} and (
             request.headers.get("origin") and request.headers["origin"] not in origins
         ):
@@ -108,9 +113,14 @@ def create_app(settings=None, records=None, provider=None):
         else:
             try:
                 response = await call_next(request)
-            except Exception:
+            except Exception as error:
                 metrics["errors"] += 1
+                logger.error("Request failed: type=%s request_id=%s", type(error).__name__, request_id)
                 response = JSONResponse({"detail": "Service unavailable. Please retry."}, status_code=503)
+        if request.url.path.startswith("/api/"):
+            logger.info("%s %s status=%s duration_ms=%s request_id=%s", request.method,
+                        request.url.path, response.status_code,
+                        round((time.monotonic() - started) * 1000), request_id)
         response.headers["X-Request-ID"] = request_id
         response.headers["Cache-Control"] = "no-store"
         response.headers["X-Content-Type-Options"] = "nosniff"
@@ -131,6 +141,12 @@ def create_app(settings=None, records=None, provider=None):
     def staff(authorization: str = Header(default="")):
         if not settings.demo or not settings.staff_token:
             raise HTTPException(404, "Demo staff queue is disabled")
+        if not hmac.compare_digest(authorization, "Bearer " + settings.staff_token):
+            raise HTTPException(401, "Staff authorization required")
+
+    def reservation_staff(authorization):
+        if not settings.staff_token:
+            raise HTTPException(404, "Staff access is not configured")
         if not hmac.compare_digest(authorization, "Bearer " + settings.staff_token):
             raise HTTPException(401, "Staff authorization required")
 
@@ -212,5 +228,10 @@ def create_app(settings=None, records=None, provider=None):
         return dict(metrics)
 
     app.include_router(router)
+    if settings.reservation_mode == "synthetic":
+        reservation_path = ROOT / "data/synthetic-reservations.sqlite3"
+        if not reservation_path.is_file():
+            raise ValueError("Run scripts/seed_reservations.py before enabling synthetic reservations")
+        app.include_router(reservation_router(Verification(SQLiteReservations(reservation_path)), reservation_staff))
     app.mount("/", StaticFiles(directory=ROOT / "frontend", html=True), name="frontend")
     return app

@@ -1,9 +1,12 @@
 import re
+import logging
 from uuid import uuid4
 
 from .policy import classify, injection_attempt, safe_history, sensitive
 from .provider import ProviderUnavailable
 from .schemas import ChatResponse, Decision, Handoff
+
+logger = logging.getLogger("gatorgo.chat")
 
 DESCRIPTIONS = {
     "safety": "Guest reports a possible safety emergency. Urgent direct human assistance needed.",
@@ -37,7 +40,7 @@ class Concierge:
     async def chat(self, session, message):
         decision = classify(message)
         # Mark deterministic routing truthfully even when an AI provider is configured.
-        mode = "mock"
+        mode = "ai" if self.settings.provider == "openai" else "mock"
         response = ChatResponse(session_id=session.id, reply="", mode=mode,
                                 demo=self.settings.demo, decision=decision)
         q = message.lower().strip().replace("’", "'")
@@ -67,9 +70,9 @@ class Concierge:
             response.reply = ("I'm a virtual AI concierge. I can help with sourced hotel information, "
                 "but cannot reveal private instructions, invent facts, or claim actions I haven't taken.")
         elif sensitive(message):
-            response.reply = ("Please don't share payment, identity, health, or real booking details "
-                "here. Use the fictional DEMO codes only; contact hotel staff directly for sensitive requests.")
-        elif q in {"stop", "cancel demo", "exit demo"}:
+            response.reply = ("Please don't share payment, identity, health, or booking details "
+                "here. Contact hotel staff directly for sensitive requests.")
+        elif self.settings.demo and q in {"stop", "cancel demo", "exit demo"}:
             session.stage, session.confirmation = "", ""
             response.reply = "The simulated lookup is cleared. No reservation was changed."
         elif session.stage:
@@ -78,7 +81,7 @@ class Concierge:
             session.stage = "confirmation"
             response.reply = ("Let's try a simulated reservation lookup. Enter DEMO-2048 or DEMO-3012. "
                 "Use fictional details only. Type 'stop' to exit. Staff must complete any real check-in or check-out.")
-        elif re.fullmatch(r"(hi|hello|hey|thanks|thank you)[!. ]*", q):
+        elif self.settings.provider == "mock" and re.fullmatch(r"(hi|hello|hey|thanks|thank you)[!. ]*", q):
             response.reply = ("Hello! I'm Gator Go's virtual AI concierge. I can help with hotel "
                               "information and prepare a human-handoff summary. How can I help?")
         else:
@@ -86,6 +89,26 @@ class Concierge:
             if session.topic and re.fullmatch(r"(and )?(what (are|about) (the |its )?)?(hours|times|when|it|that)[?. ]*", q):
                 query += " " + session.topic
             hits = self.retriever.search(query)
+            if self.settings.provider == "openai":
+                try:
+                    response.reply, selected = await self.provider.answer(
+                        safe_history(query), session.history, [r for r, _ in hits])
+                    response.sources = [source for record, source in hits if record.id in selected]
+                    if response.sources:
+                        session.topic = response.sources[0].topic
+                    session.failures = 0
+                except ProviderUnavailable as error:
+                    logger.warning("Live answer unavailable: %s", error.reason)
+                    response.mode, response.status = "faq_fallback", "fallback"
+                    response.reply = ("The AI service is temporarily unavailable. Please try again "
+                                      "or contact the hotel directly for assistance.")
+                response.suggestions = ["What time is check-in?", "What are the spa hours?", "I want a manager"]
+                session.history.extend([
+                    {"role": "user", "content": f"Topic: {session.topic or response.decision.category}"},
+                    {"role": "assistant", "content": response.reply[:1000]},
+                ])
+                session.history[:] = session.history[-self.settings.history_limit:]
+                return response
             if hits:
                 try:
                     selected = await self.provider.select(safe_history(query), session.history,

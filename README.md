@@ -1,73 +1,39 @@
-# Gator Go Resort & Spa — virtual concierge
+# Gator Go virtual concierge
 
-A local course prototype with a FastAPI backend, a resort-themed web interface, sourced FAQ answers, optional model selection, and consent-based **simulated** staff handoffs. Default mode is deterministic and needs no API key. All supplied hotel facts remain **demo-only**; the instructor has not approved them.
+Gator Go is a local FastAPI and browser application that uses OpenAI to answer questions. The server handles the API key and logs request status and sanitized provider error categories; it does not log guest messages or keys.
 
 ## Start
 
-Install Python 3.11+ from python.org. From this directory:
+Install Python 3.11 or newer, copy `.env.example` to `.env`, and set `OPENAI_API_KEY` in `.env`. Keep the file private. `MODEL_PROVIDER=openai` and `DEMO_MODE=false` are the defaults. The OpenAI API requires network access and may incur usage charges.
 
-```powershell
-# Windows: double-click run.bat, or run:
-.\run.bat
-```
+On Windows, double-click `run.bat` or run `./run.bat`. In Git Bash, macOS, Linux, or WSL, run `bash ./run-all.sh`. The launcher checks Python and installs project dependencies when necessary. Open **http://127.0.0.1:8000** and use Ctrl+C to stop the server. If port 8000 is occupied, stop the other service or set `PORT` in `.env`.
 
-```bash
-# Git Bash, macOS, Linux, or WSL
-bash ./run-all.sh
-```
+The console displays startup settings, request status and timing, and safe error codes. Run `.venv\Scripts\python.exe scripts\model-smoke.py` on Windows (or `.venv/bin/python scripts/model-smoke.py` on macOS/Linux) to test the configured model. A 429 response requires checking API billing, quota, and rate limits. Avoid posting keys or guest data when sharing diagnostics.
 
-Open **http://127.0.0.1:8000**. Ctrl+C stops the API and frontend together. The first launch creates `.venv` and installs dependencies; later launches reuse it. The launchers also attempt to repair an existing environment whose Python is missing. An internet connection is needed for the initial installation, but not to run the mock demo afterward. If no working Python 3.11+ can be found, install Python from python.org and run the launcher again.
+## Knowledge and limits
 
-Optional: copy `.env.example` to `.env`. Change `PORT` if 8000 is occupied. Never put API keys in frontend files. The server binds to loopback only. `DEMO_MODE=false` excludes every sample policy and fictional reservation; with the currently empty approved knowledge file, hotel questions safely require staff confirmation.
+`knowledge/approved.json` currently contains no approved property-specific facts. The concierge can answer general questions, but cannot confirm hotel hours, fees, amenities or policies until verified facts are added. The earlier sample knowledge remains separate and is excluded in normal operation. The datasets listed in the application's Data sources page are background material; they have not been used to train the model or directly answer guest questions.
 
-## Demonstrate
+The application cannot make reservations, change bookings, charge guests, dispatch services, or notify staff. Handoff summaries are displayed to the guest for direct contact. The app binds to localhost and is not ready for public deployment or actual hotel operations.
 
-1. Ask “What time is check-in?” or “What are the spa hours?” Observe the sample-data label and source ID.
-2. Ask “My room is dirty.” Review the prepared summary; **no staff has been contacted**.
-3. To demonstrate the queue, set `STAFF_TOKEN` in `.env` to a random value of at least 24 characters and restart. Choose “Allow demo queue submission,” then open `/staff.html` separately and enter the token. Set the simulated disposition to in review or resolved.
-4. Type “Start demo check-in,” then `DEMO-2048` and `Parker`. Wrong code/name pairs do not match. `DEMO-3012` pairs with `Lee`. Type “stop” to exit. No real check-in/out, key, charge, or room assignment occurs.
-5. Choose New conversation to reset. Safety or human requests interrupt any reservation step.
+## Local reservation verification
 
-## Optional model mode
+Reservation lookup is disabled by default. To exercise the verification flow with **fictional data only**, run `python scripts/seed_reservations.py` using the project environment, then set `RESERVATION_MODE=synthetic` in `.env` and restart. The seed script creates 24 fictional records in ignored `data/synthetic-reservations.sqlite3` and refuses to overwrite an existing database. Example: confirmation `GG-2026-1048`, full name `Guest1 Sample`.
 
-Set `MODEL_PROVIDER=openai`, `MODEL_ID`, and `OPENAI_API_KEY` server-side. The adapter calls the Responses API to select relevant source IDs, then renders the corresponding stored answers. It does **not** generate unrestricted prose or perform hotel actions. Invalid responses, rate limits, and provider outages fall back to explicitly labeled sourced FAQ answers. The adapter has fake-transport tests; the live smoke test encountered HTTP 429 and has not yet succeeded. Model-quality comparison is deferred. See [model selection](docs/model-selection.md).
+Ask the concierge to check a reservation. Enter the details in the separate form; if they match, a six-digit development-only code appears in the server console. The lookup response is the same for missing or mismatched records. The code expires after five minutes and a verified access token expires after ten minutes; attempts and requests are limited. Codes and confirmation details are not sent to the language model. This console simulator does not send email or SMS, and must never be used for real guest data.
 
-To check the live connection after configuring `.env`, run `.venv\Scripts\python.exe scripts\model-smoke.py` on Windows (or `.venv/bin/python scripts/model-smoke.py` on macOS/Linux). An HTTP 429 indicates the provider is limiting the request; check API usage, billing, and rate limits. Keep API keys in `.env`, never in the chat or source control.
+After verification, a change request can be saved locally for staff review; no actual booking is changed and no staff member is notified. Configure a private `STAFF_TOKEN` of at least 24 characters and open `/staff.html` to view the local queue. The same queue is available through `GET /api/reservations/staff/requests` with an `Authorization: Bearer <token>` header. The queue and fictional bookings are local SQLite data, not an integration with a hotel. The reservation API also provides `POST /api/reservations/lookup`, `POST /api/reservations/verify`, `GET /api/reservations/me`, and `POST /api/reservations/request-change`; the last two require the short-lived verified bearer token.
+
+The supplied Mews guide describes a client token, property-issued access token, a demo environment, and certification before production. No Mews credentials or adapter are configured. Before accepting real guest data, replace the synthetic provider and console code simulator with an authorized property-management integration and verified delivery service, and review authentication, privacy, deployment, and operational controls.
+
+See [knowledge guidance](docs/knowledge.md) for the approved-data format and importer. After importing verified records, restart the server.
 
 ## Checks
 
 ```powershell
 .venv\Scripts\python.exe -m pytest -q
-.venv\Scripts\python.exe -m ruff check backend scripts tests
-.venv\Scripts\python.exe scripts/evaluate.py
-```
-
-On macOS/Linux replace `.venv\Scripts\python.exe` with `.venv/bin/python`. Browser checks require Node 20+:
-
-```bash
-npm ci
-npx playwright install chromium
+.venv\Scripts\ruff.exe check backend scripts tests
 npm run check
-# Start the application in another terminal first.
-npm run test:ui
 ```
 
-Evaluation results and viewport screenshots are written to `artifacts/`. The evaluation uses synthetic scenarios; it does not measure real guest satisfaction or live model quality. [Ticket status](docs/ticket-status.md) records completion evidence and remaining external checks.
-
-## Layout and ownership
-
-```text
-frontend/                 HTML/CSS/JS and local SVG avatar — Chris + Gabe
-backend/app/              API, schemas, model adapter, routing, sessions — Chris + Bingran
-knowledge/                approved/demo records and schema — Wyatt + Bingran
-tests/                    backend, behavior, browser scenarios — team
-scripts/                  startup, import, evaluation, recording
-docs/                     baseline, ticket tracker, presentation and survey
-.github/workflows/        automated checks
-```
-
-Suggested review ownership: Audrey reviews escalation, consent, and privacy; Wyatt reviews factual grounding and tone; Gabe reviews visual design, accessibility, survey, and presentation. These are suggestions, not GitHub assignments.
-
-Use branches such as `feat/22-handoff-consent` or `fix/11-unknown-facts`. Open a PR describing the user-visible change, ticket planning IDs, tests run, and any remaining limitations. Review source status, empty/error paths, action honesty, and screenshots. The owner has scoped this iteration to a product demo; do not imply unperformed tests or instructor approval.
-
-Knowledge import: `python scripts/import_knowledge.py approved-input.json --dry-run`, review counts, then omit `--dry-run`. See [knowledge guide](docs/knowledge.md). Runtime boundaries, retention, and local-only limitations are described in [architecture](docs/architecture.md) and [privacy](frontend/privacy.html).
+For browser checks, install Node 20+, run `npm ci` and `npx playwright install chromium`, start the server, then run `npm run test:ui`. The browser tests stub the provider; they do not prove that a paid API account works. The deterministic provider remains available for automated tests via `MODEL_PROVIDER=mock`; it is not the normal application mode.

@@ -23,7 +23,7 @@ jobs:
       - name: Browser checks
         shell: bash
         run: |
-          python scripts/serve.py > /tmp/gatorgo.log 2>&1 &
+          MODEL_PROVIDER=mock DEMO_MODE=false python scripts/serve.py > /tmp/gatorgo.log 2>&1 &
           server_pid=$!
           trap 'kill "$server_pid"' EXIT
           for attempt in {1..30}; do

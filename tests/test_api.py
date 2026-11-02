@@ -145,6 +145,31 @@ def test_provider_failure_safe_fallback(settings):
         assert "private provider" not in str(result)
 
 
+def test_live_provider_is_used_without_any_approved_records():
+    class LiveProvider:
+        async def answer(self, query, history, records):
+            assert query == "Can you suggest how to pack for a trip?"
+            assert records == []
+            return "Pack comfortable clothes and any essentials you need.", []
+    with TestClient(create_app(Settings(provider="openai", api_key="test", demo=False),
+                               provider=LiveProvider())) as client:
+        result = chat(client, "Can you suggest how to pack for a trip?")
+        assert result["mode"] == "ai" and "Pack comfortable" in result["reply"]
+        assert result["sources"] == []
+
+
+def test_live_provider_failure_is_visible_without_leaking_diagnostics():
+    class FailedProvider:
+        async def answer(self, *args):
+            raise ProviderUnavailable("private provider diagnostic")
+    with TestClient(create_app(Settings(provider="openai", api_key="test", demo=False),
+                               provider=FailedProvider())) as client:
+        result = chat(client, "What is check-in time?")
+        assert result["mode"] == "faq_fallback" and result["status"] == "fallback"
+        assert "temporarily unavailable" in result["reply"]
+        assert "private provider" not in str(result)
+
+
 def test_safe_exception(client, app):
     async def failed(*args):
         raise RuntimeError("SECRET_VALUE")

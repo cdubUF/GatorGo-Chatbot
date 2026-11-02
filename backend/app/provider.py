@@ -1,10 +1,13 @@
-"""Bounded Responses API adapter. Only validated source selections reach the renderer."""
+"""Bounded Responses API adapter with validated structured responses."""
 import asyncio
 import json
+import logging
 
 import httpx
 
 from .config import ROOT
+
+logger = logging.getLogger("gatorgo.provider")
 
 
 class ProviderUnavailable(Exception):
@@ -36,6 +39,38 @@ class ModelAdapter:
                     "source_ids": {"type": "array", "items": {"type": "string"}}},
                     "required": ["source_ids"], "additionalProperties": False}}},
         }
+        selected = await self._request(payload)
+        values = selected.get("source_ids")
+        if (set(selected) != {"source_ids"} or not isinstance(values, list)
+            or len(values) > 3 or any(not isinstance(v, str) or v not in ids for v in values)):
+            raise ProviderUnavailable("invalid_response")
+        return list(dict.fromkeys(values))
+
+    async def answer(self, query, history, records):
+        ids = {record.id for record in records}
+        payload = {
+            "model": self.settings.model, "store": False, "max_output_tokens": 700,
+            "instructions": self.prompt,
+            "input": [{"role": "user", "content": json.dumps({
+                "question": query, "recent_context": history,
+                "evidence": [{"id": r.id, "topic": r.topic, "answer": r.answer}
+                             for r in records],
+            })}],
+            "text": {"format": {"type": "json_schema", "name": "concierge_reply",
+                "strict": True, "schema": {"type": "object", "properties": {
+                    "reply": {"type": "string"},
+                    "source_ids": {"type": "array", "items": {"type": "string"}}},
+                    "required": ["reply", "source_ids"], "additionalProperties": False}}},
+        }
+        result = await self._request(payload)
+        reply, values = result.get("reply"), result.get("source_ids")
+        if (set(result) != {"reply", "source_ids"} or not isinstance(reply, str)
+            or not reply.strip() or len(reply) > 3000 or not isinstance(values, list)
+            or len(values) > 3 or any(not isinstance(v, str) or v not in ids for v in values)):
+            raise ProviderUnavailable("invalid_response")
+        return reply.strip(), list(dict.fromkeys(values))
+
+    async def _request(self, payload):
         try:
             # Total deadline also bounds retries, connections, and slow streaming bodies.
             async with asyncio.timeout(self.settings.provider_timeout):
@@ -56,12 +91,10 @@ class ModelAdapter:
                             if item.get("type") == "message" for c in item.get("content", [])
                             if c.get("type") == "output_text")
                         selected = json.loads(output)
-                        values = selected.get("source_ids")
-                        if (set(selected) != {"source_ids"} or not isinstance(values, list)
-                            or len(values) > 3 or any(not isinstance(v, str) or v not in ids
-                                                     for v in values)):
-                            raise ValueError("Invalid source selection")
-                        return list(dict.fromkeys(values))
+                        if not isinstance(selected, dict):
+                            raise ValueError("Invalid provider response")
+                        logger.info("OpenAI response completed; model=%s", self.settings.model)
+                        return selected
         except httpx.HTTPStatusError as error:
             reason = f"http_{error.response.status_code}"
             if error.response.status_code == 429:
@@ -71,9 +104,12 @@ class ModelAdapter:
                         reason = code
                 except (ValueError, TypeError, AttributeError):
                     pass
+            logger.warning("OpenAI request failed: %s; model=%s", reason, self.settings.model)
             raise ProviderUnavailable(reason) from None
         except (httpx.HTTPError, TimeoutError):
+            logger.warning("OpenAI request failed: connection or timeout; model=%s", self.settings.model)
             raise ProviderUnavailable("connection_or_timeout") from None
         except (ValueError, TypeError, KeyError, AttributeError):
+            logger.warning("OpenAI request failed: invalid or incomplete response; model=%s", self.settings.model)
             raise ProviderUnavailable("invalid_response") from None
         raise ProviderUnavailable()

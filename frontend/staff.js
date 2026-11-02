@@ -6,35 +6,26 @@ const status = document.querySelector('#staffStatus');
 async function refresh() {
   const version = ++generation;
   try {
-    const items = await request('/staff/handoffs', {token});
+    const items = await request('/reservations/staff/requests', {token});
     if (version !== generation) return;
-    queue.replaceChildren();
-    status.textContent = `${items.length} simulated summaries`;
+    queue.replaceChildren(); status.textContent = `${items.length} local requests`;
     for (const item of items) {
       const card = document.createElement('section'); card.className = 'handoff-card';
-      const heading = document.createElement('h2'); heading.textContent = `${item.category} · ${item.urgency}`;
-      const text = document.createElement('p'); text.textContent = item.summary;
-      const date = document.createElement('p'); date.textContent = `Created ${new Date(item.created).toLocaleString()} · DEMO ONLY`;
-      const select = document.createElement('select'); select.setAttribute('aria-label', `Disposition for ${item.category}`);
-      for (const value of ['open', 'in_review', 'resolved']) {
-        const option = document.createElement('option'); option.value = value; option.textContent = value.replace('_', ' '); select.append(option);
-      }
-      select.value = item.disposition;
-      select.addEventListener('change', async () => {
-        select.disabled = true;
-        try { await request(`/staff/handoffs/${item.id}`, {method: 'PATCH', token, body: {disposition: select.value}}); item.disposition = select.value; }
-        catch (error) { status.textContent = error.message; select.value = item.disposition; }
-        finally { select.disabled = false; }
-      });
-      card.append(heading, text, date, select); queue.append(card);
+      const heading = document.createElement('h2'); heading.textContent = `Request ${item.id} · ${item.status}`;
+      const guest = document.createElement('p'); guest.textContent = `${item.confirmation} · ${item.first_name} ${item.last_name}`;
+      const details = document.createElement('p'); details.textContent = item.details;
+      const date = document.createElement('p'); date.textContent = `Created ${item.created_at} UTC`;
+      card.append(heading, guest, details, date); queue.append(card);
     }
   } catch {
     if (version !== generation) return;
-    queue.replaceChildren(); status.textContent = 'Queue unavailable. Check your token and DEMO_MODE configuration.';
+    queue.replaceChildren(); status.textContent = 'Queue unavailable. Check the staff token and reservation configuration.';
   }
 }
 document.querySelector('#staffLogin').addEventListener('submit', event => {
   event.preventDefault(); token = document.querySelector('#staffToken').value;
   document.querySelector('#staffToken').value = ''; refresh();
 });
-document.querySelector('#logout').addEventListener('click', () => { generation += 1; token = ''; queue.replaceChildren(); status.textContent = 'Access cleared'; });
+document.querySelector('#logout').addEventListener('click', () => {
+  generation += 1; token = ''; queue.replaceChildren(); status.textContent = 'Access cleared';
+});

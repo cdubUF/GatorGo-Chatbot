@@ -12,3 +12,5 @@ playwright-report/
 test-results/
 *.inspect.ndjson
 data/external/
+data/*.sqlite3
+data/*.sqlite3-*

@@ -20,6 +20,7 @@ class Settings:
     threshold: float = 1.5
     provider_timeout: float = 8
     staff_token: str = ""
+    reservation_mode: str = "disabled"
 
     def __post_init__(self):
         if self.provider not in {"mock", "openai"}:
@@ -34,15 +35,17 @@ class Settings:
             raise ValueError("Use PROVIDER_TIMEOUT_SECONDS=0..10 and RETRIEVAL_THRESHOLD=0..20")
         if self.staff_token and len(self.staff_token) < 24:
             raise ValueError("STAFF_TOKEN needs at least 24 characters, or leave it empty")
+        if self.reservation_mode not in {"disabled", "synthetic"}:
+            raise ValueError("RESERVATION_MODE must be disabled or synthetic")
 
 
 def load_settings():
     load_dotenv(ROOT / ".env", override=False)
-    flag = os.getenv("DEMO_MODE", "true").lower()
+    flag = os.getenv("DEMO_MODE", "false").lower()
     if flag not in {"true", "false"}:
         raise ValueError("DEMO_MODE must be true or false")
     return Settings(
-        provider=os.getenv("MODEL_PROVIDER", "mock"),
+        provider=os.getenv("MODEL_PROVIDER", "openai"),
         model=os.getenv("MODEL_ID", "gpt-5.4-mini-2026-03-17"),
         api_key=os.getenv("OPENAI_API_KEY", ""), demo=flag == "true",
         port=int(os.getenv("PORT", "8000")),
@@ -51,4 +54,5 @@ def load_settings():
         threshold=float(os.getenv("RETRIEVAL_THRESHOLD", "1.5")),
         provider_timeout=float(os.getenv("PROVIDER_TIMEOUT_SECONDS", "8")),
         staff_token=os.getenv("STAFF_TOKEN", ""),
+        reservation_mode=os.getenv("RESERVATION_MODE", "disabled"),
     )

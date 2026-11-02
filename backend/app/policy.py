@@ -29,7 +29,7 @@ def injection_attempt(text):
 
 
 def sensitive(text):
-    return bool(re.search(r"(?:\d[ -]?){9,}|[\w.+-]+@[\w.-]+\.\w+|"
+    return bool(re.search(r"(?:\d[ -]?){9,}|\b\d{6}\b|\bGG-\d{4}-\d+\b|[\w.+-]+@[\w.-]+\.\w+|"
                           r"\b(passport|social security|credit card|my address|my name is|"
                           r"my room is \d|room number|diagnos\w*)\b", text, re.I))
 

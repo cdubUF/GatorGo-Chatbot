@@ -53,3 +53,23 @@ def test_timeout_is_bounded():
                            httpx.MockTransport(handler))
     with pytest.raises(ProviderUnavailable):
         asyncio.run(adapter.select("pool", [], [record()]))
+
+
+def test_live_answer_supports_no_property_evidence():
+    def handler(request):
+        body = json.loads(request.content)
+        assert json.loads(body["input"][0]["content"])["evidence"] == []
+        return httpx.Response(200, json={"status": "completed", "output": [{
+            "type": "message", "content": [{"type": "output_text", "text": json.dumps({
+                "reply": "I can help with your stay.", "source_ids": []})}]}]})
+    adapter = ModelAdapter(Settings(provider="openai", api_key="testing"), httpx.MockTransport(handler))
+    assert asyncio.run(adapter.answer("Hello", [], [])) == ("I can help with your stay.", [])
+
+
+def test_live_answer_rejects_invented_source():
+    body = {"status": "completed", "output": [{"type": "message", "content": [
+        {"type": "output_text", "text": json.dumps({"reply": "Hello", "source_ids": ["made-up"]})}]}]}
+    adapter = ModelAdapter(Settings(provider="openai", api_key="testing"),
+                           httpx.MockTransport(lambda req: httpx.Response(200, json=body)))
+    with pytest.raises(ProviderUnavailable):
+        asyncio.run(adapter.answer("Hello", [], []))
