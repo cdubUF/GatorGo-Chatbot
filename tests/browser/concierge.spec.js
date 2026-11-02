@@ -182,3 +182,43 @@ for (const width of [1440, 390]) {
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
   });
 }
+
+test('verified reservation connects to chat and can be disconnected', async ({page}) => {
+  await stubLiveService(page);
+  const authorizations = [];
+  await page.route('**/api/chat', route => {
+    authorizations.push(route.request().headers().authorization || null);
+    return route.fulfill({json: {session_id: 'b1193ac0-b20c-4813-8804-21a0327ae9e4', mode: 'ai', demo: false,
+      reply: 'I can help with your stay.', suggestions: [], sources: [], handoff: null}});
+  });
+  await page.route('**/api/reservations/providers', route => route.fulfill({json: [
+    {id: 'gatorgo', name: 'Gator Go Resort & Spa (fictional)', kind: 'fictional'}]}));
+  await page.route('**/api/reservations/lookup', route => route.fulfill({json: {
+    challenge_id: 'synthetic-challenge-123456', message: 'Code available.'}}));
+  await page.route('**/api/reservations/verify', route => route.fulfill({json: {access_token: 'test-access'}}));
+  await page.route('**/api/reservations/me', route => route.fulfill({json: {
+    status: 'confirmed', confirmation: 'GG-2026-1048', first_name: 'Guest1', last_name: 'Sample',
+    check_in: '2026-11-14', check_out: '2026-11-17', room_type: 'Double Queen', guests: 2,
+    hotel: 'Gator Go Resort & Spa (fictional)', provider: 'gatorgo'}}));
+  await page.goto('/');
+  const input = page.getByRole('textbox', {name: 'Message the concierge'});
+  await input.fill('When is check-in?'); await input.press('Enter');
+  await expect.poll(() => authorizations.length).toBe(1);
+  await page.getByRole('button', {name: 'Reservation testing'}).click();
+  await expect(page.getByText('Your chat mentioned arrival or departure.', {exact: false})).toBeVisible();
+  await page.getByLabel('Hotel or provider').selectOption('gatorgo');
+  await page.getByLabel('Confirmation number').fill('GG-2026-1048');
+  await page.getByLabel('Full name').fill('Guest1 Sample');
+  await page.getByRole('button', {name: 'Continue'}).click();
+  await page.getByLabel('Verification code').fill('123456');
+  await page.getByRole('button', {name: 'Verify', exact: true}).click();
+  await expect(page.getByText('Test stay connected:', {exact: false})).toBeVisible();
+  await page.getByRole('button', {name: 'Ask AI about this stay'}).click();
+  await input.fill('What room type is booked?'); await input.press('Enter');
+  await expect.poll(() => authorizations.length).toBe(2);
+  expect(authorizations).toEqual([null, 'Bearer test-access']);
+  await page.getByRole('button', {name: 'Disconnect'}).click();
+  await input.fill('What room type is booked?'); await input.press('Enter');
+  await expect.poll(() => authorizations.length).toBe(3);
+  expect(authorizations[2]).toBeNull();
+});

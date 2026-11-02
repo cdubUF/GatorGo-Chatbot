@@ -9,7 +9,8 @@ const send = document.querySelector('#sendBtn');
 let sessionId = null, busy = false, epoch = 0, controller;
 let config = {mode: 'unknown', demo: false};
 let activeHandoff = null;
-let reservationGeneration = 0, reservationStarted = false;
+let reservationGeneration = 0, reservationStarted = false, reservationToken = null;
+let reservationIntent = '';
 const reservationMessages = document.querySelector('#reservationMessages');
 const defaults = ['What time is check-in?', 'What amenities do you have?', 'My room is dirty', 'I want a manager'];
 
@@ -68,7 +69,13 @@ function invalidateHandoff() {
   }
 }
 
+function disconnectReservation() {
+  reservationToken = null;
+  document.querySelector('#reservationLink').hidden = true;
+}
+
 function reservationLookup() {
+  disconnectReservation();
   const lookupEpoch = epoch, generation = ++reservationGeneration;
   const current = () => lookupEpoch === epoch && generation === reservationGeneration;
   reservationStarted = true;
@@ -134,12 +141,19 @@ function reservationLookup() {
           code.value = ''; const accessToken = verified.access_token;
           const reservation = await request('/reservations/me', {token: accessToken});
           if (!current()) return;
+          reservationToken = accessToken;
+          document.querySelector('#reservationLinkText').textContent = `Test stay connected: ${reservation.hotel}`;
+          document.querySelector('#reservationLink').hidden = false;
           card.replaceChildren(element('strong', '', 'Verified test reservation'));
           for (const [title, value] of [['Hotel', reservation.hotel], ['Status', reservation.status], ['Confirmation', reservation.confirmation],
             ['Guest', `${reservation.first_name} ${reservation.last_name}`], ['Check-in', reservation.check_in],
             ['Check-out', reservation.check_out], ['Room', reservation.room_type], ['Guests', reservation.guests]]) {
             card.append(element('p', '', `${title}: ${value}`));
           }
+          const ask = element('button', 'outline-button', 'Ask AI about this stay');
+          ask.type = 'button'; ask.addEventListener('click', () => setView('chat')); card.append(ask);
+          card.append(element('p', 'small', 'AI chat can use the hotel, stay dates, room type, guest count, and status. Your name, confirmation number, and code are not sent to the AI.'));
+          suggestions(['When do I check in?', 'When do I check out?', 'What room type is booked?', 'How many guests are on my stay?']);
           if (reservation.provider === 'mews-sandbox') {
             card.append(element('p', 'small', 'Mews test data is read-only. No changes can be submitted.'));
             return;
@@ -203,8 +217,13 @@ async function submit(raw, retry = false) {
   const text = raw.trim();
   if (!text || busy) return;
   const turn = epoch;
+  if (/\b(change|modify|reschedule|cancel)\w*\b/i.test(text) && /\b(reservation|booking|stay|room|dates?)\b/i.test(text)) {
+    reservationIntent = 'Your chat mentioned a possible reservation change. After verification, you can review the stay and request a change.';
+  } else if (/\b(check.?in|check.?out|arrival|departure)\b/i.test(text)) {
+    reservationIntent = 'Your chat mentioned arrival or departure. Verify a test stay to ask about its dates in AI chat.';
+  }
   invalidateHandoff();
-  if (/\b(reservation|booking)\b/i.test(text) && /\b(my|mine|check|find|show|confirm|view|retrieve|look up)\b/i.test(text)
+  if (!reservationToken && /\b(reservation|booking)\b/i.test(text) && /\b(check|find|show|view|retrieve|look up)\b/i.test(text)
       && !/\b(cancel|refund|change|policy|policies|terms|rules|fees)\b/i.test(text)) {
     input.value = ''; setBusy(false); setView('reservation'); return;
   }
@@ -214,7 +233,7 @@ async function submit(raw, retry = false) {
   controller = new AbortController();
   try {
     const result = await request('/chat', {method: 'POST', signal: controller.signal,
-      body: {session_id: sessionId, message: text}});
+      token: reservationToken, body: {session_id: sessionId, message: text}});
     if (turn !== epoch) return;
     sessionId = result.session_id;
     config = {mode: result.mode, demo: result.demo};
@@ -229,6 +248,11 @@ async function submit(raw, retry = false) {
     suggestions(result.suggestions);
   } catch (error) {
     if (turn !== epoch) return;
+    if (error.status === 401 && reservationToken) {
+      disconnectReservation();
+      bubble('Your test reservation verification expired. Verify it again in Reservation testing, then retry your question.');
+      return;
+    }
     showMode('offline');
     const body = bubble('The service is unavailable. Please retry or contact a hotel employee directly. No staff has been contacted.');
     const retryButton = element('button', 'outline-button', 'Retry message');
@@ -250,13 +274,15 @@ function setView(view) {
   messages.hidden = reservation;
   document.querySelector('#composerArea').hidden = reservation;
   document.querySelector('#reservationView').hidden = !reservation;
+  const intent = document.querySelector('#reservationIntent');
+  intent.textContent = reservationIntent; intent.hidden = !reservationIntent;
   if (reservation && !reservationStarted) reservationLookup();
   if (!reservation) input.focus();
 }
 
 async function reset() {
   epoch += 1;
-  reservationGeneration += 1; reservationStarted = false; reservationMessages.replaceChildren();
+  reservationGeneration += 1; reservationStarted = false; reservationIntent = ''; disconnectReservation(); reservationMessages.replaceChildren();
   setView('chat');
   controller?.abort();
   const oldSession = sessionId;
@@ -277,6 +303,7 @@ document.querySelector('#resetBtn').addEventListener('click', reset);
 document.querySelector('#chatViewBtn').addEventListener('click', () => setView('chat'));
 document.querySelector('#reservationViewBtn').addEventListener('click', () => setView('reservation'));
 document.querySelector('#restartReservation').addEventListener('click', reservationLookup);
+document.querySelector('#disconnectReservation').addEventListener('click', disconnectReservation);
 reset();
 try {
   config = await request('/health');

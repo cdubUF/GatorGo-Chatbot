@@ -37,7 +37,7 @@ class Concierge:
                                   urgency=decision.urgency, summary=summary)
         return session.pending
 
-    async def chat(self, session, message):
+    async def chat(self, session, message, reservation_context=None):
         decision = classify(message)
         # Mark deterministic routing truthfully even when an AI provider is configured.
         mode = "ai" if self.settings.provider == "openai" else "mock"
@@ -89,10 +89,19 @@ class Concierge:
             if session.topic and re.fullmatch(r"(and )?(what (are|about) (the |its )?)?(hours|times|when|it|that)[?. ]*", q):
                 query += " " + session.topic
             hits = self.retriever.search(query)
+            if reservation_context and reservation_context["provider"] != "gatorgo":
+                # Project property records describe Gator Go, not the selected hotel.
+                hits = [(record, source) for record, source in hits if record.status == "general"]
             if self.settings.provider == "openai":
                 try:
-                    response.reply, selected = await self.provider.answer(
-                        safe_history(query), session.history, [r for r, _ in hits])
+                    history = session.history
+                    if reservation_context and reservation_context["provider"] != "gatorgo":
+                        history = [item for item in history if item["role"] == "user"]
+                    args = (safe_history(query), history, [r for r, _ in hits])
+                    if reservation_context:
+                        response.reply, selected = await self.provider.answer(*args, reservation_context)
+                    else:
+                        response.reply, selected = await self.provider.answer(*args)
                     response.sources = [source for record, source in hits if record.id in selected]
                     if response.sources:
                         session.topic = response.sources[0].topic
@@ -111,7 +120,7 @@ class Concierge:
                 response.suggestions = ["What time is check-in?", "What are the spa hours?", "I want a manager"]
                 session.history.extend([
                     {"role": "user", "content": f"Topic: {session.topic or response.decision.category}"},
-                    {"role": "assistant", "content": response.reply[:1000]},
+                    {"role": "assistant", "content": "[Reservation-related reply omitted]" if reservation_context else response.reply[:1000]},
                 ])
                 session.history[:] = session.history[-self.settings.history_limit:]
                 return response

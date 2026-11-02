@@ -47,7 +47,7 @@ class ModelAdapter:
             raise ProviderUnavailable("invalid_response")
         return list(dict.fromkeys(values))
 
-    async def answer(self, query, history, records):
+    async def answer(self, query, history, records, reservation_context=None):
         ids = {record.id for record in records}
         payload = {
             "model": self.settings.model, "store": False, "max_output_tokens": 1200,
@@ -64,6 +64,10 @@ class ModelAdapter:
                     "source_ids": {"type": "array", "items": {"type": "string"}}},
                     "required": ["reply", "source_ids"], "additionalProperties": False}}},
         }
+        if reservation_context:
+            content = json.loads(payload["input"][0]["content"])
+            content["verified_test_reservation"] = reservation_context
+            payload["input"][0]["content"] = json.dumps(content)
         if self.settings.model == "gpt-6-astra":
             payload["reasoning"] = {"effort": "low"}
         result = await self._request(payload)

@@ -18,7 +18,7 @@ from fastapi.staticfiles import StaticFiles
 from .config import ROOT, load_settings
 from .provider import ModelAdapter
 from .retrieval import Retriever, normalize, read_records, validate_records
-from .reservations import SQLiteReservations, Verification, reservation_router
+from .reservations import HOTELS, SQLiteReservations, Verification, reservation_router
 from .mews import MewsSandboxReservations
 from .schemas import ChatRequest, ChatResponse, ConsentRequest, DispositionRequest
 from .service import Concierge
@@ -110,6 +110,15 @@ def create_app(settings=None, records=None, provider=None):
         sessions.items.clear()
         queue.clear()
 
+    verification = None
+    if settings.reservation_mode == "synthetic":
+        reservation_path = ROOT / "data/synthetic-hotel-reservations.sqlite3"
+        if not reservation_path.is_file():
+            raise ValueError("Run scripts/seed_reservations.py before enabling synthetic reservations")
+        mews = (MewsSandboxReservations(settings.mews_client_token, settings.mews_access_token)
+                if settings.mews_sandbox else None)
+        verification = Verification(SQLiteReservations(reservation_path), mews=mews)
+
     app = FastAPI(title="Gator Go Concierge", version="1.0.0", lifespan=lifespan)
     app.state.sessions, app.state.queue, app.state.service = sessions, queue, service
     origins = [f"http://localhost:{settings.port}", f"http://127.0.0.1:{settings.port}"]
@@ -173,7 +182,18 @@ def create_app(settings=None, records=None, provider=None):
                 "staff_notifications": False, "version": "1.0.0"}
 
     @router.post("/chat", response_model=ChatResponse)
-    async def chat(body: ChatRequest):
+    async def chat(body: ChatRequest, authorization: str = Header(default="")):
+        reservation_context = None
+        if authorization:
+            if verification is None:
+                raise HTTPException(401, "Reservation verification required or expired.")
+            hotel, reservation_id = verification.authorized(authorization)
+            row = await asyncio.to_thread(verification.providers[hotel].by_id, reservation_id)
+            if not row:
+                raise HTTPException(401, "Reservation verification required or expired.")
+            reservation_context = {"hotel": HOTELS[hotel], "provider": hotel,
+                                   **{key: row[key] for key in
+                                      ("check_in", "check_out", "room_type", "guests", "status")}}
         try:
             session = sessions.get(body.session_id)
         except OverflowError:
@@ -184,7 +204,7 @@ def create_app(settings=None, records=None, provider=None):
             if len(session.requests) >= 30:
                 raise HTTPException(429, "Please wait a minute before sending more messages.")
             session.requests.append(now)
-            result = await service.chat(session, body.message)
+            result = await service.chat(session, body.message, reservation_context)
             session.touched = time.monotonic()
             metrics["requests"] += 1
             metrics[result.decision.level] += 1
@@ -245,12 +265,7 @@ def create_app(settings=None, records=None, provider=None):
         return dict(metrics)
 
     app.include_router(router)
-    if settings.reservation_mode == "synthetic":
-        reservation_path = ROOT / "data/synthetic-hotel-reservations.sqlite3"
-        if not reservation_path.is_file():
-            raise ValueError("Run scripts/seed_reservations.py before enabling synthetic reservations")
-        mews = (MewsSandboxReservations(settings.mews_client_token, settings.mews_access_token)
-                if settings.mews_sandbox else None)
-        app.include_router(reservation_router(Verification(SQLiteReservations(reservation_path), mews=mews), reservation_staff))
+    if verification is not None:
+        app.include_router(reservation_router(verification, reservation_staff))
     app.mount("/", StaticFiles(directory=ROOT / "frontend", html=True), name="frontend")
     return app

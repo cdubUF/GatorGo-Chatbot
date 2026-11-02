@@ -28,12 +28,16 @@
             <button type="button" id="chatViewBtn" aria-pressed="true">AI chat</button>
             <button type="button" id="reservationViewBtn" aria-pressed="false">Reservation testing</button>
           </div>
+          <div id="reservationLink" class="reservation-link" role="status" hidden>
+            <span id="reservationLinkText"></span><button type="button" id="disconnectReservation">Disconnect</button>
+          </div>
           <div class="conversation" id="messages" role="log" aria-live="polite" aria-relevant="additions">
           </div>
           <div class="conversation reservation-view" id="reservationView" aria-label="Reservation testing" hidden>
             <div class="reservation-intro">
               <h2>Test a reservation</h2>
-              <p>Choose a provider and enter the matching test details. The verification code appears in the server console.</p>
+              <p>Choose a provider and enter the matching test details. The verification code appears in the server console. After verification, the AI can use the hotel's name and test stay details to answer your questions.</p>
+              <p id="reservationIntent" hidden></p>
               <details><summary>Sample reservation details</summary>
                 <p>Gator Go Resort &amp; Spa: <b>GG-2026-1048</b> / Guest1 Sample<br>
                 Hilton University of Florida: <b>GG-2026-1056</b> / Guest9 Sample<br>
