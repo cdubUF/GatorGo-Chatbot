@@ -9,6 +9,8 @@ const send = document.querySelector('#sendBtn');
 let sessionId = null, busy = false, epoch = 0, controller;
 let config = {mode: 'unknown', demo: false};
 let activeHandoff = null;
+let reservationGeneration = 0, reservationStarted = false;
+const reservationMessages = document.querySelector('#reservationMessages');
 const defaults = ['What time is check-in?', 'What amenities do you have?', 'My room is dirty', 'I want a manager'];
 
 function element(tag, className, text) {
@@ -18,7 +20,7 @@ function element(tag, className, text) {
   return node;
 }
 
-function bubble(text, who = 'agent') {
+function bubble(text, who = 'agent', target = messages) {
   const wrap = element('div', `message ${who}`);
   if (who === 'agent') {
     const avatar = element('img', 'mini-avatar');
@@ -27,8 +29,9 @@ function bubble(text, who = 'agent') {
   }
   const body = element('div', 'message-body');
   body.append(element('div', 'bubble', text));
-  wrap.append(body); messages.append(wrap);
-  messages.scrollTop = messages.scrollHeight;
+  wrap.append(body); target.append(wrap);
+  const scrollArea = target === messages ? messages : document.querySelector('#reservationView');
+  scrollArea.scrollTop = scrollArea.scrollHeight;
   return body;
 }
 
@@ -66,8 +69,11 @@ function invalidateHandoff() {
 }
 
 function reservationLookup() {
-  const lookupEpoch = epoch;
-  const body = bubble('To check a reservation, enter the confirmation number and full name.');
+  const lookupEpoch = epoch, generation = ++reservationGeneration;
+  const current = () => lookupEpoch === epoch && generation === reservationGeneration;
+  reservationStarted = true;
+  reservationMessages.replaceChildren();
+  const body = bubble('To check a reservation, enter the confirmation number and full name.', 'agent', reservationMessages);
   const card = element('form', 'handoff-card');
   card.append(element('p', 'small', 'Test reservations only. Real hotels are shown for reference; these bookings are fictional and not connected to those hotels.'));
   const hotelLabel = element('label', '', 'Hotel or provider');
@@ -95,21 +101,21 @@ function reservationLookup() {
   const note = element('p', 'small'); card.append(note); body.append(card);
   button.disabled = true;
   request('/reservations/providers').then(providers => {
-    if (lookupEpoch !== epoch) return;
+    if (!current()) return;
     placeholder.textContent = 'Choose a hotel';
     for (const provider of providers) {
       const option = element('option', '', `${provider.name} — ${provider.kind === 'mews-test' ? 'public test property' : 'fictional booking'}`);
       option.value = provider.id; hotel.append(option);
     }
     button.disabled = providers.length === 0;
-  }).catch(() => { note.textContent = 'Reservation lookup is not configured. Contact the hotel directly.'; });
+  }).catch(() => { if (current()) note.textContent = 'Reservation lookup is not configured. Contact the hotel directly.'; });
   card.addEventListener('submit', async event => {
     event.preventDefault(); button.disabled = true; note.textContent = 'Checking…';
     try {
       const result = await request('/reservations/lookup', {method: 'POST', body: {
         confirmation: confirmation.value, name: name.value, hotel: hotel.value, test_data_only: consent.checked,
       }});
-      if (lookupEpoch !== epoch) return;
+      if (!current()) return;
       card.replaceChildren(element('p', '', result.message));
       const label = element('label', '', 'Verification code');
       const code = element('input'); code.name = 'code'; code.required = true; code.inputMode = 'numeric';
@@ -124,10 +130,10 @@ function reservationLookup() {
           const verified = await request('/reservations/verify', {method: 'POST', body: {
             challenge_id: result.challenge_id, code: code.value,
           }});
-          if (lookupEpoch !== epoch) return;
+          if (!current()) return;
           code.value = ''; const accessToken = verified.access_token;
           const reservation = await request('/reservations/me', {token: accessToken});
-          if (lookupEpoch !== epoch) return;
+          if (!current()) return;
           card.replaceChildren(element('strong', '', 'Verified test reservation'));
           for (const [title, value] of [['Hotel', reservation.hotel], ['Status', reservation.status], ['Confirmation', reservation.confirmation],
             ['Guest', `${reservation.first_name} ${reservation.last_name}`], ['Check-in', reservation.check_in],
@@ -150,14 +156,15 @@ function reservationLookup() {
               try {
                 const result = await request('/reservations/request-change', {method: 'POST', token: accessToken,
                   body: {details: detail.value.trim()}});
-                if (lookupEpoch !== epoch) return;
+                if (!current()) return;
                 detail.remove(); sendChange.remove(); card.append(element('p', '', result.message));
               } catch (error) { card.append(element('p', '', error.message)); sendChange.disabled = false; }
             });
           });
-        } catch { feedback.textContent = 'Verification failed or expired. Check the code or start again.'; verify.disabled = false; }
+        } catch { if (!current()) return; feedback.textContent = 'Verification failed or expired. Check the code or start again.'; verify.disabled = false; }
       });
     } catch {
+      if (!current()) return;
       note.textContent = 'Reservation lookup is unavailable or the request limit was reached. Please contact the hotel.';
       button.disabled = false;
     }
@@ -199,8 +206,7 @@ async function submit(raw, retry = false) {
   invalidateHandoff();
   if (/\b(reservation|booking)\b/i.test(text) && /\b(my|mine|check|find|show|confirm|view|retrieve|look up)\b/i.test(text)
       && !/\b(cancel|refund|change|policy|policies|terms|rules|fees)\b/i.test(text)) {
-    bubble('I would like to check a reservation.', 'user');
-    input.value = ''; setBusy(false); reservationLookup(); return;
+    input.value = ''; setBusy(false); setView('reservation'); return;
   }
   if (!retry) bubble(text, 'user');
   input.value = '';
@@ -232,13 +238,26 @@ async function submit(raw, retry = false) {
     if (turn === epoch) {
       setBusy(false);
       messages.scrollTop = messages.scrollHeight;
-      input.focus();
+      if (!messages.hidden) input.focus();
     }
   }
 }
 
+function setView(view) {
+  const reservation = view === 'reservation';
+  document.querySelector('#chatViewBtn').setAttribute('aria-pressed', String(!reservation));
+  document.querySelector('#reservationViewBtn').setAttribute('aria-pressed', String(reservation));
+  messages.hidden = reservation;
+  document.querySelector('#composerArea').hidden = reservation;
+  document.querySelector('#reservationView').hidden = !reservation;
+  if (reservation && !reservationStarted) reservationLookup();
+  if (!reservation) input.focus();
+}
+
 async function reset() {
   epoch += 1;
+  reservationGeneration += 1; reservationStarted = false; reservationMessages.replaceChildren();
+  setView('chat');
   controller?.abort();
   const oldSession = sessionId;
   sessionId = null;
@@ -253,8 +272,11 @@ async function reset() {
 
 form.addEventListener('submit', event => { event.preventDefault(); submit(input.value); });
 input.addEventListener('input', () => send.disabled = busy || !input.value.trim());
-document.querySelectorAll('[data-prompt]').forEach(button => button.addEventListener('click', () => submit(button.dataset.prompt)));
+document.querySelectorAll('[data-prompt]').forEach(button => button.addEventListener('click', () => { setView('chat'); submit(button.dataset.prompt); }));
 document.querySelector('#resetBtn').addEventListener('click', reset);
+document.querySelector('#chatViewBtn').addEventListener('click', () => setView('chat'));
+document.querySelector('#reservationViewBtn').addEventListener('click', () => setView('reservation'));
+document.querySelector('#restartReservation').addEventListener('click', reservationLookup);
 reset();
 try {
   config = await request('/health');

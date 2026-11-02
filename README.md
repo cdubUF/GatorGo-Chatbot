@@ -26,6 +26,8 @@ Reservation lookup is disabled by default. To exercise the verification flow wit
 
 Choose a hotel in the reservation form and use its fictional confirmation and name:
 
+Use **AI chat** and **Reservation testing** at the top of the interface to switch views. Open **Sample reservation details** for test credentials, and use **Start another lookup** to reset the form. Switching views preserves the current chat and lookup.
+
 | Test hotel | Confirmation | Full name |
 |---|---|---|
 | Gator Go Resort & Spa | `GG-2026-1048` | `Guest1 Sample` |

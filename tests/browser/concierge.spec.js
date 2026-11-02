@@ -152,3 +152,33 @@ test('reservation details stay in the verification form and produce a review req
   await expect(page.getByText('Request saved for review.', {exact: false})).toBeVisible();
   expect(chatCalls).toBe(0);
 });
+
+for (const width of [1440, 390]) {
+  test(`switching between chat and reservation testing preserves each view at ${width}px`, async ({page}) => {
+    await stubLiveService(page);
+    await page.route('**/api/reservations/providers', route => route.fulfill({json: [
+      {id: 'gatorgo', name: 'Gator Go Resort & Spa (fictional)', kind: 'fictional'}
+    ]}));
+    await page.setViewportSize({width, height: 900});
+    await page.goto('/');
+    const chat = page.getByRole('button', {name: 'AI chat', exact: true});
+    const reservations = page.getByRole('button', {name: 'Reservation testing'});
+    await page.getByRole('textbox', {name: 'Message the concierge'}).fill('Hello');
+    await page.getByRole('textbox', {name: 'Message the concierge'}).press('Enter');
+    await expect(page.getByText('I can help with your stay.')).toBeVisible();
+    await reservations.click();
+    await expect(reservations).toHaveAttribute('aria-pressed', 'true');
+    await page.getByText('Sample reservation details').click();
+    await expect(page.getByText('GG-2026-1048', {exact: false})).toBeVisible();
+    await page.getByLabel('Hotel or provider').selectOption('gatorgo');
+    await page.getByLabel('Confirmation number').fill('GG-2026-1048');
+    await chat.click();
+    await expect(chat).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.getByText('I can help with your stay.')).toBeVisible();
+    await reservations.click();
+    await expect(page.getByLabel('Confirmation number')).toHaveValue('GG-2026-1048');
+    await page.getByRole('button', {name: 'Start another lookup'}).click();
+    await expect(page.getByLabel('Confirmation number')).toHaveValue('');
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
+  });
+}
