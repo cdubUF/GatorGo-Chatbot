@@ -37,7 +37,7 @@ def main():
                         datefmt="%H:%M:%S", stream=sys.stdout, force=True)
     try:
         settings = load_settings()
-        if settings.reservation_mode == "synthetic" and not (ROOT / "data/synthetic-reservations.sqlite3").is_file():
+        if settings.reservation_mode == "synthetic" and not (ROOT / "data/synthetic-hotel-reservations.sqlite3").is_file():
             sys.exit("Synthetic reservation database missing. Run scripts/seed_reservations.py first.")
         with socket.socket() as sock:
             sock.bind(("127.0.0.1", settings.port))
@@ -48,7 +48,8 @@ def main():
         message = str(error)
         if message.startswith(("MODEL_PROVIDER must", "Set OPENAI_API_KEY", "PORT must",
                                "Use SESSION_TTL", "Use PROVIDER_TIMEOUT", "STAFF_TOKEN needs",
-                               "RESERVATION_MODE must", "DEMO_MODE must", "SAMPLE_KNOWLEDGE must")):
+                               "RESERVATION_MODE must", "DEMO_MODE must", "SAMPLE_KNOWLEDGE must",
+                               "MEWS_SANDBOX_ENABLED must", "Mews sandbox needs", "Mews sandbox requires")):
             sys.exit(f"Configuration error: {message}")
         sys.exit(f"Configuration or knowledge error ({type(error).__name__}). Check .env values and knowledge files.")
     print(f"Gator Go: http://127.0.0.1:{settings.port} | provider={settings.provider} | model={settings.model}", flush=True)
@@ -58,6 +59,8 @@ def main():
     general = sum(record.status == "general" for record in records)
     print(f"Knowledge: {samples} project test records, {general} general guidance records, {approved} approved | staff notifications: not connected", flush=True)
     print(f"Reservations: {settings.reservation_mode} (synthetic mode is local development only)", flush=True)
+    if settings.mews_sandbox:
+        print("Mews: public test property enabled; use fictional data only.", flush=True)
     print("Live request status and safe error codes appear below. API keys and message contents are not logged.", flush=True)
     if settings.reservation_mode == "synthetic":
         print("Local synthetic reservation verification codes will appear in this console.", flush=True)

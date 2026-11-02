@@ -19,6 +19,7 @@ from .config import ROOT, load_settings
 from .provider import ModelAdapter
 from .retrieval import Retriever, normalize, read_records, validate_records
 from .reservations import SQLiteReservations, Verification, reservation_router
+from .mews import MewsSandboxReservations
 from .schemas import ChatRequest, ChatResponse, ConsentRequest, DispositionRequest
 from .service import Concierge
 from .sessions import Sessions
@@ -245,9 +246,11 @@ def create_app(settings=None, records=None, provider=None):
 
     app.include_router(router)
     if settings.reservation_mode == "synthetic":
-        reservation_path = ROOT / "data/synthetic-reservations.sqlite3"
+        reservation_path = ROOT / "data/synthetic-hotel-reservations.sqlite3"
         if not reservation_path.is_file():
             raise ValueError("Run scripts/seed_reservations.py before enabling synthetic reservations")
-        app.include_router(reservation_router(Verification(SQLiteReservations(reservation_path)), reservation_staff))
+        mews = (MewsSandboxReservations(settings.mews_client_token, settings.mews_access_token)
+                if settings.mews_sandbox else None)
+        app.include_router(reservation_router(Verification(SQLiteReservations(reservation_path), mews=mews), reservation_staff))
     app.mount("/", StaticFiles(directory=ROOT / "frontend", html=True), name="frontend")
     return app

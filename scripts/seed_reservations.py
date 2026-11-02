@@ -4,7 +4,7 @@ from datetime import date, timedelta
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-PATH = ROOT / "data" / "synthetic-reservations.sqlite3"
+PATH = ROOT / "data" / "synthetic-hotel-reservations.sqlite3"
 
 
 def main():
@@ -14,7 +14,7 @@ def main():
     with sqlite3.connect(PATH) as db:
         db.executescript("""
         CREATE TABLE reservations (
-            id INTEGER PRIMARY KEY, confirmation TEXT NOT NULL UNIQUE,
+            id INTEGER PRIMARY KEY, confirmation TEXT NOT NULL UNIQUE, hotel_id TEXT NOT NULL,
             first_name TEXT NOT NULL, last_name TEXT NOT NULL, contact TEXT NOT NULL,
             room_type TEXT NOT NULL, check_in TEXT NOT NULL, check_out TEXT NOT NULL,
             guests INTEGER NOT NULL, status TEXT NOT NULL
@@ -26,15 +26,17 @@ def main():
         );
         """)
         statuses = ("confirmed", "checked in", "checked out", "canceled")
+        hotels = ("gatorgo", "hilton-uf", "hyatt-downtown")
         for index in range(1, 25):
             start = date(2026, 11, 14) + timedelta(days=index - 1)
-            db.execute("INSERT INTO reservations VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (
-                index, f"GG-2026-{1047 + index}", f"Guest{index}", "Sample",
+            db.execute("INSERT INTO reservations VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (
+                index, f"GG-2026-{1047 + index}", hotels[(index - 1) // 8], f"Guest{index}", "Sample",
                 f"guest{index}@example.invalid", ("Deluxe King", "Double Queen")[index % 2],
                 start.isoformat(), (start + timedelta(days=3)).isoformat(),
                 1 + index % 4, statuses[(index - 1) % len(statuses)],
             ))
-    print("Created 24 fictional reservations. Example: GG-2026-1048 / Guest1 Sample.")
+    print("Created 24 fictional reservations across three test hotels.")
+    print("Examples: Gator Go: GG-2026-1048 / Guest1 Sample; Hilton UF: GG-2026-1056 / Guest9 Sample; Hyatt: GG-2026-1064 / Guest17 Sample.")
 
 
 if __name__ == "__main__":

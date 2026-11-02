@@ -1,6 +1,6 @@
 """Server-only configuration. Never serialize Settings into API responses."""
 import os
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -12,7 +12,7 @@ ROOT = Path(__file__).resolve().parents[2]
 class Settings:
     provider: str = "mock"
     model: str = "gpt-6-astra"
-    api_key: str = ""
+    api_key: str = field(default="", repr=False)
     demo: bool = True
     port: int = 8000
     session_ttl: int = 1800
@@ -22,6 +22,9 @@ class Settings:
     staff_token: str = ""
     reservation_mode: str = "disabled"
     sample_knowledge: bool = False
+    mews_sandbox: bool = False
+    mews_client_token: str = field(default="", repr=False)
+    mews_access_token: str = field(default="", repr=False)
 
     def __post_init__(self):
         if self.provider not in {"mock", "openai"}:
@@ -38,6 +41,10 @@ class Settings:
             raise ValueError("STAFF_TOKEN needs at least 24 characters, or leave it empty")
         if self.reservation_mode not in {"disabled", "synthetic"}:
             raise ValueError("RESERVATION_MODE must be disabled or synthetic")
+        if self.mews_sandbox and (not self.mews_client_token or not self.mews_access_token):
+            raise ValueError("Mews sandbox needs MEWS_CLIENT_TOKEN and MEWS_ACCESS_TOKEN")
+        if self.mews_sandbox and self.reservation_mode != "synthetic":
+            raise ValueError("Mews sandbox requires RESERVATION_MODE=synthetic")
 
 
 def load_settings():
@@ -48,6 +55,9 @@ def load_settings():
     samples = os.getenv("SAMPLE_KNOWLEDGE", "true").lower()
     if samples not in {"true", "false"}:
         raise ValueError("SAMPLE_KNOWLEDGE must be true or false")
+    sandbox = os.getenv("MEWS_SANDBOX_ENABLED", "false").lower()
+    if sandbox not in {"true", "false"}:
+        raise ValueError("MEWS_SANDBOX_ENABLED must be true or false")
     return Settings(
         provider=os.getenv("MODEL_PROVIDER", "openai"),
         model=os.getenv("MODEL_ID", "gpt-6-astra"),
@@ -60,4 +70,7 @@ def load_settings():
         staff_token=os.getenv("STAFF_TOKEN", ""),
         reservation_mode=os.getenv("RESERVATION_MODE", "disabled"),
         sample_knowledge=samples == "true",
+        mews_sandbox=sandbox == "true",
+        mews_client_token=os.getenv("MEWS_CLIENT_TOKEN", ""),
+        mews_access_token=os.getenv("MEWS_ACCESS_TOKEN", ""),
     )

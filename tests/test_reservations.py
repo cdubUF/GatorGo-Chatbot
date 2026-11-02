@@ -93,3 +93,23 @@ def test_guests_only_access_their_own_reservation_and_canceled_change_is_blocked
     assert client.get('/api/reservations/me', headers=tokens[1]).json()['status'] == 'canceled'
     assert client.post('/api/reservations/request-change', headers=tokens[1],
                        json={"details": "Change my dates"}).status_code == 409
+
+
+def test_local_hotel_selection_scopes_fictional_reservations(reservation_service):
+    client, _, _, caplog = reservation_service
+    available = client.get('/api/reservations/providers').json()
+    assert {item['id'] for item in available} == {'gatorgo', 'hilton-uf', 'hyatt-downtown'}
+    payload = {"confirmation": "GG-2026-1056", "name": "Guest9 Sample", "hotel": "gatorgo"}
+    caplog.clear()
+    wrong_hotel = client.post('/api/reservations/lookup', json=payload)
+    assert wrong_hotel.status_code == 200 and 'development only' not in caplog.text
+    payload['hotel'] = 'hilton-uf'
+    right_hotel = client.post('/api/reservations/lookup', json=payload)
+    match = re.search(r'development only\): (\d{6})', caplog.text)
+    assert right_hotel.status_code == 200 and match
+    verified = client.post('/api/reservations/verify', json={"challenge_id": right_hotel.json()['challenge_id'],
+                                                             "code": match.group(1)})
+    auth = {"Authorization": "Bearer " + verified.json()['access_token']}
+    row = client.get('/api/reservations/me', headers=auth).json()
+    assert row['hotel'] == 'Hilton University of Florida Conference Center Gainesville'
+    assert row['confirmation'] == 'GG-2026-1056'

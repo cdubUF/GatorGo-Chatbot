@@ -22,13 +22,23 @@ The application cannot make reservations, change bookings, charge guests, dispat
 
 ## Local reservation verification
 
-Reservation lookup is disabled by default. To exercise the verification flow with **fictional data only**, run `python scripts/seed_reservations.py` using the project environment, then set `RESERVATION_MODE=synthetic` in `.env` and restart. The seed script creates 24 fictional records in ignored `data/synthetic-reservations.sqlite3` and refuses to overwrite an existing database. Example: confirmation `GG-2026-1048`, full name `Guest1 Sample`.
+Reservation lookup is disabled by default. To exercise the verification flow with **fictional data only**, run `.venv\Scripts\python.exe scripts\seed_reservations.py` on Windows (or `.venv/bin/python scripts/seed_reservations.py` on macOS/Linux), set `RESERVATION_MODE=synthetic` in `.env`, and restart. The script creates 24 fictional records in ignored `data/synthetic-hotel-reservations.sqlite3` and refuses to overwrite an existing database. It preserves any earlier `synthetic-reservations.sqlite3` database.
+
+Choose a hotel in the reservation form and use its fictional confirmation and name:
+
+| Test hotel | Confirmation | Full name |
+|---|---|---|
+| Gator Go Resort & Spa | `GG-2026-1048` | `Guest1 Sample` |
+| Hilton University of Florida Conference Center Gainesville | `GG-2026-1056` | `Guest9 Sample` |
+| Hyatt Place Gainesville Downtown | `GG-2026-1064` | `Guest17 Sample` |
+
+The [Hilton](https://www.hilton.com/en/hotels/gvncchf-hilton-university-of-florida-conference-center-gainesville/) and [Hyatt](https://www.hyattplacegnv.com/hotel) names refer to real Gainesville hotels, but these reservations are fictional. This application is not affiliated with or connected to either hotel.
 
 Ask the concierge to check a reservation. Enter the details in the separate form; if they match, a six-digit development-only code appears in the server console. The lookup response is the same for missing or mismatched records. The code expires after five minutes and a verified access token expires after ten minutes; attempts and requests are limited. Codes and confirmation details are not sent to the language model. This console simulator does not send email or SMS, and must never be used for real guest data.
 
 After verification, a change request can be saved locally for staff review; no actual booking is changed and no staff member is notified. Configure a private `STAFF_TOKEN` of at least 24 characters and open `/staff.html` to view the local queue. The same queue is available through `GET /api/reservations/staff/requests` with an `Authorization: Bearer <token>` header. The queue and fictional bookings are local SQLite data, not an integration with a hotel. The reservation API also provides `POST /api/reservations/lookup`, `POST /api/reservations/verify`, `GET /api/reservations/me`, and `POST /api/reservations/request-change`; the last two require the short-lived verified bearer token.
 
-The supplied Mews guide describes a client token, property-issued access token, a demo environment, and certification before production. No Mews credentials or adapter are configured. Before accepting real guest data, replace the synthetic provider and console code simulator with an authorized property-management integration and verified delivery service, and review authentication, privacy, deployment, and operational controls.
+To enable the **read-only Mews public test property**, set `MEWS_SANDBOX_ENABLED=true` and add Mews's published sandbox `MEWS_CLIENT_TOKEN` and `MEWS_ACCESS_TOKEN` to `.env`. `RESERVATION_MODE=synthetic` must also be enabled. The adapter uses only `https://api.mews-demo.com`, filters by Mews or channel confirmation number, and checks the guest name locally before issuing a console-only test code. Mews reservation changes are not supported. Mews's [environment documentation](https://docs.mews.com/connector-api/guidelines/environments) says the public sandbox must never contain real data. For a real property, an authorized connection, genuine code delivery, certification, and a separate security/operational review are required; this test adapter cannot be pointed at production.
 
 See [knowledge guidance](docs/knowledge.md) for the approved-data format and importer. After importing verified records, restart the server.
 

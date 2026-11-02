@@ -2,13 +2,14 @@
 import hashlib
 import hmac
 import logging
+import asyncio
 import secrets
 import sqlite3
 import time
 from contextlib import closing
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Protocol
+from typing import Literal, Protocol
 
 from fastapi import APIRouter, Header, HTTPException, Request
 from pydantic import Field
@@ -16,6 +17,16 @@ from pydantic import Field
 from .schemas import StrictModel
 
 logger = logging.getLogger("gatorgo.reservations")
+HOTELS = {
+    "gatorgo": "Gator Go Resort & Spa (fictional)",
+    "hilton-uf": "Hilton University of Florida Conference Center Gainesville",
+    "hyatt-downtown": "Hyatt Place Gainesville Downtown",
+    "mews-sandbox": "Mews public test property",
+}
+
+
+class ReservationUnavailable(Exception):
+    pass
 
 
 def normalize(value):
@@ -23,8 +34,8 @@ def normalize(value):
 
 
 class ReservationProvider(Protocol):
-    def find(self, confirmation: str, name: str) -> dict | None: ...
-    def by_id(self, reservation_id: int) -> dict | None: ...
+    def find(self, confirmation: str, name: str, hotel: str = "gatorgo") -> dict | None: ...
+    def by_id(self, reservation_id: int | str) -> dict | None: ...
     def request_change(self, reservation_id: int, details: str) -> None: ...
     def requests(self) -> list[dict]: ...
 
@@ -38,11 +49,11 @@ class SQLiteReservations:
         connection.row_factory = sqlite3.Row
         return connection
 
-    def find(self, confirmation, name):
+    def find(self, confirmation, name, hotel="gatorgo"):
         with closing(self.connect()) as db:
             # Data in this provider is synthetic and small; normalize consistently in Python.
             for row in db.execute("SELECT * FROM reservations"):
-                if (normalize(row["confirmation"]) == normalize(confirmation)
+                if (row["hotel_id"] == hotel and normalize(row["confirmation"]) == normalize(confirmation)
                     and normalize(row["first_name"] + " " + row["last_name"]) == normalize(name)):
                     return dict(row)
         return None
@@ -68,6 +79,8 @@ class SQLiteReservations:
 class Lookup(StrictModel):
     confirmation: str = Field(min_length=1, max_length=80)
     name: str = Field(min_length=1, max_length=120)
+    hotel: Literal["gatorgo", "hilton-uf", "hyatt-downtown", "mews-sandbox"] = "gatorgo"
+    test_data_only: bool = False
 
 
 class Verify(StrictModel):
@@ -81,16 +94,20 @@ class Change(StrictModel):
 
 @dataclass
 class Challenge:
-    reservation_id: int | None
+    reservation_id: int | str | None
     digest: bytes
     expires: float
+    hotel: str = "gatorgo"
     attempts: int = 0
 
 
 class Verification:
     """Short-lived process-local challenges and grants; restart revokes both."""
-    def __init__(self, provider: ReservationProvider, clock=time.monotonic):
+    def __init__(self, provider: ReservationProvider, clock=time.monotonic, mews=None):
         self.provider, self.clock = provider, clock
+        self.providers = {hotel: provider for hotel in HOTELS if hotel != "mews-sandbox"}
+        if mews is not None:
+            self.providers["mews-sandbox"] = mews
         self.secret = secrets.token_bytes(32)
         self.challenges, self.grants, self.limits = {}, {}, {}
 
@@ -100,7 +117,7 @@ class Verification:
     def prune(self):
         now = self.clock()
         self.challenges = {k: v for k, v in self.challenges.items() if v.expires > now}
-        self.grants = {k: v for k, v in self.grants.items() if v[1] > now}
+        self.grants = {k: v for k, v in self.grants.items() if v[2] > now}
         self.limits = {k: [t for t in times if now - t < 600] for k, times in self.limits.items()
                        if any(now - t < 600 for t in times)}
 
@@ -113,14 +130,17 @@ class Verification:
             raise HTTPException(429, "Please wait before trying again.")
         bucket.append(self.clock())
 
-    def lookup(self, confirmation, name):
+    async def lookup(self, confirmation, name, hotel="gatorgo"):
         if len(self.challenges) >= 5000:
             raise HTTPException(503, "Reservation service is busy. Please try later.")
-        row = self.provider.find(confirmation, name)
+        provider = self.providers.get(hotel)
+        if provider is None:
+            raise HTTPException(503, "That test hotel is unavailable.")
+        row = await asyncio.to_thread(provider.find, confirmation, name, hotel)
         code = f"{secrets.randbelow(1_000_000):06d}"
         challenge_id = secrets.token_urlsafe(32)
         self.challenges[challenge_id] = Challenge(row["id"] if row else None,
-                                                   self.digest(challenge_id + code), self.clock() + 300)
+                                                   self.digest(challenge_id + code), self.clock() + 300, hotel)
         # The only delivery mechanism is a local, explicitly enabled synthetic-data simulator.
         if row:
             logger.warning("SYNTHETIC RESERVATION CODE (local development only): %s", code)
@@ -138,7 +158,7 @@ class Verification:
         if not valid:
             raise HTTPException(401, "Verification failed or expired. Please start again or try another code.")
         token = secrets.token_urlsafe(32)
-        self.grants[self.digest(token)] = (challenge.reservation_id, self.clock() + 600)
+        self.grants[self.digest(token)] = (challenge.hotel, challenge.reservation_id, self.clock() + 600)
         return token
 
     def authorized(self, authorization):
@@ -147,7 +167,7 @@ class Verification:
         grant = self.grants.get(self.digest(token)) if token else None
         if not grant:
             raise HTTPException(401, "Verification required or expired.")
-        return grant[0]
+        return grant[0], grant[1]
 
 
 def reservation_router(verification: Verification, staff_dependency):
@@ -156,10 +176,20 @@ def reservation_router(verification: Verification, staff_dependency):
     def limit(request, action, maximum):
         verification.limit(request.client.host if request.client else "unknown", action, maximum)
 
+    @router.get("/providers")
+    async def providers():
+        return [{"id": hotel, "name": HOTELS[hotel], "kind": "mews-test" if hotel == "mews-sandbox" else "fictional"}
+                for hotel in verification.providers]
+
     @router.post("/lookup")
     async def lookup(body: Lookup, request: Request):
         limit(request, "lookup", 10)
-        challenge_id = verification.lookup(body.confirmation, body.name)
+        if body.hotel == "mews-sandbox" and not body.test_data_only:
+            raise HTTPException(400, "Mews test property accepts fictional test data only.")
+        try:
+            challenge_id = await verification.lookup(body.confirmation, body.name, body.hotel)
+        except ReservationUnavailable:
+            raise HTTPException(503, "The selected test hotel is currently unavailable.") from None
         return {"challenge_id": challenge_id, "message": "If the details match, a verification code is available through the configured delivery method."}
 
     @router.post("/verify")
@@ -169,15 +199,19 @@ def reservation_router(verification: Verification, staff_dependency):
 
     @router.get("/me")
     async def me(authorization: str = Header(default="")):
-        row = verification.provider.by_id(verification.authorized(authorization))
+        hotel, reservation_id = verification.authorized(authorization)
+        row = verification.providers[hotel].by_id(reservation_id)
         if not row:
             raise HTTPException(404, "Reservation unavailable.")
-        return {key: row[key] for key in ("confirmation", "first_name", "last_name", "room_type",
-                                          "check_in", "check_out", "guests", "status")}
+        return {**{key: row[key] for key in ("confirmation", "first_name", "last_name", "room_type",
+                                          "check_in", "check_out", "guests", "status")},
+                "hotel": HOTELS[hotel], "provider": hotel}
 
     @router.post("/request-change", status_code=201)
     async def change(body: Change, authorization: str = Header(default="")):
-        reservation_id = verification.authorized(authorization)
+        hotel, reservation_id = verification.authorized(authorization)
+        if hotel == "mews-sandbox":
+            raise HTTPException(409, "Changes to the Mews test property are not supported.")
         row = verification.provider.by_id(reservation_id)
         if not row or normalize(row["status"]) == "canceled":
             raise HTTPException(409, "Contact the hotel directly about this reservation.")
