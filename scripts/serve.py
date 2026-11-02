@@ -2,13 +2,34 @@
 import socket
 import sys
 import logging
+import asyncio
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import uvicorn  # noqa: E402
+from uvicorn.protocols.http.h11_impl import H11Protocol  # noqa: E402
 from backend.app.config import ROOT, load_settings  # noqa: E402
 from backend.app.main import create_app  # noqa: E402
+
+
+class LocalHTTPProtocol(H11Protocol):
+    """Explain TLS sent to the local HTTP listener without recording request bytes."""
+    def connection_made(self, transport):
+        self.first_bytes = True
+        super().connection_made(transport)
+
+    def data_received(self, data):
+        if self.first_bytes and data:
+            self.first_bytes = False
+            if data[0] == 0x16:
+                self.logger.warning(
+                    "HTTPS was sent to the HTTP-only local server. Open http://127.0.0.1:%s instead.",
+                    self.server[1],
+                )
+                self.transport.close()
+                return
+        super().data_received(data)
 
 
 def main():
@@ -36,7 +57,12 @@ def main():
     print("Live request status and safe error codes appear below. API keys and message contents are not logged.", flush=True)
     if settings.reservation_mode == "synthetic":
         print("Local synthetic reservation verification codes will appear in this console.", flush=True)
-    uvicorn.run(app, host="127.0.0.1", port=settings.port, access_log=False, log_level="info")
+    # Uvicorn's Windows default is a Proactor loop, which can emit an unhandled
+    # connection-lost callback traceback when a local client resets a socket.
+    # The selector loop is sufficient for this localhost, single-process app.
+    loop_factory = asyncio.SelectorEventLoop if sys.platform == "win32" else "auto"
+    uvicorn.run(app, host="127.0.0.1", port=settings.port, access_log=False,
+                log_level="info", loop=loop_factory, http=LocalHTTPProtocol)
 
 
 if __name__ == "__main__":
