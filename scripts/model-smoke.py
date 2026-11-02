@@ -17,8 +17,16 @@ async def main():
     records = read_records(ROOT / "knowledge/demo.json")[:1]
     try:
         result = await ModelAdapter(settings).select("What time is check-in?", [], records)
-    except ProviderUnavailable:
-        sys.exit("Provider smoke test failed; no credentials or provider diagnostics are displayed.")
+    except ProviderUnavailable as error:
+        advice = {
+            "insufficient_quota": "Check API billing and available quota.",
+            "rate_limit_exceeded": "Wait and check your API rate limits.",
+            "http_429": "Check API billing, quota, and rate limits.",
+            "http_401": "Check the server-side API key.",
+            "http_403": "Check model and project permissions.",
+            "http_404": "Check the configured model ID and model access.",
+        }.get(error.reason, "Check the API key, model access, and network.")
+        sys.exit(f"Provider smoke test failed ({error.reason}). {advice} No key or provider response was displayed.")
     if result != ["checkin"]:
         sys.exit("Provider smoke test returned an unexpected source selection.")
     print(f"Live provider selection passed for model {settings.model}; synthetic sample only.")

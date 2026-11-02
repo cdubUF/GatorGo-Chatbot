@@ -8,7 +8,9 @@ from .config import ROOT
 
 
 class ProviderUnavailable(Exception):
-    pass
+    def __init__(self, reason="unavailable"):
+        super().__init__("Model service unavailable")
+        self.reason = reason
 
 
 class ModelAdapter:
@@ -60,6 +62,18 @@ class ModelAdapter:
                                                      for v in values)):
                             raise ValueError("Invalid source selection")
                         return list(dict.fromkeys(values))
-        except (httpx.HTTPError, TimeoutError, ValueError, TypeError, KeyError, AttributeError):
-            raise ProviderUnavailable("Model service unavailable") from None
-        raise ProviderUnavailable("Model service unavailable")
+        except httpx.HTTPStatusError as error:
+            reason = f"http_{error.response.status_code}"
+            if error.response.status_code == 429:
+                try:
+                    code = error.response.json().get("error", {}).get("code")
+                    if code in {"insufficient_quota", "rate_limit_exceeded"}:
+                        reason = code
+                except (ValueError, TypeError, AttributeError):
+                    pass
+            raise ProviderUnavailable(reason) from None
+        except (httpx.HTTPError, TimeoutError):
+            raise ProviderUnavailable("connection_or_timeout") from None
+        except (ValueError, TypeError, KeyError, AttributeError):
+            raise ProviderUnavailable("invalid_response") from None
+        raise ProviderUnavailable()

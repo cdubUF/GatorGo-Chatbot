@@ -7,16 +7,16 @@ A local course prototype with a FastAPI backend, a resort-themed web interface, 
 Install Python 3.11+ from python.org. From this directory:
 
 ```powershell
-# Windows (or double-click run.bat)
-powershell -NoProfile -ExecutionPolicy Bypass -File scripts/dev.ps1
+# Windows: double-click run.bat, or run:
+.\run.bat
 ```
 
 ```bash
-# macOS / Linux
-bash scripts/dev.sh
+# Git Bash, macOS, Linux, or WSL
+bash ./run-all.sh
 ```
 
-Open **http://127.0.0.1:8000**. Ctrl+C stops the API and frontend together. The first launch creates `.venv` and installs dependencies; later launches reuse it. An internet connection is needed for the initial installation, but not to run the mock demo afterward. If Python's Windows launcher points to a missing executable, repair the Python installation or use an existing working `.venv`.
+Open **http://127.0.0.1:8000**. Ctrl+C stops the API and frontend together. The first launch creates `.venv` and installs dependencies; later launches reuse it. The launchers also attempt to repair an existing environment whose Python is missing. An internet connection is needed for the initial installation, but not to run the mock demo afterward. If no working Python 3.11+ can be found, install Python from python.org and run the launcher again.
 
 Optional: copy `.env.example` to `.env`. Change `PORT` if 8000 is occupied. Never put API keys in frontend files. The server binds to loopback only. `DEMO_MODE=false` excludes every sample policy and fictional reservation; with the currently empty approved knowledge file, hotel questions safely require staff confirmation.
 
@@ -30,7 +30,9 @@ Optional: copy `.env.example` to `.env`. Change `PORT` if 8000 is occupied. Neve
 
 ## Optional model mode
 
-Set `MODEL_PROVIDER=openai`, `MODEL_ID`, and `OPENAI_API_KEY` server-side. The adapter calls the Responses API to select relevant source IDs, then renders the corresponding stored answers. It does **not** generate unrestricted prose or perform hotel actions. Invalid responses, rate limits, and provider outages fall back to explicitly labeled sourced FAQ answers. The provider integration has fake-transport tests; no live paid model test or model-quality comparison has been performed. See [model selection](docs/model-selection.md).
+Set `MODEL_PROVIDER=openai`, `MODEL_ID`, and `OPENAI_API_KEY` server-side. The adapter calls the Responses API to select relevant source IDs, then renders the corresponding stored answers. It does **not** generate unrestricted prose or perform hotel actions. Invalid responses, rate limits, and provider outages fall back to explicitly labeled sourced FAQ answers. The adapter has fake-transport tests; the live smoke test encountered HTTP 429 and has not yet succeeded. Model-quality comparison is deferred. See [model selection](docs/model-selection.md).
+
+To check the live connection after configuring `.env`, run `.venv\Scripts\python.exe scripts\model-smoke.py` on Windows (or `.venv/bin/python scripts/model-smoke.py` on macOS/Linux). An HTTP 429 indicates the provider is limiting the request; check API usage, billing, and rate limits. Keep API keys in `.env`, never in the chat or source control.
 
 ## Checks
 
@@ -66,6 +68,6 @@ docs/                     baseline, ticket tracker, presentation and survey
 
 Suggested review ownership: Audrey reviews escalation, consent, and privacy; Wyatt reviews factual grounding and tone; Gabe reviews visual design, accessibility, survey, and presentation. These are suggestions, not GitHub assignments.
 
-Use branches such as `feat/22-handoff-consent` or `fix/11-unknown-facts`. Open a PR describing the user-visible change, ticket planning IDs, tests run, and remaining approval requirements. Review source status, empty/error paths, action honesty, and screenshots. Never close a ticket solely because implementation exists when its acceptance criteria require instructor approval, live-model evidence, another operating system, or teammate review.
+Use branches such as `feat/22-handoff-consent` or `fix/11-unknown-facts`. Open a PR describing the user-visible change, ticket planning IDs, tests run, and any remaining limitations. Review source status, empty/error paths, action honesty, and screenshots. The owner has scoped this iteration to a product demo; do not imply unperformed tests or instructor approval.
 
 Knowledge import: `python scripts/import_knowledge.py approved-input.json --dry-run`, review counts, then omit `--dry-run`. See [knowledge guide](docs/knowledge.md). Runtime boundaries, retention, and local-only limitations are described in [architecture](docs/architecture.md) and [privacy](frontend/privacy.html).

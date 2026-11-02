@@ -1,6 +1,6 @@
 # Verification evidence
 
-Local environment: Windows, Python 3.11, Node 24, Chromium via Playwright. Mock mode only; no live model key or paid API call was used.
+Local environment: Windows, Python 3.11, Node 24, Chromium via Playwright. Mock-mode checks passed. A subsequent live-provider smoke attempt returned HTTP 429; a successful live response has not been confirmed.
 
 | Check | Actual result |
 |---|---|
@@ -14,7 +14,7 @@ Local environment: Windows, Python 3.11, Node 24, Chromium via Playwright. Mock 
 | Knowledge importer | Dry-run, duplicate rejection, CSV import, repeatable snapshot, and no-mutation-on-rejection tested |
 | Survey workbook | Weighted mean tested with temporary values (3.40), then cleared; blank result displays Not collected; render inspected |
 | Demo video | H.264, yuv420p, 1440×900, 25 fps, under 60 seconds; representative frames inspected |
-| Windows startup | Launcher started the combined service from the existing environment; Ctrl+C stopped the direct server |
+| Windows startup | `run.bat` and `run-all.sh` via Git Bash started the combined service on test ports; health endpoint returned OK |
 
 The automated tests include session isolation, expiry, reset, limited history, invalid input, body size, origin restrictions, secret-safe errors, staff authorization, consent and decline, idempotent queue submission, simulated disposition, production sample exclusion, unsupported facts, stale/conflicting sources, evidence injection, bounded retries/timeouts, and emergency interruption of both reservation stages.
 
