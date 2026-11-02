@@ -1,0 +1,26 @@
+{
+  "property": {
+    "name": "Gator Go Resort & Spa",
+    "location": "Gainesville, Florida",
+    "notice": "Fictional hotel and sample policies created for a course-project prototype. Replace this file with the team's approved hotel knowledge base before presenting facts as official."
+  },
+  "policies": [
+    {"id":"checkin", "category":"Stay", "topic":"Check-in time", "answer":"Standard check-in begins at 3:00 PM. Early check-in may be requested, but availability must be confirmed by staff.", "keywords":["check in time","check-in time","when can i check in","arrival time","early check in"]},
+    {"id":"checkout", "category":"Stay", "topic":"Check-out time", "answer":"Check-out is at 11:00 AM. Please ask staff if you need a late check-out; it is not guaranteed.", "keywords":["check out time","check-out time","late checkout","departure time"]},
+    {"id":"wifi", "category":"Amenities", "topic":"Wi-Fi", "answer":"Complimentary guest Wi-Fi is available. Connect to the sample network ‘GatorGuest’; front desk staff can provide the current access instructions.", "keywords":["wifi","wi fi","internet","network","password"]},
+    {"id":"parking", "category":"Arrival", "topic":"Parking", "answer":"For this fictional property, self-parking is included for registered guests. Staff can explain the parking location at arrival.", "keywords":["parking","park my car","garage","valet"]},
+    {"id":"breakfast", "category":"Dining", "topic":"Breakfast", "answer":"The sample Palmetto Kitchen serves breakfast daily from 7:00 AM to 11:00 AM. Meal inclusion depends on the guest's reservation.", "keywords":["breakfast","morning food","coffee","eat in morning"]},
+    {"id":"dining", "category":"Dining", "topic":"Dining", "answer":"Palmetto Kitchen is the sample on-site restaurant. Breakfast is listed as 7:00–11:00 AM; staff can confirm other meal hours and reservations.", "keywords":["restaurant","dining","dinner","lunch","food","palmetto"]},
+    {"id":"spa", "category":"Amenities", "topic":"Serenity Spa", "answer":"The fictional Serenity Spa is open 9:00 AM to 7:00 PM. Treatments are by appointment; this demo can answer questions but cannot book one.", "keywords":["spa","massage","facial","treatment","serenity"]},
+    {"id":"pool", "category":"Amenities", "topic":"Pool", "answer":"The sample resort pool is open from 7:00 AM to 10:00 PM. Check with hotel staff for temporary closures or weather restrictions.", "keywords":["pool","swim","swimming","hot tub"]},
+    {"id":"gym", "category":"Amenities", "topic":"Fitness center", "answer":"The sample fitness center is open 24 hours for registered guests. Staff can help with access instructions.", "keywords":["gym","fitness","workout","exercise","weights"]},
+    {"id":"quiet", "category":"Stay", "topic":"Quiet hours", "answer":"The fictional resort observes quiet hours from 10:00 PM to 7:00 AM. If noise is affecting your stay, I can prepare a demo staff handoff.", "keywords":["quiet hours","noise policy","loud","noisy"]},
+    {"id":"pets", "category":"Stay", "topic":"Pets", "answer":"Service animals are welcome. Other pet accommodations and any fees need to be confirmed directly with staff; this demo does not have an approved pet policy.", "keywords":["pet","dog","cat","animal"]},
+    {"id":"cancel", "category":"Reservations", "topic":"Cancellation", "answer":"Cancellation terms depend on your booking and rate. Please review your confirmation or ask a front desk staff member. I cannot cancel a reservation.", "keywords":["cancel","refund","change booking","modify reservation"]},
+    {"id":"accessible", "category":"Stay", "topic":"Accessibility", "answer":"For accessible-room options or accommodation requests, I can prepare a staff handoff. Availability and specific features must be confirmed by the hotel.", "keywords":["accessible","accessibility","wheelchair","ada"]}
+  ],
+  "demo_reservations": [
+    {"confirmation":"DEMO-2048", "last_name":"Parker", "first_name":"Avery", "arrival":"November 6, 2026", "departure":"November 8, 2026", "room_type":"Garden King"},
+    {"confirmation":"DEMO-3012", "last_name":"Lee", "first_name":"Morgan", "arrival":"November 10, 2026", "departure":"November 12, 2026", "room_type":"Double Queen"}
+  ]
+}
