@@ -55,7 +55,8 @@ def main():
     records = app.state.service.retriever.records
     approved = sum(record.status == "approved" for record in records)
     samples = sum(record.status == "demo_only" for record in records)
-    print(f"Knowledge: {approved} approved, {samples} unverified sample records loaded | staff notifications: not connected", flush=True)
+    general = sum(record.status == "general" for record in records)
+    print(f"Knowledge: {samples} project test records, {general} general guidance records, {approved} approved | staff notifications: not connected", flush=True)
     print(f"Reservations: {settings.reservation_mode} (synthetic mode is local development only)", flush=True)
     print("Live request status and safe error codes appear below. API keys and message contents are not logged.", flush=True)
     if settings.reservation_mode == "synthetic":

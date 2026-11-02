@@ -60,6 +60,7 @@ class BodyLimit:
 
 def create_app(settings=None, records=None, provider=None):
     settings = settings or load_settings()
+    aliases = {}
     if records is None:
         records = read_records(ROOT / "knowledge/approved.json")
         validate_records(records)
@@ -70,10 +71,20 @@ def create_app(settings=None, records=None, provider=None):
             approved_topics = {normalize(record.topic) for record in records}
             records += [record for record in samples if record.id not in approved_ids
                         and normalize(record.topic) not in approved_topics]
+            general_path = ROOT / "knowledge/general.json"
+            if settings.sample_knowledge and general_path.exists():
+                general = read_records(general_path)
+                validate_records(general)
+                records += [record for record in general if record.id not in approved_ids
+                            and normalize(record.topic) not in approved_topics]
+            aliases_path = ROOT / "knowledge/dataset-phrases.json"
+            if settings.sample_knowledge and aliases_path.exists():
+                aliases = json.loads(aliases_path.read_text("utf-8"))
     sessions = Sessions(settings.session_ttl)
     queue, metrics = {}, Counter()
     reservations = json.loads((ROOT / "knowledge/reservations.json").read_text("utf-8")) if settings.demo else []
-    service = Concierge(settings, Retriever(records, settings.demo or settings.sample_knowledge, settings.threshold),
+    service = Concierge(settings, Retriever(records, settings.demo or settings.sample_knowledge,
+                                             settings.threshold, aliases=aliases),
                         provider or ModelAdapter(settings), reservations)
 
     def prune():

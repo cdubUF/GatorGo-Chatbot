@@ -64,8 +64,31 @@ test('dataset sources are visible', async ({page}) => {
   await page.getByRole('link', {name: 'Data sources'}).click();
   await expect(page.getByRole('heading', {name: 'Data sources'})).toBeVisible();
   await expect(page.getByText('Bitext Hospitality')).toBeVisible();
-  await expect(page.getByText('not currently used to train', {exact: false})).toBeVisible();
+  await expect(page.getByText('not used to train the model', {exact: false})).toBeVisible();
   expect(await page.evaluate(() => localStorage.length)).toBe(0);
+});
+
+test('general booking policy questions go to chat, not reservation verification', async ({page}) => {
+  await stubLiveService(page);
+  await page.goto('/');
+  const input = page.getByRole('textbox', {name: 'Message the concierge'});
+  await input.fill('What is your booking policy?'); await input.press('Enter');
+  await expect(page.locator('.bubble').last()).toContainText('I can help');
+  await expect(page.getByLabel('Confirmation number')).toHaveCount(0);
+});
+
+test('hotel answers identify the source as project test data', async ({page}) => {
+  await stubLiveService(page);
+  await page.route('**/api/chat', route => route.fulfill({json: {
+    session_id: 'b1193ac0-b20c-4813-8804-21a0327ae9e4', mode: 'ai', demo: false,
+    reply: 'Check-in starts at 3:00 PM.', suggestions: [], handoff: null,
+    sources: [{id: 'checkin', topic: 'Check-in time', status: 'demo_only', source: 'Original; not instructor-approved'}]
+  }}));
+  await page.goto('/');
+  const input = page.getByRole('textbox', {name: 'Message the concierge'});
+  await input.fill('When is check-in?'); await input.press('Enter');
+  await expect(page.locator('.source-note')).toContainText('project test data');
+  await expect(page.locator('.source-note')).not.toContainText('instructor-approved');
 });
 
 test('reservation details stay in the verification form and produce a review request', async ({page}) => {

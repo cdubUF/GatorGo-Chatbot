@@ -1,6 +1,6 @@
 # Model decision and verification status
 
-**November 2 update:** Live OpenAI mode is now the application default. A live smoke test and a check-in question using labeled sample evidence succeeded. The comparison of model candidates remains future work. The earlier selection notes below are historical and describe the original source-selection-only design, not the current conversational adapter.
+**November 2 update:** At the project owner's request, the current default is `gpt-6-astra` with low reasoning effort. Live Astra tests succeeded for check-in, luggage, cancellation, and room-pricing questions. The comparison of model candidates remains future work. The earlier selection notes below are historical and describe the original source-selection-only design, not the current conversational adapter.
 
 The delivered default is **mock**, which selects the strongest deterministic retrieval hit and makes no external model call. Optional OpenAI mode uses `gpt-5.4-mini-2026-03-17` as a configurable initial candidate. This is a provisional implementation choice, not a measured winner. A team API key and live smoke test are still required before closing planning tickets 14 and 15.
 

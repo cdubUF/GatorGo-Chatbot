@@ -18,6 +18,11 @@ def classify(message):
     text = message.lower().replace("’", "'")
     for level, category, urgency, pattern in RULES:
         if re.search(pattern, text):
+            # Informational questions can be answered without performing the action.
+            general_question = bool(re.match(r"^(what|when|where|which|how|is|are|does|do|tell me|explain)\b", text.strip()))
+            if (general_question and category in {"billing", "reservation_change", "housekeeping", "maintenance"}
+                and not re.search(r"\b(my|me|mine|our|please (cancel|change|refund|send|fix|clean))\b", text)):
+                continue
             return Decision(level=level, category=category, urgency=urgency)
     return Decision()
 

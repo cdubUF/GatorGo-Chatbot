@@ -9,6 +9,7 @@ from .schemas import KnowledgeRecord, Source
 from .policy import injection_attempt
 
 STOP = set("what when where how is are the a an i my your you do does it about can at of to and have time hours times open close opens closes".split())
+ALIAS_STOP = STOP | set("would could please like want need help find information get know tell me more assistance looking got see".split())
 
 
 def normalize(text):
@@ -39,13 +40,15 @@ def validate_records(records):
 
 
 class Retriever:
-    def __init__(self, records, demo=False, threshold=1.5):
+    def __init__(self, records, demo=False, threshold=1.5, aliases=None):
         self.records = records
         self.demo = demo
         self.threshold = threshold
+        self.aliases = {key: [set(normalize(phrase).split()) - ALIAS_STOP for phrase in phrases]
+                        for key, phrases in (aliases or {}).items()}
 
     def search(self, query, limit=3):
-        eligible = [r for r in self.records if r.status == "approved" or
+        eligible = [r for r in self.records if r.status in {"approved", "general"} or
                     (self.demo and r.status == "demo_only")]
         # Fail closed for contradictory topics or duplicate IDs, including stale peers.
         counts = Counter(r.id for r in eligible)
@@ -63,7 +66,7 @@ class Retriever:
                 continue
             # A topic match alone cannot answer unsupported prices, locations, or availability.
             attributes = [
-                ({"price", "cost", "costs", "fee", "fees", "much"}, {"price", "cost", "fee", "fees", "included", "complimentary"}),
+                ({"price", "prices", "cost", "costs", "fee", "fees", "much"}, {"price", "prices", "cost", "costs", "fee", "fees", "rate", "rates", "included", "complimentary"}),
                 ({"where", "location", "address"}, {"located", "location", "address", "floor"}),
                 ({"available", "availability", "vacancy"}, {"available", "availability", "confirm"}),
                 ({"owner", "birthday", "built"}, {"owner", "birthday", "built"}),
@@ -77,7 +80,13 @@ class Retriever:
             score = len(overlap) * 2.0
             if any(" " + normalize(t) + " " in " " + q + " " for t in r.tags):
                 score += 2
-            if overlap and score >= self.threshold:
+            query_terms = set(q.split()) - ALIAS_STOP
+            for phrase in self.aliases.get(r.id, []):
+                shared = query_terms & phrase
+                similarity = len(shared) / max(len(query_terms), len(phrase), 1)
+                if len(shared) >= 2 and similarity >= 0.6:
+                    score = max(score, 2.0 + similarity * 2)
+            if score >= self.threshold:
                 ranked.append((score, r))
         ranked.sort(key=lambda pair: (-pair[0], pair[1].id))
         return [(r, Source(id=r.id, topic=r.topic, source=r.source, status=r.status, score=s))

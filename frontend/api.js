@@ -1,5 +1,5 @@
 export async function request(path, {method = 'GET', body, signal, token} = {}) {
-  const deadline = AbortSignal.timeout(12000);
+  const deadline = AbortSignal.timeout(path === '/chat' ? 130000 : 12000);
   const response = await fetch(`/api${path}`, {
     method, signal: signal ? AbortSignal.any([signal, deadline]) : deadline,
     headers: {'Content-Type': 'application/json', ...(token ? {Authorization: `Bearer ${token}`} : {})},

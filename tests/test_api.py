@@ -42,7 +42,7 @@ def test_body_limit_and_origin(client):
 def test_sample_sources_and_unknown(client):
     result = chat(client, "What time is check-in?")
     assert result["sources"][0]["id"] == "checkin"
-    assert "3:00 PM" in result["reply"] and "not verified" in result["reply"]
+    assert "3:00 PM" in result["reply"] and "Project test information" in result["reply"]
     unknown = chat(client, "Is there a helicopter landing pad?")
     assert unknown["sources"] == [] and unknown["handoff"]["state"] == "prepared"
 
@@ -180,7 +180,7 @@ def test_live_provider_receives_labeled_samples_without_demo_mode():
                                         sample_knowledge=True), provider=SampleProvider())) as client:
         result = chat(client, "What time is check-in?")
         assert result["demo"] is False and result["mode"] == "ai"
-        assert "Unverified sample" in result["reply"]
+        assert "3:00 PM" in result["reply"] and "Unverified sample" not in result["reply"]
         assert result["sources"][0]["status"] == "demo_only"
 
 
@@ -192,8 +192,37 @@ def test_live_provider_outage_can_show_labeled_sample():
                                         sample_knowledge=True), provider=FailedProvider())) as client:
         result = chat(client, "What time is check-in?")
         assert result["mode"] == "faq_fallback"
-        assert "unavailable" in result["reply"] and "Unverified sample" in result["reply"]
+        assert "unavailable" in result["reply"] and "3:00 PM" in result["reply"]
         assert result["sources"][0]["id"] == "checkin"
+
+
+@pytest.mark.parametrize("question,source_id", [
+    ("Can I store my baggage after checkout?", "general-luggage"),
+    ("What time is the airport shuttle?", "general-transport"),
+    ("What are your payment methods?", "general-payment"),
+    ("What is the cancellation policy?", "general-cancellation"),
+    ("How much does a room cost?", "general-pricing"),
+])
+def test_general_questions_reach_retrieved_guidance(question, source_id):
+    class GuidanceProvider:
+        async def answer(self, query, history, records):
+            matching = [entry for entry in records if entry.id == source_id]
+            assert matching, f"Missing {source_id} for {query}"
+            return matching[0].answer, [source_id]
+    with TestClient(create_app(Settings(provider="openai", api_key="test", demo=False,
+                                        sample_knowledge=True), provider=GuidanceProvider())) as client:
+        result = chat(client, question)
+        assert result["decision"]["level"] == "ai"
+        assert result["sources"][0]["id"] == source_id
+        assert "Unverified sample" not in result["reply"]
+
+
+def test_reservation_change_and_refund_requests_still_escalate():
+    from backend.app.policy import classify
+    assert classify("Please cancel my reservation").level == "human"
+    assert classify("I want a refund").level == "human"
+    assert classify("What is the cancellation policy?").level == "ai"
+    assert classify("What payment methods are accepted?").level == "ai"
 
 
 def test_approved_knowledge_takes_priority_over_sample(tmp_path, monkeypatch):

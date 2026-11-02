@@ -20,7 +20,7 @@ class KnowledgeRecord(StrictModel):
     topic: str = Field(min_length=1, max_length=120)
     answer: str = Field(min_length=1, max_length=2000)
     source: str = Field(min_length=1, max_length=300)
-    status: Literal["approved", "unverified", "demo_only"]
+    status: Literal["approved", "unverified", "demo_only", "general"]
     updated: date
     expires: date | None = None
     tags: list[str] = Field(default_factory=list, max_length=40)

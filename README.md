@@ -6,6 +6,8 @@ Gator Go is a local FastAPI and browser application that uses OpenAI to answer q
 
 Install Python 3.11 or newer, copy `.env.example` to `.env`, and set `OPENAI_API_KEY` in `.env`. Keep the file private. `MODEL_PROVIDER=openai` and `DEMO_MODE=false` are the defaults. The OpenAI API requires network access and may incur usage charges.
 
+The default model is `gpt-6-astra`, using low reasoning effort for chat. As of November 2, 2026, OpenAI lists standard text pricing of $10 per million input tokens and $50 per million output tokens; see the [official model page](https://developers.openai.com/api/docs/models/gpt-6-astra) for current pricing. Set `MODEL_ID` in `.env` to use another supported model.
+
 On Windows, double-click `run.bat` or run `./run.bat`. In Git Bash, macOS, Linux, or WSL, run `bash ./run-all.sh`. The launcher checks Python and installs project dependencies when necessary. Open **http://127.0.0.1:8000** and use Ctrl+C to stop the server. If port 8000 is occupied, stop the other service or set `PORT` in `.env`.
 
 The local server uses HTTP, not HTTPS. If the console reports an HTTPS request on the HTTP port, open the printed `http://127.0.0.1:8000` address exactly and check whether the browser is forcing secure connections. Other malformed requests still appear as warnings.
@@ -14,7 +16,7 @@ The console displays startup settings, request status and timing, and safe error
 
 ## Knowledge and limits
 
-`knowledge/approved.json` currently contains no approved property-specific facts. The concierge can use the 14 original records in `knowledge/demo.json` as explicitly labeled, unverified sample information, independently of demo mode. These samples cannot confirm actual hotel hours, fees, amenities or policies. Set `SAMPLE_KNOWLEDGE=false` to exclude them. The datasets listed in the application's Data sources page are background material; they have not been used to train the model or directly answer guest questions.
+The application uses the 14 original hotel records in `knowledge/demo.json` as project test data. It also retrieves six general hotel guidance records and uses 360 example question phrasings extracted from the Bitext Hospitality and Customer Support datasets to recognize relevant topics. This is retrieval, not model training. The dataset examples do not establish policies or services at a real property. `knowledge/approved.json` can hold verified property facts, which take priority over overlapping test data. Set `SAMPLE_KNOWLEDGE=false` to exclude the test records and general guidance.
 
 The application cannot make reservations, change bookings, charge guests, dispatch services, or notify staff. Handoff summaries are displayed to the guest for direct contact. The app binds to localhost and is not ready for public deployment or actual hotel operations.
 

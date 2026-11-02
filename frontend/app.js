@@ -170,7 +170,8 @@ async function submit(raw, retry = false) {
   if (!text || busy) return;
   const turn = epoch;
   invalidateHandoff();
-  if (/\b(reservation|booking)\b/i.test(text) && !/\b(cancel|refund|change)\b/i.test(text)) {
+  if (/\b(reservation|booking)\b/i.test(text) && /\b(my|mine|check|find|show|confirm|view|retrieve|look up)\b/i.test(text)
+      && !/\b(cancel|refund|change|policy|policies|terms|rules|fees)\b/i.test(text)) {
     bubble('I would like to check a reservation.', 'user');
     input.value = ''; setBusy(false); reservationLookup(); return;
   }
@@ -188,7 +189,8 @@ async function submit(raw, retry = false) {
     const body = bubble(result.reply);
     if (result.sources?.length) {
       body.append(element('p', 'source-note', 'Sources: ' + result.sources.map(s =>
-        `${s.topic} [${s.id}] · ${s.status === 'demo_only' ? 'sample' : s.status} · ${s.source}`).join('; ')));
+        s.status === 'demo_only' ? `${s.topic} [${s.id}] · project test data` :
+          `${s.topic} [${s.id}] · ${s.status === 'general' ? 'general guidance' : s.status} · ${s.source}`).join('; ')));
     }
     if (result.handoff) handoffCard(body, result.handoff);
     suggestions(result.suggestions);

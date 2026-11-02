@@ -37,7 +37,8 @@
         "enum": [
           "approved",
           "unverified",
-          "demo_only"
+          "demo_only",
+          "general"
         ],
         "title": "Status",
         "type": "string"

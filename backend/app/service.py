@@ -94,9 +94,6 @@ class Concierge:
                     response.reply, selected = await self.provider.answer(
                         safe_history(query), session.history, [r for r, _ in hits])
                     response.sources = [source for record, source in hits if record.id in selected]
-                    if any(record.status == "demo_only" for record, _ in hits):
-                        response.reply = ("Unverified sample information; please confirm with the hotel:\n\n"
-                                          + response.reply)
                     if response.sources:
                         session.topic = response.sources[0].topic
                     session.failures = 0
@@ -106,9 +103,7 @@ class Concierge:
                     if hits:
                         record, source = hits[0]
                         response.sources = [source]
-                        label = ("Unverified sample information; please confirm with the hotel:\n\n"
-                                 if record.status == "demo_only" else "")
-                        response.reply = ("The AI service is temporarily unavailable. " + label + record.answer)
+                        response.reply = "The AI service is temporarily unavailable. " + record.answer
                         session.topic = source.topic
                     else:
                         response.reply = ("The AI service is temporarily unavailable. Please try again "
@@ -133,7 +128,7 @@ class Concierge:
                 response.sources = [s for _, s in hits]
                 response.reply = "\n\n".join(r.answer for r, _ in hits)
                 if any(r.status == "demo_only" for r, _ in hits):
-                    response.reply = "Sample course-project information, not verified hotel policy:\n\n" + response.reply
+                    response.reply = "Project test information:\n\n" + response.reply
                 if response.mode == "faq_fallback":
                     response.reply = "The AI service is unavailable. Here is a sourced FAQ answer:\n\n" + response.reply
                 session.topic = hits[0][0].topic

@@ -11,14 +11,14 @@ ROOT = Path(__file__).resolve().parents[2]
 @dataclass(frozen=True)
 class Settings:
     provider: str = "mock"
-    model: str = "gpt-5.4-mini-2026-03-17"
+    model: str = "gpt-6-astra"
     api_key: str = ""
     demo: bool = True
     port: int = 8000
     session_ttl: int = 1800
     history_limit: int = 12
     threshold: float = 1.5
-    provider_timeout: float = 8
+    provider_timeout: float = 45
     staff_token: str = ""
     reservation_mode: str = "disabled"
     sample_knowledge: bool = False
@@ -32,8 +32,8 @@ class Settings:
             raise ValueError("PORT must be between 1024 and 65535")
         if not 1 <= self.session_ttl <= 86400 or not 2 <= self.history_limit <= 40:
             raise ValueError("Use SESSION_TTL_SECONDS=1..86400 and HISTORY_LIMIT=2..40")
-        if not 0 < self.provider_timeout <= 10 or not 0 < self.threshold <= 20:
-            raise ValueError("Use PROVIDER_TIMEOUT_SECONDS=0..10 and RETRIEVAL_THRESHOLD=0..20")
+        if not 0 < self.provider_timeout <= 120 or not 0 < self.threshold <= 20:
+            raise ValueError("Use PROVIDER_TIMEOUT_SECONDS=0..120 and RETRIEVAL_THRESHOLD=0..20")
         if self.staff_token and len(self.staff_token) < 24:
             raise ValueError("STAFF_TOKEN needs at least 24 characters, or leave it empty")
         if self.reservation_mode not in {"disabled", "synthetic"}:
@@ -50,13 +50,13 @@ def load_settings():
         raise ValueError("SAMPLE_KNOWLEDGE must be true or false")
     return Settings(
         provider=os.getenv("MODEL_PROVIDER", "openai"),
-        model=os.getenv("MODEL_ID", "gpt-5.4-mini-2026-03-17"),
+        model=os.getenv("MODEL_ID", "gpt-6-astra"),
         api_key=os.getenv("OPENAI_API_KEY", ""), demo=flag == "true",
         port=int(os.getenv("PORT", "8000")),
         session_ttl=int(os.getenv("SESSION_TTL_SECONDS", "1800")),
         history_limit=int(os.getenv("HISTORY_LIMIT", "12")),
         threshold=float(os.getenv("RETRIEVAL_THRESHOLD", "1.5")),
-        provider_timeout=float(os.getenv("PROVIDER_TIMEOUT_SECONDS", "8")),
+        provider_timeout=float(os.getenv("PROVIDER_TIMEOUT_SECONDS", "45")),
         staff_token=os.getenv("STAFF_TOKEN", ""),
         reservation_mode=os.getenv("RESERVATION_MODE", "disabled"),
         sample_knowledge=samples == "true",

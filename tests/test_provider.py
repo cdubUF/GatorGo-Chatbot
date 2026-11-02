@@ -85,3 +85,17 @@ def test_live_answer_sends_source_status_and_provenance():
                 "reply": "Sample information.", "source_ids": ["pool"]})}]}]})
     adapter = ModelAdapter(Settings(provider="openai", api_key="testing"), httpx.MockTransport(handler))
     assert asyncio.run(adapter.answer("pool", [], [record(status="demo_only")]))[1] == ["pool"]
+
+
+def test_astra_uses_low_reasoning_and_allows_sufficient_output():
+    def handler(request):
+        body = json.loads(request.content)
+        assert body["model"] == "gpt-6-astra"
+        assert body["reasoning"] == {"effort": "low"}
+        assert body["max_output_tokens"] >= 1000
+        return httpx.Response(200, json={"status": "completed", "output": [{"type": "message",
+            "content": [{"type": "output_text", "text": json.dumps({
+                "reply": "Hello!", "source_ids": []})}]}]})
+    adapter = ModelAdapter(Settings(provider="openai", api_key="testing", model="gpt-6-astra"),
+                           httpx.MockTransport(handler))
+    assert asyncio.run(adapter.answer("Hello", [], []))[0] == "Hello!"

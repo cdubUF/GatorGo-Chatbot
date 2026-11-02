@@ -33,3 +33,13 @@ def test_conflict_stale_duplicate_and_threshold():
         validate_records([record(), record()])
     with pytest.raises(ValueError):
         validate_records([record(), record(id="pool2", answer="Contradiction")])
+
+
+def test_downloaded_question_phrasing_improves_luggage_retrieval():
+    from backend.app.config import Settings
+    from backend.app.main import create_app
+    retriever = create_app(Settings(demo=False, sample_knowledge=True)).state.service.retriever
+    question = "id like to collect my baggagd after the check-out how do i do it"
+    assert "general-luggage" in [item.id for item, _ in retriever.search(question)]
+    without_aliases = Retriever(retriever.records, demo=True)
+    assert "general-luggage" not in [item.id for item, _ in without_aliases.search(question)]

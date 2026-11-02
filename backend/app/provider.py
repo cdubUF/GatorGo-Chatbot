@@ -50,7 +50,7 @@ class ModelAdapter:
     async def answer(self, query, history, records):
         ids = {record.id for record in records}
         payload = {
-            "model": self.settings.model, "store": False, "max_output_tokens": 700,
+            "model": self.settings.model, "store": False, "max_output_tokens": 1200,
             "instructions": self.prompt,
             "input": [{"role": "user", "content": json.dumps({
                 "question": query, "recent_context": history,
@@ -64,6 +64,8 @@ class ModelAdapter:
                     "source_ids": {"type": "array", "items": {"type": "string"}}},
                     "required": ["reply", "source_ids"], "additionalProperties": False}}},
         }
+        if self.settings.model == "gpt-6-astra":
+            payload["reasoning"] = {"effort": "low"}
         result = await self._request(payload)
         reply, values = result.get("reply"), result.get("source_ids")
         if (set(result) != {"reply", "source_ids"} or not isinstance(reply, str)
