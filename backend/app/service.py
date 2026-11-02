@@ -89,15 +89,14 @@ class Concierge:
             if session.topic and re.fullmatch(r"(and )?(what (are|about) (the |its )?)?(hours|times|when|it|that)[?. ]*", q):
                 query += " " + session.topic
             hits = self.retriever.search(query)
-            if reservation_context and reservation_context["provider"] != "gatorgo":
-                # Project property records describe Gator Go, not the selected hotel.
-                hits = [(record, source) for record, source in hits if record.status == "general"]
+            if not hits and session.topic and re.search(r"\b(it|its|there|they|their|that|this|those)\b", q):
+                hits = self.retriever.search(query + " " + session.topic)
+            if (not hits and re.search(r"\b(recommend|suggest|things to do|what should i do)\b", q)
+                and not re.search(r"\b(nearby|local|attraction|attractions|offsite|off-site)\b", q)):
+                hits = self.retriever.search("resort amenities spa dining")
             if self.settings.provider == "openai":
                 try:
-                    history = session.history
-                    if reservation_context and reservation_context["provider"] != "gatorgo":
-                        history = [item for item in history if item["role"] == "user"]
-                    args = (safe_history(query), history, [r for r, _ in hits])
+                    args = (safe_history(query), session.history, [r for r, _ in hits])
                     if reservation_context:
                         response.reply, selected = await self.provider.answer(*args, reservation_context)
                     else:

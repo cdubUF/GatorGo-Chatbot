@@ -103,11 +103,13 @@ class Challenge:
 
 class Verification:
     """Short-lived process-local challenges and grants; restart revokes both."""
-    def __init__(self, provider: ReservationProvider, clock=time.monotonic, mews=None):
+    def __init__(self, provider: ReservationProvider, clock=time.monotonic, mews=None, allowed_hotels=None):
         self.provider, self.clock = provider, clock
         self.providers = {hotel: provider for hotel in HOTELS if hotel != "mews-sandbox"}
         if mews is not None:
             self.providers["mews-sandbox"] = mews
+        if allowed_hotels is not None:
+            self.providers = {key: value for key, value in self.providers.items() if key in allowed_hotels}
         self.secret = secrets.token_bytes(32)
         self.challenges, self.grants, self.limits = {}, {}, {}
 

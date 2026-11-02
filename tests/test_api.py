@@ -263,3 +263,23 @@ def test_summary_preserves_issue_without_unrelated_faq(client):
     assert "Spa" not in concern["handoff"]["summary"]
     manager = chat(client, "I want a manager", sid)
     assert "housekeeping" in manager["handoff"]["summary"]
+
+
+def test_resort_knowledge_is_visible_and_recommendations_use_it():
+    class RecordingProvider:
+        calls = []
+        async def answer(self, query, history, records):
+            self.calls.append((query, records))
+            return "I recommend enjoying the resort amenities.", [records[0].id] if records else []
+
+    provider = RecordingProvider()
+    settings = Settings(provider="openai", api_key="test", demo=False, sample_knowledge=True)
+    with TestClient(create_app(settings, provider=provider)) as client:
+        knowledge = client.get("/api/knowledge").json()
+        assert any(item["topic"] == "Serenity Spa" for item in knowledge)
+        assert all(item["status"] in {"demo_only", "approved"} for item in knowledge)
+        result = chat(client, "I'm staying here for two days. What do you recommend I do?")
+        assert result["sources"] and provider.calls[-1][1]
+        first = chat(client, "What are the spa hours?")
+        chat(client, "What time does it close?", first["session_id"])
+        assert any(record.id == "spa" for record in provider.calls[-1][1])

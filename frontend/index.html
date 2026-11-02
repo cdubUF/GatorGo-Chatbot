@@ -36,19 +36,17 @@
           <div class="conversation reservation-view" id="reservationView" aria-label="Reservation testing" hidden>
             <div class="reservation-intro">
               <h2>Test a reservation</h2>
-              <p>Choose a provider and enter the matching test details. The verification code appears in the server console. After verification, the AI can use the hotel's name and test stay details to answer your questions.</p>
+              <p>Enter the matching Gator Go test details. The verification code appears in the server console. After verification, the AI can use the hotel's name and test stay details to answer your questions.</p>
               <p id="reservationIntent" hidden></p>
               <details><summary>Sample reservation details</summary>
-                <p>Gator Go Resort &amp; Spa: <b>GG-2026-1048</b> / Guest1 Sample<br>
-                Hilton University of Florida: <b>GG-2026-1056</b> / Guest9 Sample<br>
-                Hyatt Place Gainesville Downtown: <b>GG-2026-1064</b> / Guest17 Sample</p>
-                <p>These bookings are fictional. For Mews, use a reservation from the public test property.</p>
+                <p>Gator Go Resort &amp; Spa: <b>GG-2026-1048</b> / Guest1 Sample</p>
+                <p>This is a fictional booking for testing.</p>
               </details>
               <button type="button" class="outline-button" id="restartReservation">Start another lookup</button>
             </div>
             <div id="reservationMessages"></div>
           </div>
-          <div class="composer-area" id="composerArea"><p id="chatStatus" class="chat-status" role="status"></p><div class="chips" id="quickReplies" aria-label="Suggested questions"></div><form id="chatForm" class="composer" autocomplete="off"><input id="messageInput" name="message" aria-label="Message the concierge" maxlength="1000" placeholder="Ask me anything about your stay..." required><button id="sendBtn" aria-label="Send message" type="submit"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 14-7-4 14-3-6-7-1Z"/><path d="m12 13 7-8"/></svg></button></form><div class="footnote"><span id="dataNotice">Using project test data. <a href="privacy.html">Privacy</a> · <a href="datasets.html">Data sources</a></span><span>Powered by <b id="engineLabel">OpenAI</b></span></div></div>
+          <div class="composer-area" id="composerArea"><p id="chatStatus" class="chat-status" role="status"></p><div class="chips" id="quickReplies" aria-label="Suggested questions"></div><form id="chatForm" class="composer" autocomplete="off"><input id="messageInput" name="message" aria-label="Message the concierge" maxlength="1000" placeholder="Ask me anything about your stay..." required><button id="sendBtn" aria-label="Send message" type="submit"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 14-7-4 14-3-6-7-1Z"/><path d="m12 13 7-8"/></svg></button></form><div class="footnote"><span id="dataNotice">Using project test data. <a href="knowledge.html">Knowledge base</a> &middot; <a href="privacy.html">Privacy</a> · <a href="datasets.html">Data sources</a></span><span>Powered by <b id="engineLabel">OpenAI</b></span></div></div>
         </section>
         <aside class="info-panel" aria-label="Guest services information">
           <div class="info-top"><div class="eyebrow dark">EXPLORE YOUR STAY</div><h2>How can we<br>help you today?</h2><p>Everything you need, right at your fingertips.</p></div>

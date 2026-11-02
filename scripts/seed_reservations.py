@@ -26,17 +26,16 @@ def main():
         );
         """)
         statuses = ("confirmed", "checked in", "checked out", "canceled")
-        hotels = ("gatorgo", "hilton-uf", "hyatt-downtown")
         for index in range(1, 25):
             start = date(2026, 11, 14) + timedelta(days=index - 1)
             db.execute("INSERT INTO reservations VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (
-                index, f"GG-2026-{1047 + index}", hotels[(index - 1) // 8], f"Guest{index}", "Sample",
+                index, f"GG-2026-{1047 + index}", "gatorgo", f"Guest{index}", "Sample",
                 f"guest{index}@example.invalid", ("Deluxe King", "Double Queen")[index % 2],
                 start.isoformat(), (start + timedelta(days=3)).isoformat(),
                 1 + index % 4, statuses[(index - 1) % len(statuses)],
             ))
-    print("Created 24 fictional reservations across three test hotels.")
-    print("Examples: Gator Go: GG-2026-1048 / Guest1 Sample; Hilton UF: GG-2026-1056 / Guest9 Sample; Hyatt: GG-2026-1064 / Guest17 Sample.")
+    print("Created 24 fictional Gator Go reservations.")
+    print("Example: GG-2026-1048 / Guest1 Sample.")
 
 
 if __name__ == "__main__":

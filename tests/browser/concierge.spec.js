@@ -91,38 +91,12 @@ test('hotel answers identify the source as project test data', async ({page}) =>
   await expect(page.locator('.source-note')).not.toContainText('instructor-approved');
 });
 
-test('Mews test property requires fictional-data confirmation', async ({page}) => {
-  await stubLiveService(page);
-  await page.route('**/api/reservations/providers', route => route.fulfill({json: [
-    {id: 'mews-sandbox', name: 'Mews public test property', kind: 'mews-test'}
-  ]}));
-  let payload = null;
-  await page.route('**/api/reservations/lookup', route => {
-    payload = route.request().postDataJSON();
-    return route.fulfill({json: {challenge_id: 'fictional-challenge-123456', message: 'Code available.'}});
-  });
-  await page.goto('/');
-  const input = page.getByRole('textbox', {name: 'Message the concierge'});
-  await input.fill('Check my reservation'); await input.press('Enter');
-  await page.getByLabel('Hotel or provider').selectOption('mews-sandbox');
-  await page.getByLabel('Confirmation number').fill('42');
-  await page.getByLabel('Full name').fill('Guest One');
-  await page.getByRole('button', {name: 'Continue'}).click();
-  expect(payload).toBeNull();
-  await page.getByLabel('I am using fictional test data only.').check();
-  await page.getByRole('button', {name: 'Continue'}).click();
-  await expect(page.getByLabel('Verification code')).toBeVisible();
-  expect(payload.hotel).toBe('mews-sandbox');
-  expect(payload.test_data_only).toBe(true);
-});
-
 test('reservation details stay in the verification form and produce a review request', async ({page}) => {
   await stubLiveService(page);
   let chatCalls = 0;
   await page.route('**/api/chat', route => { chatCalls += 1; return route.abort(); });
   await page.route('**/api/reservations/providers', route => route.fulfill({json: [
-    {id: 'gatorgo', name: 'Gator Go Resort & Spa (fictional)', kind: 'fictional'},
-    {id: 'mews-sandbox', name: 'Mews public test property', kind: 'mews-test'}
+    {id: 'gatorgo', name: 'Gator Go Resort & Spa (fictional)', kind: 'fictional'}
   ]}));
   await page.route('**/api/reservations/lookup', route => route.fulfill({json: {
     challenge_id: 'synthetic-challenge-123456', message: 'If the details match, a code is available.'
@@ -139,7 +113,6 @@ test('reservation details stay in the verification form and produce a review req
   await page.goto('/');
   const input = page.getByRole('textbox', {name: 'Message the concierge'});
   await input.fill('Can you check my reservation?'); await input.press('Enter');
-  await page.getByLabel('Hotel or provider').selectOption('gatorgo');
   await page.getByLabel('Confirmation number').fill('GG-2026-1048');
   await page.getByLabel('Full name').fill('Guest1 Sample');
   await page.getByRole('button', {name: 'Continue'}).click();
@@ -170,8 +143,7 @@ for (const width of [1440, 390]) {
     await expect(reservations).toHaveAttribute('aria-pressed', 'true');
     await page.getByText('Sample reservation details').click();
     await expect(page.getByText('GG-2026-1048', {exact: false})).toBeVisible();
-    await page.getByLabel('Hotel or provider').selectOption('gatorgo');
-    await page.getByLabel('Confirmation number').fill('GG-2026-1048');
+      await page.getByLabel('Confirmation number').fill('GG-2026-1048');
     await chat.click();
     await expect(chat).toHaveAttribute('aria-pressed', 'true');
     await expect(page.getByText('I can help with your stay.')).toBeVisible();
@@ -206,7 +178,6 @@ test('verified reservation connects to chat and can be disconnected', async ({pa
   await expect.poll(() => authorizations.length).toBe(1);
   await page.getByRole('button', {name: 'Reservation testing'}).click();
   await expect(page.getByText('Your chat mentioned arrival or departure.', {exact: false})).toBeVisible();
-  await page.getByLabel('Hotel or provider').selectOption('gatorgo');
   await page.getByLabel('Confirmation number').fill('GG-2026-1048');
   await page.getByLabel('Full name').fill('Guest1 Sample');
   await page.getByRole('button', {name: 'Continue'}).click();
@@ -221,4 +192,17 @@ test('verified reservation connects to chat and can be disconnected', async ({pa
   await input.fill('What room type is booked?'); await input.press('Enter');
   await expect.poll(() => authorizations.length).toBe(3);
   expect(authorizations[2]).toBeNull();
+});
+
+
+test('resort knowledge base is visible from chat', async ({page}) => {
+  await stubLiveService(page);
+  await page.route('**/api/knowledge', route => route.fulfill({json: [
+    {category: 'Amenities', topic: 'Serenity Spa', answer: 'The spa is open 9 AM to 7 PM.', status: 'demo_only'}
+  ]}));
+  await page.goto('/');
+  await page.getByRole('link', {name: 'Knowledge base'}).click();
+  await expect(page.getByRole('heading', {name: 'Gator Go knowledge base'})).toBeVisible();
+  await expect(page.getByRole('heading', {name: 'Serenity Spa'})).toBeVisible();
+  await expect(page.getByText('The spa is open 9 AM to 7 PM.')).toBeVisible();
 });

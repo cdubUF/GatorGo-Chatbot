@@ -5,7 +5,7 @@ import logging
 import time
 from collections import Counter
 from contextlib import asynccontextmanager
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from uuid import UUID, uuid4
 
 from fastapi import APIRouter, Depends, FastAPI, Header, HTTPException, Request
@@ -16,10 +16,10 @@ from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 
 from .config import ROOT, load_settings
+from .policy import injection_attempt
 from .provider import ModelAdapter
 from .retrieval import Retriever, normalize, read_records, validate_records
 from .reservations import HOTELS, SQLiteReservations, Verification, reservation_router
-from .mews import MewsSandboxReservations
 from .schemas import ChatRequest, ChatResponse, ConsentRequest, DispositionRequest
 from .service import Concierge
 from .sessions import Sessions
@@ -115,9 +115,7 @@ def create_app(settings=None, records=None, provider=None):
         reservation_path = ROOT / "data/synthetic-hotel-reservations.sqlite3"
         if not reservation_path.is_file():
             raise ValueError("Run scripts/seed_reservations.py before enabling synthetic reservations")
-        mews = (MewsSandboxReservations(settings.mews_client_token, settings.mews_access_token)
-                if settings.mews_sandbox else None)
-        verification = Verification(SQLiteReservations(reservation_path), mews=mews)
+        verification = Verification(SQLiteReservations(reservation_path), allowed_hotels={"gatorgo"})
 
     app = FastAPI(title="Gator Go Concierge", version="1.0.0", lifespan=lifespan)
     app.state.sessions, app.state.queue, app.state.service = sessions, queue, service
@@ -180,6 +178,12 @@ def create_app(settings=None, records=None, provider=None):
     async def health():
         return {"status": "ok", "mode": settings.provider, "demo": settings.demo,
                 "staff_notifications": False, "version": "1.0.0"}
+
+    @router.get("/knowledge")
+    async def knowledge():
+        return [{"topic": r.topic, "category": r.category, "answer": r.answer, "status": r.status}
+                for r in service.retriever.records if r.status in {"approved", "demo_only"}
+                and (r.expires is None or r.expires >= date.today()) and not injection_attempt(r.answer)]
 
     @router.post("/chat", response_model=ChatResponse)
     async def chat(body: ChatRequest, authorization: str = Header(default="")):

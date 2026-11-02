@@ -23,7 +23,7 @@ def test_verified_context_is_scoped_minimized_and_never_survives_authorization(t
     monkeypatch.setattr(Path, "is_file", lambda path: True if path.name == "synthetic-hotel-reservations.sqlite3" else original_is_file(path))
     monkeypatch.setattr(main_module, "SQLiteReservations", lambda path: SQLiteReservations(db_path))
     now = [1000.0]
-    monkeypatch.setattr(main_module, "Verification", lambda provider, mews=None: Verification(provider, clock=lambda: now[0], mews=mews))
+    monkeypatch.setattr(main_module, "Verification", lambda provider, allowed_hotels=None: Verification(provider, clock=lambda: now[0], allowed_hotels=allowed_hotels))
     requests = []
 
     def handler(request):
@@ -62,8 +62,7 @@ def test_verified_context_is_scoped_minimized_and_never_survives_authorization(t
         assert "verified_test_reservation" not in requests[-1]
         assert "[Reservation-related reply omitted]" in json.dumps(requests[-1]["recent_context"])
 
-        hilton = verify("hilton-uf", "GG-2026-1056", "Guest9 Sample")
-        client.post("/api/chat", headers=hilton, json={"session_id": sid, "message": "What time is check-in?"})
-        assert requests[-1]["verified_test_reservation"]["provider"] == "hilton-uf"
-        assert all(record["status"] == "general" for record in requests[-1]["evidence"])
-        assert all(item["role"] == "user" for item in requests[-1]["recent_context"])
+        providers = client.get("/api/reservations/providers").json()
+        assert [provider["id"] for provider in providers] == ["gatorgo"]
+        rejected = client.post("/api/reservations/lookup", json={"hotel": "hilton-uf", "confirmation": "GG-2026-1056", "name": "Guest9 Sample"})
+        assert rejected.status_code == 503

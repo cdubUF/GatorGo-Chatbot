@@ -59,8 +59,6 @@ def main():
     general = sum(record.status == "general" for record in records)
     print(f"Knowledge: {samples} project test records, {general} general guidance records, {approved} approved | staff notifications: not connected", flush=True)
     print(f"Reservations: {settings.reservation_mode} (synthetic mode is local development only)", flush=True)
-    if settings.mews_sandbox:
-        print("Mews: public test property enabled; use fictional data only.", flush=True)
     print("Live request status and safe error codes appear below. API keys and message contents are not logged.", flush=True)
     if settings.reservation_mode == "synthetic":
         print("Local synthetic reservation verification codes will appear in this console.", flush=True)

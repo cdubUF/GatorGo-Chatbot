@@ -82,20 +82,7 @@ function reservationLookup() {
   reservationMessages.replaceChildren();
   const body = bubble('To check a reservation, enter the confirmation number and full name.', 'agent', reservationMessages);
   const card = element('form', 'handoff-card');
-  card.append(element('p', 'small', 'Test reservations only. Real hotels are shown for reference; these bookings are fictional and not connected to those hotels.'));
-  const hotelLabel = element('label', '', 'Hotel or provider');
-  const hotel = element('select'); hotel.required = true;
-  const placeholder = element('option', '', 'Loading hotels…'); placeholder.value = ''; hotel.append(placeholder);
-  hotelLabel.append(hotel); card.append(hotelLabel);
-  const consentLabel = element('label', 'small');
-  const consent = element('input'); consent.type = 'checkbox';
-  consentLabel.append(consent, document.createTextNode(' I am using fictional test data only.'));
-  consentLabel.hidden = true; card.append(consentLabel);
-  hotel.addEventListener('change', () => {
-    consentLabel.hidden = hotel.value !== 'mews-sandbox';
-    consent.required = hotel.value === 'mews-sandbox';
-    consent.checked = false;
-  });
+  card.append(element('p', 'small', 'Look up a fictional Gator Go reservation using the sample details above.'));
   function field(label, name, autocomplete = 'off') {
     const wrapper = element('label', '', label);
     const box = element('input'); box.name = name; box.required = true;
@@ -109,18 +96,14 @@ function reservationLookup() {
   button.disabled = true;
   request('/reservations/providers').then(providers => {
     if (!current()) return;
-    placeholder.textContent = 'Choose a hotel';
-    for (const provider of providers) {
-      const option = element('option', '', `${provider.name} — ${provider.kind === 'mews-test' ? 'public test property' : 'fictional booking'}`);
-      option.value = provider.id; hotel.append(option);
-    }
-    button.disabled = providers.length === 0;
-  }).catch(() => { if (current()) note.textContent = 'Reservation lookup is not configured. Contact the hotel directly.'; });
+    button.disabled = !providers.some(provider => provider.id === 'gatorgo');
+    if (button.disabled) note.textContent = 'Reservation testing is not configured.';
+  }).catch(() => { if (current()) note.textContent = 'Reservation testing is not configured. Start the local reservation service.'; });
   card.addEventListener('submit', async event => {
     event.preventDefault(); button.disabled = true; note.textContent = 'Checking…';
     try {
       const result = await request('/reservations/lookup', {method: 'POST', body: {
-        confirmation: confirmation.value, name: name.value, hotel: hotel.value, test_data_only: consent.checked,
+        confirmation: confirmation.value, name: name.value, hotel: 'gatorgo',
       }});
       if (!current()) return;
       card.replaceChildren(element('p', '', result.message));
@@ -154,10 +137,6 @@ function reservationLookup() {
           ask.type = 'button'; ask.addEventListener('click', () => setView('chat')); card.append(ask);
           card.append(element('p', 'small', 'AI chat can use the hotel, stay dates, room type, guest count, and status. Your name, confirmation number, and code are not sent to the AI.'));
           suggestions(['When do I check in?', 'When do I check out?', 'What room type is booked?', 'How many guests are on my stay?']);
-          if (reservation.provider === 'mews-sandbox') {
-            card.append(element('p', 'small', 'Mews test data is read-only. No changes can be submitted.'));
-            return;
-          }
           const change = element('button', 'outline-button', 'Request reservation change');
           change.type = 'button'; card.append(change);
           change.addEventListener('click', () => {

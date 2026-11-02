@@ -95,15 +95,13 @@ def test_guests_only_access_their_own_reservation_and_canceled_change_is_blocked
                        json={"details": "Change my dates"}).status_code == 409
 
 
-def test_local_hotel_selection_scopes_fictional_reservations(reservation_service):
+def test_fictional_reservations_are_scoped_to_gatorgo(reservation_service):
     client, _, _, caplog = reservation_service
-    available = client.get('/api/reservations/providers').json()
-    assert {item['id'] for item in available} == {'gatorgo', 'hilton-uf', 'hyatt-downtown'}
-    payload = {"confirmation": "GG-2026-1056", "name": "Guest9 Sample", "hotel": "gatorgo"}
+    payload = {"confirmation": "GG-2026-1056", "name": "Guest9 Sample", "hotel": "hilton-uf"}
     caplog.clear()
     wrong_hotel = client.post('/api/reservations/lookup', json=payload)
     assert wrong_hotel.status_code == 200 and 'development only' not in caplog.text
-    payload['hotel'] = 'hilton-uf'
+    payload['hotel'] = 'gatorgo'
     right_hotel = client.post('/api/reservations/lookup', json=payload)
     match = re.search(r'development only\): (\d{6})', caplog.text)
     assert right_hotel.status_code == 200 and match
@@ -111,5 +109,5 @@ def test_local_hotel_selection_scopes_fictional_reservations(reservation_service
                                                              "code": match.group(1)})
     auth = {"Authorization": "Bearer " + verified.json()['access_token']}
     row = client.get('/api/reservations/me', headers=auth).json()
-    assert row['hotel'] == 'Hilton University of Florida Conference Center Gainesville'
+    assert row['hotel'] == 'Gator Go Resort & Spa (fictional)'
     assert row['confirmation'] == 'GG-2026-1056'
