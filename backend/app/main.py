@@ -17,7 +17,7 @@ from fastapi.staticfiles import StaticFiles
 
 from .config import ROOT, load_settings
 from .provider import ModelAdapter
-from .retrieval import Retriever, read_records, validate_records
+from .retrieval import Retriever, normalize, read_records, validate_records
 from .reservations import SQLiteReservations, Verification, reservation_router
 from .schemas import ChatRequest, ChatResponse, ConsentRequest, DispositionRequest
 from .service import Concierge
@@ -62,13 +62,18 @@ def create_app(settings=None, records=None, provider=None):
     settings = settings or load_settings()
     if records is None:
         records = read_records(ROOT / "knowledge/approved.json")
-        if settings.demo:
-            records += read_records(ROOT / "knowledge/demo.json")
         validate_records(records)
+        if settings.demo or settings.sample_knowledge:
+            samples = read_records(ROOT / "knowledge/demo.json")
+            validate_records(samples)
+            approved_ids = {record.id for record in records}
+            approved_topics = {normalize(record.topic) for record in records}
+            records += [record for record in samples if record.id not in approved_ids
+                        and normalize(record.topic) not in approved_topics]
     sessions = Sessions(settings.session_ttl)
     queue, metrics = {}, Counter()
     reservations = json.loads((ROOT / "knowledge/reservations.json").read_text("utf-8")) if settings.demo else []
-    service = Concierge(settings, Retriever(records, settings.demo, settings.threshold),
+    service = Concierge(settings, Retriever(records, settings.demo or settings.sample_knowledge, settings.threshold),
                         provider or ModelAdapter(settings), reservations)
 
     def prune():

@@ -31,7 +31,8 @@ class ModelAdapter:
             "instructions": self.prompt,
             "input": [{"role": "user", "content": json.dumps({
                 "question": query, "recent_context": history,
-                "evidence": [{"id": r.id, "topic": r.topic, "answer": r.answer}
+                "evidence": [{"id": r.id, "topic": r.topic, "answer": r.answer,
+                              "status": r.status, "source": r.source}
                              for r in records],
             })}],
             "text": {"format": {"type": "json_schema", "name": "source_selection",
@@ -53,7 +54,8 @@ class ModelAdapter:
             "instructions": self.prompt,
             "input": [{"role": "user", "content": json.dumps({
                 "question": query, "recent_context": history,
-                "evidence": [{"id": r.id, "topic": r.topic, "answer": r.answer}
+                "evidence": [{"id": r.id, "topic": r.topic, "answer": r.answer,
+                              "status": r.status, "source": r.source}
                              for r in records],
             })}],
             "text": {"format": {"type": "json_schema", "name": "concierge_reply",

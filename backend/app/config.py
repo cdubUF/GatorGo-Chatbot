@@ -21,6 +21,7 @@ class Settings:
     provider_timeout: float = 8
     staff_token: str = ""
     reservation_mode: str = "disabled"
+    sample_knowledge: bool = False
 
     def __post_init__(self):
         if self.provider not in {"mock", "openai"}:
@@ -44,6 +45,9 @@ def load_settings():
     flag = os.getenv("DEMO_MODE", "false").lower()
     if flag not in {"true", "false"}:
         raise ValueError("DEMO_MODE must be true or false")
+    samples = os.getenv("SAMPLE_KNOWLEDGE", "true").lower()
+    if samples not in {"true", "false"}:
+        raise ValueError("SAMPLE_KNOWLEDGE must be true or false")
     return Settings(
         provider=os.getenv("MODEL_PROVIDER", "openai"),
         model=os.getenv("MODEL_ID", "gpt-5.4-mini-2026-03-17"),
@@ -55,4 +59,5 @@ def load_settings():
         provider_timeout=float(os.getenv("PROVIDER_TIMEOUT_SECONDS", "8")),
         staff_token=os.getenv("STAFF_TOKEN", ""),
         reservation_mode=os.getenv("RESERVATION_MODE", "disabled"),
+        sample_knowledge=samples == "true",
     )

@@ -48,11 +48,14 @@ def main():
         message = str(error)
         if message.startswith(("MODEL_PROVIDER must", "Set OPENAI_API_KEY", "PORT must",
                                "Use SESSION_TTL", "Use PROVIDER_TIMEOUT", "STAFF_TOKEN needs",
-                               "RESERVATION_MODE must", "DEMO_MODE must")):
+                               "RESERVATION_MODE must", "DEMO_MODE must", "SAMPLE_KNOWLEDGE must")):
             sys.exit(f"Configuration error: {message}")
         sys.exit(f"Configuration or knowledge error ({type(error).__name__}). Check .env values and knowledge files.")
     print(f"Gator Go: http://127.0.0.1:{settings.port} | provider={settings.provider} | model={settings.model}", flush=True)
-    print(f"Knowledge: {len(app.state.service.retriever.records)} records loaded | staff notifications: not connected", flush=True)
+    records = app.state.service.retriever.records
+    approved = sum(record.status == "approved" for record in records)
+    samples = sum(record.status == "demo_only" for record in records)
+    print(f"Knowledge: {approved} approved, {samples} unverified sample records loaded | staff notifications: not connected", flush=True)
     print(f"Reservations: {settings.reservation_mode} (synthetic mode is local development only)", flush=True)
     print("Live request status and safe error codes appear below. API keys and message contents are not logged.", flush=True)
     if settings.reservation_mode == "synthetic":

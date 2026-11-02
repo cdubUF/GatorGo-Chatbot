@@ -94,14 +94,25 @@ class Concierge:
                     response.reply, selected = await self.provider.answer(
                         safe_history(query), session.history, [r for r, _ in hits])
                     response.sources = [source for record, source in hits if record.id in selected]
+                    if any(record.status == "demo_only" for record, _ in hits):
+                        response.reply = ("Unverified sample information; please confirm with the hotel:\n\n"
+                                          + response.reply)
                     if response.sources:
                         session.topic = response.sources[0].topic
                     session.failures = 0
                 except ProviderUnavailable as error:
                     logger.warning("Live answer unavailable: %s", error.reason)
                     response.mode, response.status = "faq_fallback", "fallback"
-                    response.reply = ("The AI service is temporarily unavailable. Please try again "
-                                      "or contact the hotel directly for assistance.")
+                    if hits:
+                        record, source = hits[0]
+                        response.sources = [source]
+                        label = ("Unverified sample information; please confirm with the hotel:\n\n"
+                                 if record.status == "demo_only" else "")
+                        response.reply = ("The AI service is temporarily unavailable. " + label + record.answer)
+                        session.topic = source.topic
+                    else:
+                        response.reply = ("The AI service is temporarily unavailable. Please try again "
+                                          "or contact the hotel directly for assistance.")
                 response.suggestions = ["What time is check-in?", "What are the spa hours?", "I want a manager"]
                 session.history.extend([
                     {"role": "user", "content": f"Topic: {session.topic or response.decision.category}"},

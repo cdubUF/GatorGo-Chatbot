@@ -170,6 +170,48 @@ def test_live_provider_failure_is_visible_without_leaking_diagnostics():
         assert "private provider" not in str(result)
 
 
+def test_live_provider_receives_labeled_samples_without_demo_mode():
+    class SampleProvider:
+        async def answer(self, query, history, records):
+            assert records and records[0].id == "checkin"
+            assert records[0].status == "demo_only"
+            return "The sample says check-in is at 3:00 PM.", ["checkin"]
+    with TestClient(create_app(Settings(provider="openai", api_key="test", demo=False,
+                                        sample_knowledge=True), provider=SampleProvider())) as client:
+        result = chat(client, "What time is check-in?")
+        assert result["demo"] is False and result["mode"] == "ai"
+        assert "Unverified sample" in result["reply"]
+        assert result["sources"][0]["status"] == "demo_only"
+
+
+def test_live_provider_outage_can_show_labeled_sample():
+    class FailedProvider:
+        async def answer(self, *args):
+            raise ProviderUnavailable("http_429")
+    with TestClient(create_app(Settings(provider="openai", api_key="test", demo=False,
+                                        sample_knowledge=True), provider=FailedProvider())) as client:
+        result = chat(client, "What time is check-in?")
+        assert result["mode"] == "faq_fallback"
+        assert "unavailable" in result["reply"] and "Unverified sample" in result["reply"]
+        assert result["sources"][0]["id"] == "checkin"
+
+
+def test_approved_knowledge_takes_priority_over_sample(tmp_path, monkeypatch):
+    import json
+    from backend.app import main
+    from test_retrieval import record
+    knowledge = tmp_path / "knowledge"
+    knowledge.mkdir()
+    (tmp_path / "frontend").mkdir()
+    (knowledge / "approved.json").write_text(json.dumps([record(id="pool-real").model_dump(mode="json")]))
+    (knowledge / "demo.json").write_text(json.dumps([record(id="pool-sample", status="demo_only",
+        answer="Sample pool opens at 9 AM.").model_dump(mode="json")]))
+    monkeypatch.setattr(main, "ROOT", tmp_path)
+    app = create_app(Settings(demo=False, sample_knowledge=True))
+    hits = app.state.service.retriever.search("pool")
+    assert [entry[0].id for entry in hits] == ["pool-real"]
+
+
 def test_safe_exception(client, app):
     async def failed(*args):
         raise RuntimeError("SECRET_VALUE")

@@ -14,7 +14,7 @@ The console displays startup settings, request status and timing, and safe error
 
 ## Knowledge and limits
 
-`knowledge/approved.json` currently contains no approved property-specific facts. The concierge can answer general questions, but cannot confirm hotel hours, fees, amenities or policies until verified facts are added. The earlier sample knowledge remains separate and is excluded in normal operation. The datasets listed in the application's Data sources page are background material; they have not been used to train the model or directly answer guest questions.
+`knowledge/approved.json` currently contains no approved property-specific facts. The concierge can use the 14 original records in `knowledge/demo.json` as explicitly labeled, unverified sample information, independently of demo mode. These samples cannot confirm actual hotel hours, fees, amenities or policies. Set `SAMPLE_KNOWLEDGE=false` to exclude them. The datasets listed in the application's Data sources page are background material; they have not been used to train the model or directly answer guest questions.
 
 The application cannot make reservations, change bookings, charge guests, dispatch services, or notify staff. Handoff summaries are displayed to the guest for direct contact. The app binds to localhost and is not ready for public deployment or actual hotel operations.
 

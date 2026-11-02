@@ -73,3 +73,15 @@ def test_live_answer_rejects_invented_source():
                            httpx.MockTransport(lambda req: httpx.Response(200, json=body)))
     with pytest.raises(ProviderUnavailable):
         asyncio.run(adapter.answer("Hello", [], []))
+
+
+def test_live_answer_sends_source_status_and_provenance():
+    def handler(request):
+        body = json.loads(request.content)
+        evidence = json.loads(body["input"][0]["content"])["evidence"]
+        assert evidence[0]["status"] == "demo_only" and evidence[0]["source"] == "Test fixture only"
+        return httpx.Response(200, json={"status": "completed", "output": [{"type": "message",
+            "content": [{"type": "output_text", "text": json.dumps({
+                "reply": "Sample information.", "source_ids": ["pool"]})}]}]})
+    adapter = ModelAdapter(Settings(provider="openai", api_key="testing"), httpx.MockTransport(handler))
+    assert asyncio.run(adapter.answer("pool", [], [record(status="demo_only")]))[1] == ["pool"]

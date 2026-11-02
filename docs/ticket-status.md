@@ -4,7 +4,7 @@ These are the 42 planning IDs from the supplied Markdown/CSV, not GitHub issue n
 
 Ready for review means the demo implementation and listed checks are available. The owner waived additional teammate testing and instructor approval as demo prerequisites. Sample hotel facts remain labeled as unapproved. Pending items are deferred or blocked, not claimed complete.
 
-**40 ready for review; 2 with outstanding acceptance steps.** See [verification](verification.md) for actual results and limits.
+**41 ready for review; 1 deferred.** See [verification](verification.md) for actual results and limits.
 
 | ID | Ticket | Status | Evidence / remaining step |
 |---|---|---|---|
@@ -22,7 +22,7 @@ Ready for review means the demo implementation and listed checks are available. 
 | 12 | [[BACKEND] Handle missing, conflicting, and outdated hotel information](issues/12-handle-missing-conflicting-and-outdated-hotel-information.md) | Ready for review | conflict/expiry/unknown regression tests. |
 | 13 | [[KNOWLEDGE] Create hotel FAQ coverage map and test question set](issues/13-create-hotel-faq-coverage-map-and-test-question-set.md) | Ready for review | tests/scenarios.json; knowledge.md. |
 | 14 | [[AI] Evaluate LLM provider/model choice and document tradeoffs](issues/14-evaluate-llm-provider-model-choice-and-document-tradeoffs.md) | Pending acceptance | model-selection.md; scripts/model-smoke.py. Deferred by project owner: compare candidate models later. |
-| 15 | [[AI] Implement server-side LLM adapter and configurable mock mode](issues/15-implement-server-side-llm-adapter-and-configurable-mock-mode.md) | Pending acceptance | backend/app/provider.py; tests/test_provider.py. Adapter and mock mode are implemented; live request reached OpenAI but returned HTTP 429. Resolve account usage or rate limits, then rerun the smoke test. |
+| 15 | [[AI] Implement server-side LLM adapter and configurable mock mode](issues/15-implement-server-side-llm-adapter-and-configurable-mock-mode.md) | Ready for review | backend/app/provider.py; tests/test_provider.py. Live OpenAI smoke test and a check-in question using labeled sample evidence passed on November 2, 2026. |
 | 16 | [[AI] Define concierge system prompt, personality, and instruction boundaries](issues/16-define-concierge-system-prompt-personality-and-instruction-boundaries.md) | Ready for review | backend/app/prompts/concierge-v1.txt; prompt boundary tests. |
 | 17 | [[AI] Implement session state and multi-turn conversation context](issues/17-implement-session-state-and-multi-turn-conversation-context.md) | Ready for review | backend/app/sessions.py; isolation/expiry/reset tests. |
 | 18 | [[AI] Build retrieval-augmented answer generation with source grounding](issues/18-build-retrieval-augmented-answer-generation-with-source-grounding.md) | Ready for review | backend/app/service.py; source-grounding tests. |
