@@ -1,0 +1,2 @@
+# Optional recording conversion only; not needed to run the application.
+imageio-ffmpeg==0.6.0

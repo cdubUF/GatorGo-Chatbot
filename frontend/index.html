@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Gator Go | AI Guest Concierge</title>
+  <meta name="description" content="Gator Go Resort & Spa virtual guest concierge.">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand"><div class="brand-icon" aria-hidden="true">G<span>✦</span></div><div class="brand-copy"><strong>GATOR GO</strong><span>RESORT & SPA</span></div></div>
+      <div class="sidebar-center">
+        <div class="eyebrow"><span class="eyebrow-line"></span> YOUR STAY, REIMAGINED</div>
+        <h1>Hospitality,<br><em>on your time.</em></h1>
+        <p>Thoughtful service, instant answers, and a personal touch. Meet your digital guest concierge.</p>
+        <div class="scenery" aria-hidden="true"><span class="sun"></span><span class="hill hill-one"></span><span class="hill hill-two"></span><span class="water"></span><span class="leaf leaf-one"></span><span class="leaf leaf-two"></span><span class="leaf leaf-three"></span></div>
+      </div>
+      <div class="sidebar-bottom"><div class="mini-icon">✦</div><div><b>Available around the clock</b><span>Here for every part of your stay</span></div></div>
+    </aside>
+    <main class="main">
+      <header class="topbar"><div><div class="top-eyebrow">DIGITAL GUEST EXPERIENCE</div><div class="top-title">Guest Concierge</div></div><div class="top-actions"><span class="status-label" id="serviceStatus" role="status"><i></i> Checking service</span><button class="outline-button" id="resetBtn" type="button" title="Start a fresh conversation" aria-label="New conversation"><span>↻</span> New conversation</button></div></header>
+      <div class="content">
+        <section class="chat-panel" aria-label="Chat with the resort concierge">
+          <div class="chat-titlebar"><div class="avatar" aria-hidden="true"><img src="avatar.svg" alt=""><i></i></div><div class="agent-detail"><strong>Gator Guest Assistant</strong><span><i></i> Virtual AI concierge</span></div><span class="mode-pill" id="modeBadge">CONNECTING</span></div>
+          <div class="view-switcher" role="group" aria-label="Choose a testing view">
+            <button type="button" id="chatViewBtn" aria-pressed="true">AI chat</button>
+            <button type="button" id="reservationViewBtn" aria-pressed="false">Reservation testing</button>
+          </div>
+          <div id="reservationLink" class="reservation-link" role="status" hidden>
+            <span id="reservationLinkText"></span><button type="button" id="disconnectReservation">Disconnect</button>
+          </div>
+          <div class="conversation" id="messages" role="log" aria-live="polite" aria-relevant="additions">
+          </div>
+          <div class="conversation reservation-view" id="reservationView" aria-label="Reservation testing" hidden>
+            <div class="reservation-intro">
+              <h2>Test a reservation</h2>
+              <p>Enter the matching Gator Go test details. The verification code appears in the server console. After verification, the AI can use the hotel's name and test stay details to answer your questions.</p>
+              <p id="reservationIntent" hidden></p>
+              <details><summary>Sample reservation details</summary>
+                <p>Gator Go Resort &amp; Spa: <b>GG-2026-1048</b> / Guest1 Sample</p>
+                <p>This is a fictional booking for testing.</p>
+              </details>
+              <button type="button" class="outline-button" id="restartReservation">Start another lookup</button>
+            </div>
+            <div id="reservationMessages"></div>
+          </div>
+          <div class="composer-area" id="composerArea"><p id="chatStatus" class="chat-status" role="status"></p><div class="chips" id="quickReplies" aria-label="Suggested questions"></div><form id="chatForm" class="composer" autocomplete="off"><input id="messageInput" name="message" aria-label="Message the concierge" maxlength="1000" placeholder="Ask me anything about your stay..." required><button id="sendBtn" aria-label="Send message" type="submit"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 14-7-4 14-3-6-7-1Z"/><path d="m12 13 7-8"/></svg></button></form><div class="footnote"><span id="dataNotice">Using project test data. <a href="knowledge.html">Knowledge base</a> &middot; <a href="privacy.html">Privacy</a> · <a href="datasets.html">Data sources</a></span><span>Powered by <b id="engineLabel">OpenAI</b></span></div></div>
+        </section>
+        <aside class="info-panel" aria-label="Guest services information">
+          <div class="info-top"><div class="eyebrow dark">EXPLORE YOUR STAY</div><h2>How can we<br>help you today?</h2><p>Everything you need, right at your fingertips.</p></div>
+          <div class="services">
+            <button class="service" data-prompt="What time is check-in?" type="button"><div class="service-icon">⌂</div><div><b>Check-in & stays</b><span>Arrivals, departures, reservations</span></div><span class="arrow">↗</span></button>
+            <button class="service" data-prompt="What are your spa hours?" type="button"><div class="service-icon">✿</div><div><b>Spa & wellness</b><span>Unwind, refresh, recharge</span></div><span class="arrow">↗</span></button>
+            <button class="service" data-prompt="When is breakfast served?" type="button"><div class="service-icon">☕</div><div><b>Dining & amenities</b><span>Discover what we offer</span></div><span class="arrow">↗</span></button>
+            <button class="service" data-prompt="My air conditioning isn't working" type="button"><div class="service-icon">♡</div><div><b>Guest assistance</b><span>We're here when you need us</span></div><span class="arrow">↗</span></button>
+          </div>
+          <div class="small-disclaimer">CONTACT THE HOTEL DIRECTLY FOR STAFF ASSISTANCE</div>
+        </aside>
+      </div>
+    </main>
+  </div>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

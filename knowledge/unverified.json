@@ -1,0 +1,86 @@
+[
+  {
+    "id": "booking-dates",
+    "category": "Reservations",
+    "topic": "Arrival dates and length of stay",
+    "answer": "Arrival date and stay length need confirmation against the guest's actual booking. This prototype cannot access real bookings.",
+    "source": "User-supplied historical CSV field structure: arrival_date_year; arrival_date_month; stays_in_week_nights; stays_in_weekend_nights",
+    "status": "unverified",
+    "updated": "2026-11-01",
+    "expires": null,
+    "tags": [
+      "arrival",
+      "length of stay"
+    ]
+  },
+  {
+    "id": "booking-meals",
+    "category": "Reservations",
+    "topic": "Meal inclusion",
+    "answer": "Meal inclusion must be confirmed from the guest's booking or by hotel staff. The historical meal field does not establish Gator Go dining policy.",
+    "source": "User-supplied historical CSV field structure: meal",
+    "status": "unverified",
+    "updated": "2026-11-01",
+    "expires": null,
+    "tags": [
+      "meal plan",
+      "meal inclusion"
+    ]
+  },
+  {
+    "id": "booking-deposit",
+    "category": "Reservations",
+    "topic": "Deposit terms",
+    "answer": "Deposit and cancellation terms need confirmation from the booking's actual terms and hotel staff. Historical deposit labels do not authorize refunds or establish current fees.",
+    "source": "User-supplied historical CSV field structure: deposit_type; is_canceled",
+    "status": "unverified",
+    "updated": "2026-11-01",
+    "expires": null,
+    "tags": [
+      "deposit",
+      "deposit terms"
+    ]
+  },
+  {
+    "id": "booking-room",
+    "category": "Reservations",
+    "topic": "Requested room type",
+    "answer": "Room categories in the historical dataset are coded. Gator Go's room descriptions, availability, and assignments still require approved information and staff confirmation.",
+    "source": "User-supplied historical CSV field structure: reserved_room_type",
+    "status": "unverified",
+    "updated": "2026-11-01",
+    "expires": null,
+    "tags": [
+      "room type",
+      "room category"
+    ]
+  },
+  {
+    "id": "booking-occupancy",
+    "category": "Reservations",
+    "topic": "Guest occupancy limits",
+    "answer": "The historical booking guest counts and rental-permit capacities do not establish Gator Go occupancy limits. Ask staff to confirm the room's approved capacity.",
+    "source": "User-supplied historical CSV field structure: adults; children; babies; export.csv: Guest limit",
+    "status": "unverified",
+    "updated": "2026-11-01",
+    "expires": null,
+    "tags": [
+      "occupancy",
+      "guest limit"
+    ]
+  },
+  {
+    "id": "booking-parking",
+    "category": "Reservations",
+    "topic": "Parking requests",
+    "answer": "A historical request for a parking space does not guarantee parking or establish Gator Go parking prices. Availability and terms need approved property information.",
+    "source": "User-supplied historical CSV field structure: required_car_parking_spaces",
+    "status": "unverified",
+    "updated": "2026-11-01",
+    "expires": null,
+    "tags": [
+      "parking availability",
+      "parking fees"
+    ]
+  }
+]
