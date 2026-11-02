@@ -4,7 +4,7 @@ These are the 42 planning IDs from the supplied Markdown/CSV, not GitHub issue n
 
 Ready for review means the implementation and listed local checks are available. Pending acceptance means a required outside input or verification remains. Neither status substitutes for team/instructor acceptance.
 
-**29 ready for review; 13 with outstanding acceptance steps.** See [verification](verification.md) for actual results and limits.
+**30 ready for review; 12 with outstanding acceptance steps.** See [verification](verification.md) for actual results and limits.
 
 | ID | Ticket | Status | Evidence / remaining step |
 |---|---|---|---|
@@ -47,7 +47,7 @@ Ready for review means the implementation and listed local checks are available.
 | 37 | [[DEMO] Create polished 60-second virtual-concierge demo script and storyboard](issues/37-create-polished-60-second-virtual-concierge-demo-script-and-storyboard.md) | Ready for review | demo-storyboard.md; timed 58.92-second screen recording. |
 | 38 | [[DEMO] Record, review, and export the PowerPoint-ready 60-second video](issues/38-record-review-and-export-the-powerpoint-ready-60-second-video.md) | Pending acceptance | evidence/gatorgo-demo.mp4; scripts/record-demo.mjs; scripts/convert-demo.py. H.264 screen recording exported under 60 seconds; teammate PowerPoint playback on a second device pending. |
 | 39 | [[DEMO] Create technical architecture diagram and speaking notes for final presentation](issues/39-create-technical-architecture-diagram-and-speaking-notes-for-final-pre.md) | Pending acceptance | architecture.md; evidence screenshots. Architecture diagram, notes, and screenshots supplied; integrate into final slides and review against instructor PDFs. |
-| 40 | [[DELIVERY] Add GitHub Actions CI for linting, unit tests, and build validation](issues/40-add-github-actions-ci-for-linting-unit-tests-and-build-validation.md) | Pending acceptance | .github/workflows/checks.yml. CI workflow supplied; remote GitHub Actions execution pending publication. |
+| 40 | [[DELIVERY] Add GitHub Actions CI for linting, unit tests, and build validation](issues/40-add-github-actions-ci-for-linting-unit-tests-and-build-validation.md) | Ready for review | .github/workflows/checks.yml. |
 | 41 | [[DELIVERY] Implement safe model-error fallback and service-status messaging](issues/41-implement-safe-model-error-fallback-and-service-status-messaging.md) | Ready for review | provider timeout/retry/malformed-response tests; browser outage test. |
 | 42 | [[DELIVERY] Prepare optional deployment or offline demo packaging](issues/42-prepare-optional-deployment-or-offline-demo-packaging.md) | Ready for review | demo-runbook.md; mock launcher; no API key needed. |
 
