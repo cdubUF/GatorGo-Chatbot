@@ -1,0 +1,18 @@
+[
+  {
+    "confirmation": "DEMO-2048",
+    "last_name": "Parker",
+    "first_name": "Avery",
+    "arrival": "November 6, 2026",
+    "departure": "November 8, 2026",
+    "room_type": "Garden King"
+  },
+  {
+    "confirmation": "DEMO-3012",
+    "last_name": "Lee",
+    "first_name": "Morgan",
+    "arrival": "November 10, 2026",
+    "departure": "November 12, 2026",
+    "room_type": "Double Queen"
+  }
+]

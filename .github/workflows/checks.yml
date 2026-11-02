@@ -1,0 +1,40 @@
+name: Concierge checks
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: pip install -r requirements.txt
+      - run: python -m ruff check backend scripts tests
+      - run: python -m pytest -q
+      - run: python scripts/evaluate.py
+      - run: npm ci && npm run check
+      - run: npx playwright install --with-deps chromium
+      - name: Browser checks
+        shell: bash
+        run: |
+          python scripts/serve.py > /tmp/gatorgo.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid"' EXIT
+          for attempt in {1..30}; do
+            if curl --fail --silent http://127.0.0.1:8000/api/health; then break; fi
+            sleep 1
+          done
+          npm run test:ui
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: verification
+          path: |
+            artifacts/
+            playwright-report/

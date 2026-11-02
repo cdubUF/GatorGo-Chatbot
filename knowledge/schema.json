@@ -1,0 +1,84 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "array",
+  "items": {
+    "additionalProperties": false,
+    "properties": {
+      "id": {
+        "pattern": "^[a-z0-9_-]{1,64}$",
+        "title": "Id",
+        "type": "string"
+      },
+      "category": {
+        "maxLength": 80,
+        "minLength": 1,
+        "title": "Category",
+        "type": "string"
+      },
+      "topic": {
+        "maxLength": 120,
+        "minLength": 1,
+        "title": "Topic",
+        "type": "string"
+      },
+      "answer": {
+        "maxLength": 2000,
+        "minLength": 1,
+        "title": "Answer",
+        "type": "string"
+      },
+      "source": {
+        "maxLength": 300,
+        "minLength": 1,
+        "title": "Source",
+        "type": "string"
+      },
+      "status": {
+        "enum": [
+          "approved",
+          "unverified",
+          "demo_only"
+        ],
+        "title": "Status",
+        "type": "string"
+      },
+      "updated": {
+        "format": "date",
+        "title": "Updated",
+        "type": "string"
+      },
+      "expires": {
+        "anyOf": [
+          {
+            "format": "date",
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Expires"
+      },
+      "tags": {
+        "items": {
+          "type": "string"
+        },
+        "maxItems": 40,
+        "title": "Tags",
+        "type": "array"
+      }
+    },
+    "required": [
+      "id",
+      "category",
+      "topic",
+      "answer",
+      "source",
+      "status",
+      "updated"
+    ],
+    "title": "KnowledgeRecord",
+    "type": "object"
+  }
+}

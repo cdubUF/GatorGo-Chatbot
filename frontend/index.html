@@ -20,13 +20,13 @@
       <div class="sidebar-bottom"><div class="mini-icon">✦</div><div><b>Available around the clock</b><span>Here for every part of your stay</span></div></div>
     </aside>
     <main class="main">
-      <header class="topbar"><div><div class="top-eyebrow">DIGITAL GUEST EXPERIENCE <span class="top-dot">•</span> PROTOTYPE</div><div class="top-title">Guest Concierge</div></div><div class="top-actions"><span class="status-label"><i></i> Concierge available</span><button class="outline-button" id="resetBtn" type="button" title="Start a fresh conversation"><span>↻</span> New conversation</button></div></header>
+      <header class="topbar"><div><div class="top-eyebrow">DIGITAL GUEST EXPERIENCE <span class="top-dot">•</span> PROTOTYPE</div><div class="top-title">Guest Concierge</div></div><div class="top-actions"><span class="status-label" id="serviceStatus" role="status"><i></i> Checking service</span><button class="outline-button" id="resetBtn" type="button" title="Start a fresh conversation" aria-label="New conversation"><span>↻</span> New conversation</button></div></header>
       <div class="content">
         <section class="chat-panel" aria-label="Chat with the resort concierge">
-          <div class="chat-titlebar"><div class="avatar" aria-hidden="true"><span>G</span><i></i></div><div class="agent-detail"><strong>Gator Guest Assistant</strong><span><i></i> AI concierge · Always here to help</span></div><span class="mode-pill" id="modeBadge">LOCAL DEMO</span></div>
+          <div class="chat-titlebar"><div class="avatar" aria-hidden="true"><img src="avatar.svg" alt=""><i></i></div><div class="agent-detail"><strong>Gator Guest Assistant</strong><span><i></i> Virtual AI concierge - Course prototype</span></div><span class="mode-pill" id="modeBadge">CONNECTING</span></div>
           <div class="conversation" id="messages" role="log" aria-live="polite" aria-relevant="additions">
           </div>
-          <div class="composer-area"><div class="chips" id="quickReplies" aria-label="Suggested questions"></div><form id="chatForm" class="composer" autocomplete="off"><input id="messageInput" name="message" aria-label="Message the concierge" maxlength="500" placeholder="Ask me anything about your stay..." required><button id="sendBtn" aria-label="Send message" type="submit"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 14-7-4 14-3-6-7-1Z"/><path d="m12 13 7-8"/></svg></button></form><div class="footnote"><span>✦ Sample resort details · No real bookings or staff notifications</span><span>Powered by <b id="engineLabel">demo logic</b></span></div></div>
+          <div class="composer-area"><p id="chatStatus" class="chat-status" role="status"></p><div class="chips" id="quickReplies" aria-label="Suggested questions"></div><form id="chatForm" class="composer" autocomplete="off"><input id="messageInput" name="message" aria-label="Message the concierge" maxlength="1000" placeholder="Ask me anything about your stay..." required><button id="sendBtn" aria-label="Send message" type="submit"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 14-7-4 14-3-6-7-1Z"/><path d="m12 13 7-8"/></svg></button></form><div class="footnote"><span id="dataNotice">Sample details - No real bookings or staff notifications - <a href="privacy.html">Privacy</a></span><span>Powered by <b id="engineLabel">demo logic</b></span></div></div>
         </section>
         <aside class="info-panel" aria-label="Guest services information">
           <div class="info-top"><div class="eyebrow dark">EXPLORE YOUR STAY</div><h2>How can we<br>help you today?</h2><p>Everything you need, right at your fingertips.</p></div>
@@ -42,6 +42,6 @@
       </div>
     </main>
   </div>
-  <script src="app.js" defer></script>
+  <script type="module" src="app.js"></script>
 </body>
 </html>

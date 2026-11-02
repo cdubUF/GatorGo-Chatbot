@@ -1,0 +1,196 @@
+[
+  {
+    "dataset": "hospitality",
+    "homepage": "https://huggingface.co/datasets/bitext/Bitext-hospitality-llm-chatbot-training-dataset",
+    "license": "CDLA-Sharing-1.0",
+    "purpose": "conversation_examples",
+    "retrieved_utc": "2026-11-02T04:10:57.847182+00:00",
+    "filenames": [
+      "bitext-hospitality-llm-chatbot-training-dataset.csv"
+    ],
+    "files": [
+      {
+        "name": "bitext-hospitality-llm-chatbot-training-dataset.csv",
+        "bytes": 16155404,
+        "sha256": "358bea7f46456539b31b40f0e3d43bbcf3210e70d6ccff798af70771fa3b15d5",
+        "rows": 25000,
+        "columns": [
+          "instruction",
+          "intent",
+          "category",
+          "tags",
+          "response"
+        ],
+        "category_counts": {
+          "BILLING": 1000,
+          "CANCELLATION_FEES": 1000,
+          "CHECK_IN": 1000,
+          "CHECK_OUT": 1000,
+          "CONTACT": 2000,
+          "EVENT": 1000,
+          "FEEDBACK": 2000,
+          "HOTEL": 8000,
+          "LUGGAGE": 1000,
+          "MENU": 1000,
+          "NIGHT": 1000,
+          "PARKING_SPACE": 1000,
+          "PETS": 1000,
+          "POINTS": 1000,
+          "REFUND": 1000,
+          "SHUTTLE_SERVICE": 1000
+        },
+        "intent_counts": {
+          "invoices": 1000,
+          "cancellation_fees": 1000,
+          "check_in": 1000,
+          "check_out": 1000,
+          "customer_service": 1000,
+          "human_agent": 1000,
+          "host_event": 1000,
+          "file_complaint": 1000,
+          "leave_review": 1000,
+          "book_hotel": 1000,
+          "cancel_hotel_reservation": 1000,
+          "change_hotel_reservation": 1000,
+          "check_hotel_facilities": 1000,
+          "check_hotel_offers": 1000,
+          "check_hotel_prices": 1000,
+          "check_hotel_reservation": 1000,
+          "search_hotel": 1000,
+          "store_luggage": 1000,
+          "check_menu": 1000,
+          "add_night": 1000,
+          "book_parking_space": 1000,
+          "bring_pets": 1000,
+          "redeem_points": 1000,
+          "get_refund": 1000,
+          "shuttle_service": 1000
+        }
+      }
+    ]
+  },
+  {
+    "dataset": "customer_support",
+    "homepage": "https://huggingface.co/datasets/bitext/Bitext-customer-support-llm-chatbot-training-dataset",
+    "license": "CDLA-Sharing-1.0",
+    "purpose": "support_intents",
+    "retrieved_utc": "2026-11-02T04:10:58.888025+00:00",
+    "filenames": [
+      "Bitext_Sample_Customer_Support_Training_Dataset_27K_responses-v11.csv"
+    ],
+    "files": [
+      {
+        "name": "Bitext_Sample_Customer_Support_Training_Dataset_27K_responses-v11.csv",
+        "bytes": 19202474,
+        "sha256": "6f81102b0100b97b8468eb04368033a23206bf1fde9d53500d5806ec1001a434",
+        "rows": 26872,
+        "columns": [
+          "flags",
+          "instruction",
+          "category",
+          "intent",
+          "response"
+        ],
+        "category_counts": {
+          "ORDER": 3988,
+          "SHIPPING": 1970,
+          "CANCEL": 950,
+          "INVOICE": 1999,
+          "PAYMENT": 1998,
+          "REFUND": 2992,
+          "FEEDBACK": 1997,
+          "CONTACT": 1999,
+          "ACCOUNT": 5986,
+          "DELIVERY": 1994,
+          "SUBSCRIPTION": 999
+        },
+        "intent_counts": {
+          "cancel_order": 998,
+          "change_order": 997,
+          "change_shipping_address": 973,
+          "check_cancellation_fee": 950,
+          "check_invoice": 1000,
+          "check_payment_methods": 999,
+          "check_refund_policy": 997,
+          "complaint": 1000,
+          "contact_customer_service": 1000,
+          "contact_human_agent": 999,
+          "create_account": 997,
+          "delete_account": 995,
+          "delivery_options": 995,
+          "delivery_period": 999,
+          "edit_account": 1000,
+          "get_invoice": 999,
+          "get_refund": 997,
+          "newsletter_subscription": 999,
+          "payment_issue": 999,
+          "place_order": 998,
+          "recover_password": 995,
+          "registration_problems": 999,
+          "review": 997,
+          "set_up_shipping_address": 997,
+          "switch_account": 1000,
+          "track_order": 995,
+          "track_refund": 998
+        }
+      }
+    ]
+  },
+  {
+    "dataset": "multiwoz",
+    "homepage": "https://huggingface.co/datasets/ConvLab/multiwoz21",
+    "license": "Apache-2.0",
+    "purpose": "hotel_booking_dialogue_tests",
+    "retrieved_utc": "2026-11-02T04:13:20.294964+00:00",
+    "filenames": [
+      "data.zip"
+    ],
+    "files": [
+      {
+        "name": "data.zip",
+        "bytes": 12903685,
+        "sha256": "aeb9bbe5269af2e84fd6a56860c50cc1c856ef43d70e1daa5b4bed38f7b37bba",
+        "archive_members": [
+          {
+            "name": "data/train_db.json",
+            "bytes": 748675
+          },
+          {
+            "name": "data/police_db.json",
+            "bytes": 149
+          },
+          {
+            "name": "data/taxi_db.json",
+            "bytes": 203
+          },
+          {
+            "name": "data/restaurant_db.json",
+            "bytes": 56391
+          },
+          {
+            "name": "data/hotel_db.json",
+            "bytes": 18229
+          },
+          {
+            "name": "data/attraction_db.json",
+            "bytes": 35731
+          },
+          {
+            "name": "data/hospital_db.json",
+            "bytes": 7291
+          },
+          {
+            "name": "data/ontology.json",
+            "bytes": 41357
+          },
+          {
+            "name": "data/dialogues.json",
+            "bytes": 205133418
+          }
+        ],
+        "dialogue_count": 10438,
+        "hotel_dialogue_count": 4264
+      }
+    ]
+  }
+]

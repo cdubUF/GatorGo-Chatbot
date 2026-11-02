@@ -1,0 +1,14 @@
+.venv/
+.env
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+*.pyc
+node_modules/
+artifacts/
+.local/
+knowledge/snapshots/
+playwright-report/
+test-results/
+*.inspect.ndjson
+data/external/
