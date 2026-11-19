@@ -50,6 +50,10 @@ class Retriever:
     def search(self, query, limit=3):
         eligible = [r for r in self.records if r.status in {"approved", "general"} or
                     (self.demo and r.status == "demo_only")]
+        approved_ids = {r.id for r in eligible if r.status == "approved"}
+        approved_topics = {normalize(r.topic) for r in eligible if r.status == "approved"}
+        eligible = [r for r in eligible if r.status == "approved" or
+                    (r.id not in approved_ids and normalize(r.topic) not in approved_topics)]
         # Fail closed for contradictory topics or duplicate IDs, including stale peers.
         counts = Counter(r.id for r in eligible)
         answers = {}

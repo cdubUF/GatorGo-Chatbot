@@ -1,7 +1,7 @@
 import {test, expect} from '@playwright/test';
 
 async function stubLiveService(page) {
-  await page.route('**/api/health', route => route.fulfill({json: {mode: 'openai', demo: false}}));
+  await page.route('**/api/health', route => route.fulfill({json: {mode: 'openai', demo: false, reservation_testing: true, sample_knowledge: true}}));
   await page.route('**/api/chat', async route => {
     const {message} = route.request().postDataJSON();
     const handoff = message.includes('dirty');
@@ -21,6 +21,7 @@ for (const width of [1440, 1024, 390]) {
     await page.setViewportSize({width, height: 900});
     const errors = []; page.on('pageerror', error => errors.push(error.message));
     await page.goto('/');
+  await page.locator('#continueGator').click();
     await expect(page.locator('#modeBadge')).toHaveText('AI ASSISTED');
     const input = page.getByRole('textbox', {name: 'Message the concierge'});
     await input.fill('Hello'); await input.press('Enter');
@@ -39,6 +40,7 @@ for (const width of [1440, 1024, 390]) {
 test('failed API can be retried; reset discards a late reply', async ({page}) => {
   await stubLiveService(page);
   await page.goto('/');
+  await page.locator('#continueGator').click();
   await expect(page.locator('#modeBadge')).toHaveText('AI ASSISTED');
   await page.route('**/api/chat', route => route.abort());
   await page.locator('#messageInput').fill('spa hours');
@@ -61,6 +63,7 @@ test('failed API can be retried; reset discards a late reply', async ({page}) =>
 test('dataset sources are visible', async ({page}) => {
   await stubLiveService(page);
   await page.goto('/');
+  await page.locator('#continueGator').click();
   await page.getByRole('link', {name: 'Data sources'}).click();
   await expect(page.getByRole('heading', {name: 'Data sources'})).toBeVisible();
   await expect(page.getByText('Bitext Hospitality')).toBeVisible();
@@ -71,6 +74,7 @@ test('dataset sources are visible', async ({page}) => {
 test('general booking policy questions go to chat, not reservation verification', async ({page}) => {
   await stubLiveService(page);
   await page.goto('/');
+  await page.locator('#continueGator').click();
   const input = page.getByRole('textbox', {name: 'Message the concierge'});
   await input.fill('What is your booking policy?'); await input.press('Enter');
   await expect(page.locator('.bubble').last()).toContainText('I can help');
@@ -85,6 +89,7 @@ test('hotel answers identify the source as project test data', async ({page}) =>
     sources: [{id: 'checkin', topic: 'Check-in time', status: 'demo_only', source: 'Original; not instructor-approved'}]
   }}));
   await page.goto('/');
+  await page.locator('#continueGator').click();
   const input = page.getByRole('textbox', {name: 'Message the concierge'});
   await input.fill('When is check-in?'); await input.press('Enter');
   await expect(page.locator('.source-note')).toContainText('project test data');
@@ -111,6 +116,7 @@ test('reservation details stay in the verification form and produce a review req
     message: 'Request saved for review. Your reservation has not been changed.'
   }}));
   await page.goto('/');
+  await page.locator('#continueGator').click();
   const input = page.getByRole('textbox', {name: 'Message the concierge'});
   await input.fill('Can you check my reservation?'); await input.press('Enter');
   await page.getByLabel('Confirmation number').fill('GG-2026-1048');
@@ -134,6 +140,7 @@ for (const width of [1440, 390]) {
     ]}));
     await page.setViewportSize({width, height: 900});
     await page.goto('/');
+  await page.locator('#continueGator').click();
     const chat = page.getByRole('button', {name: 'AI chat', exact: true});
     const reservations = page.getByRole('button', {name: 'Reservation testing'});
     await page.getByRole('textbox', {name: 'Message the concierge'}).fill('Hello');
@@ -173,6 +180,7 @@ test('verified reservation connects to chat and can be disconnected', async ({pa
     check_in: '2026-11-14', check_out: '2026-11-17', room_type: 'Double Queen', guests: 2,
     hotel: 'Gator Go Resort & Spa (fictional)', provider: 'gatorgo'}}));
   await page.goto('/');
+  await page.locator('#continueGator').click();
   const input = page.getByRole('textbox', {name: 'Message the concierge'});
   await input.fill('When is check-in?'); await input.press('Enter');
   await expect.poll(() => authorizations.length).toBe(1);
@@ -201,6 +209,7 @@ test('resort knowledge base is visible from chat', async ({page}) => {
     {category: 'Amenities', topic: 'Serenity Spa', answer: 'The spa is open 9 AM to 7 PM.', status: 'demo_only'}
   ]}));
   await page.goto('/');
+  await page.locator('#continueGator').click();
   await page.getByRole('link', {name: 'Knowledge base'}).click();
   await expect(page.getByRole('heading', {name: 'Gator Go knowledge base'})).toBeVisible();
   await expect(page.getByRole('heading', {name: 'Serenity Spa'})).toBeVisible();

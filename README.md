@@ -1,6 +1,24 @@
+## Live voice demo
+
+Run `run-local-live.bat`, open the localhost URL it prints, choose a guide, then press **Start conversation** and allow the microphone. Speak a question and pause for about 1.4 seconds. The gator answers with AI-generated speech, moves its mouth with the audio, then listens for your next question. **End conversation** stops the loop. Use **Talk to gator** / **Stop recording** for a single turn; uncheck **Send when recording stops** to review the transcript first. **Stop audio** interrupts speech, and **Replay reply** repeats the last answer. Camera is optional and stays local.
+
+The scene includes an outdoor teak desk, height-constrained characters, randomized blinks and subtle idle movement. Reduced-motion preference disables idle movement and blinks. AI speech uses server-side credentials, never a browser API key. The local demo still uses fictional resort knowledge and cannot make bookings or contact staff.
+
+Voice requires a funded API account and available configured budget. The durable conservative budget ledger is preserved across restarts; test calls consume its allowance. The live launcher defaults to $0.25 reserved per bounded provider call, within the unchanged $10 cumulative allowance; these are conservative reservations, not reported actual costs. Explicit environment overrides take precedence. `PROVIDER_BUDGET_USD` and per-call reserve settings remain operator-controlled. Audio errors leave the text answer available. A real microphone/speaker rehearsal on the presentation computer is still necessary.
+
+The current local voice adapter uses `gpt-4o-mini-tts` with Marin/Cedar. OpenAI documents retirement of this Speech API model on January 6, 2027; migrate this adapter to the Realtime API before then. See https://developers.openai.com/api/docs/guides/text-to-speech .
+
 # Gator Go virtual concierge
 
 Gator Go is a local FastAPI and browser application that uses OpenAI to answer questions. The server handles the API key and logs request status and sanitized provider error categories; it does not log guest messages or keys.
+
+## Guest experience expansion (local)
+
+Use **`run-local.bat`** for a no-key, no-charge English FAQ demo. Use **`run-local-live.bat`** for live text, speech transcription and automatic language routing using the server's existing `OPENAI_API_KEY` in `.env`. Both serve the app at `http://127.0.0.1:8000` (or `PORT`) and disable reservation testing. Loopback is a browser secure context for microphone/camera use. These launchers do not deploy anything.
+
+Choose one of three gators, continue into chat, and use **Change guide** to switch while preserving the conversation. **Record question** captures up to 30 seconds; stop, review/edit the transcript and send. Enable **Speak replies** for the device voice and animated mouth, or stop/mute playback at any time. Click the gator to say hello. Camera is an independent local self-preview. Blue/green styling and the stadium-resort backdrop follow the supplied references.
+
+The live launcher allows $10 of cumulative conservative request reservations, at $1 per provider call including retries. This is deliberately stricter than actual billing; a multilingual turn can use multiple reservations. The ledger persists in `data/provider-budget.sqlite3`, and restarting does not refill it. Increase the configured total only deliberately. Set the budget to 0 to stop paid calls. See [local expansion verification](docs/expansion-verification.md) for test evidence, language qualification limits, restart/rollback and exact ticket status.
 
 ## Start
 

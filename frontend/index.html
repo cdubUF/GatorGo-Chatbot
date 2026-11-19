@@ -8,7 +8,21 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="app-shell">
+  <section id="gatorPicker" class="picker" aria-labelledby="pickerTitle">
+    <div class="picker-brand">Gator<span class="brand-go">Go</span><small>VIRTUAL RESORT CONCIERGE</small></div>
+    <p class="picker-eyebrow">A LITTLE PERSONALITY. A WARM WELCOME.</p>
+    <h1 id="pickerTitle">Choose your gator.</h1>
+    <p>Three friendly faces. The same thoughtful help for your stay.</p>
+    <div class="gator-cards" role="group" aria-label="Choose a gator">
+      <button type="button" class="gator-card" data-gator="desk" aria-pressed="true"><span class="selection-mark" aria-hidden="true">&#10003;</span><span class="mascot-sprite" data-character="desk" role="img" aria-label="Green gator wearing a blue blazer"></span><strong>Front Desk Gator</strong><span>Your polished personal concierge</span></button>
+      <button type="button" class="gator-card" data-gator="pool" aria-pressed="false"><span class="selection-mark" aria-hidden="true">&#10003;</span><span class="mascot-sprite" data-character="pool" role="img" aria-label="Green gator wearing a blue visor"></span><strong>Poolside Gator</strong><span>A sunny side to every stay</span></button>
+      <button type="button" class="gator-card" data-gator="trail" aria-pressed="false"><span class="selection-mark" aria-hidden="true">&#10003;</span><span class="mascot-sprite" data-character="trail" role="img" aria-label="Green gator wearing a ranger hat"></span><strong>Trail Guide Gator</strong><span>A little curiosity goes a long way</span></button>
+    </div>
+    <div class="picker-preview" aria-live="polite"><span id="pickerPreview" class="mascot-sprite" data-character="desk" role="img" aria-label="Selected guide preview"></span><span id="selectionName">Front Desk Gator</span></div>
+    <button id="continueGator" class="primary-button" type="button">Continue &#8594;</button>
+    <p class="picker-note">Virtual assistance &middot; No bookings or staff notifications</p>
+  </section>
+  <div class="app-shell" id="conciergeScreen" hidden>
     <aside class="sidebar">
       <div class="brand"><div class="brand-icon" aria-hidden="true">G<span>✦</span></div><div class="brand-copy"><strong>GATOR GO</strong><span>RESORT & SPA</span></div></div>
       <div class="sidebar-center">
@@ -20,10 +34,10 @@
       <div class="sidebar-bottom"><div class="mini-icon">✦</div><div><b>Available around the clock</b><span>Here for every part of your stay</span></div></div>
     </aside>
     <main class="main">
-      <header class="topbar"><div><div class="top-eyebrow">DIGITAL GUEST EXPERIENCE</div><div class="top-title">Guest Concierge</div></div><div class="top-actions"><span class="status-label" id="serviceStatus" role="status"><i></i> Checking service</span><button class="outline-button" id="resetBtn" type="button" title="Start a fresh conversation" aria-label="New conversation"><span>↻</span> New conversation</button></div></header>
+      <header class="topbar"><div><div class="top-eyebrow">YOUR PERSONAL RESORT COMPANION</div><div class="top-title">Gator<span>Go</span> <small>Cabana Concierge</small></div></div><div class="top-actions"><button id="changeGator" class="outline-button" type="button">Change guide</button><span class="status-label" id="serviceStatus" role="status"><i></i> Checking service</span><button class="outline-button" id="resetBtn" type="button" title="Start a fresh conversation" aria-label="New conversation"><span>↻</span> New conversation</button></div></header>
       <div class="content">
         <section class="chat-panel" aria-label="Chat with the resort concierge">
-          <div class="chat-titlebar"><div class="avatar" aria-hidden="true"><img src="avatar.svg" alt=""><i></i></div><div class="agent-detail"><strong>Gator Guest Assistant</strong><span><i></i> Virtual AI concierge</span></div><span class="mode-pill" id="modeBadge">CONNECTING</span></div>
+          <div class="chat-titlebar"><div class="avatar" aria-hidden="true"><span class="mascot-sprite" data-character="desk"></span><i></i></div><div class="agent-detail"><strong>Gator Guest Assistant</strong><span><i></i> Virtual AI concierge</span></div><span class="mode-pill" id="modeBadge">CONNECTING</span></div>
           <div class="view-switcher" role="group" aria-label="Choose a testing view">
             <button type="button" id="chatViewBtn" aria-pressed="true">AI chat</button>
             <button type="button" id="reservationViewBtn" aria-pressed="false">Reservation testing</button>
@@ -46,17 +60,19 @@
             </div>
             <div id="reservationMessages"></div>
           </div>
-          <div class="composer-area" id="composerArea"><p id="chatStatus" class="chat-status" role="status"></p><div class="chips" id="quickReplies" aria-label="Suggested questions"></div><form id="chatForm" class="composer" autocomplete="off"><input id="messageInput" name="message" aria-label="Message the concierge" maxlength="1000" placeholder="Ask me anything about your stay..." required><button id="sendBtn" aria-label="Send message" type="submit"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 14-7-4 14-3-6-7-1Z"/><path d="m12 13 7-8"/></svg></button></form><div class="footnote"><span id="dataNotice">Using project test data. <a href="knowledge.html">Knowledge base</a> &middot; <a href="privacy.html">Privacy</a> · <a href="datasets.html">Data sources</a></span><span>Powered by <b id="engineLabel">OpenAI</b></span></div></div>
+          <div class="composer-area" id="composerArea"><div class="media-tools"><button id="liveTalk" type="button" class="primary-button" aria-pressed="false">Start conversation</button>
+<label for="replyLocale">Reply language</label><select id="replyLocale"><option value="auto">Detect automatically</option></select>
+<button type="button" id="recordStart" class="outline-button">Talk to gator</button><button type="button" id="recordStop" class="outline-button" hidden>Stop recording</button><button type="button" id="recordCancel" class="outline-button" hidden>Cancel recording</button></div><label class="auto-send"><input id="autoSend" type="checkbox" checked> Send when recording stops</label><p id="mediaStatus" class="small" role="status"></p><p id="chatStatus" class="chat-status" role="status"></p><div class="chips" id="quickReplies" aria-label="Suggested questions"></div><form id="chatForm" class="composer" autocomplete="off"><input id="messageInput" name="message" aria-label="Message the concierge" maxlength="1000" placeholder="Ask me anything about your stay..." required><button id="sendBtn" aria-label="Send message" type="submit"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 14-7-4 14-3-6-7-1Z"/><path d="m12 13 7-8"/></svg></button></form><div class="footnote"><span id="dataNotice">Using project test data. <a href="knowledge.html">Knowledge base</a> &middot; <a href="privacy.html">Privacy</a> · <a href="datasets.html">Data sources</a></span><span>Powered by <b id="engineLabel">OpenAI</b></span></div></div>
         </section>
-        <aside class="info-panel" aria-label="Guest services information">
-          <div class="info-top"><div class="eyebrow dark">EXPLORE YOUR STAY</div><h2>How can we<br>help you today?</h2><p>Everything you need, right at your fingertips.</p></div>
-          <div class="services">
-            <button class="service" data-prompt="What time is check-in?" type="button"><div class="service-icon">⌂</div><div><b>Check-in & stays</b><span>Arrivals, departures, reservations</span></div><span class="arrow">↗</span></button>
-            <button class="service" data-prompt="What are your spa hours?" type="button"><div class="service-icon">✿</div><div><b>Spa & wellness</b><span>Unwind, refresh, recharge</span></div><span class="arrow">↗</span></button>
-            <button class="service" data-prompt="When is breakfast served?" type="button"><div class="service-icon">☕</div><div><b>Dining & amenities</b><span>Discover what we offer</span></div><span class="arrow">↗</span></button>
-            <button class="service" data-prompt="My air conditioning isn't working" type="button"><div class="service-icon">♡</div><div><b>Guest assistance</b><span>We're here when you need us</span></div><span class="arrow">↗</span></button>
-          </div>
-          <div class="small-disclaimer">CONTACT THE HOTEL DIRECTLY FOR STAFF ASSISTANCE</div>
+        <aside class="info-panel gator-panel" aria-label="Your gator guide">
+          <p class="picker-eyebrow scene-label">THE SWAMP MEETS YOUR SANCTUARY</p><h2 id="guideName">Front Desk Gator</h2>
+          <div id="gatorStage" class="gator-stage" data-state="idle" tabindex="0" role="button" aria-label="Say hello to your gator"><div id="guideArt" class="mascot-sprite" data-character="desk" role="img" aria-label="Your selected gator guide"></div></div>
+          <div class="outdoor-desk" aria-hidden="true"></div><p id="gatorState" role="status">Ready to help</p>
+          <div class="playback-controls"><label><input type="checkbox" id="speakReplies" checked> AI voice</label><button id="resumeVoice" type="button" class="outline-button" hidden>Play reply</button><button id="replayVoice" type="button" class="outline-button">Replay reply</button><button id="stopSpeech" type="button" class="outline-button">Stop audio</button></div>
+          <p class="small">AI-generated voice &middot; Your personal cabana concierge</p>
+          <button id="cameraToggle" type="button" class="outline-button" aria-pressed="false">Turn camera on</button>
+          <figure id="cameraTile" hidden><video id="selfPreview" autoplay muted playsinline></video><figcaption>Your camera &middot; local preview only</figcaption></figure>
+          <p id="cameraStatus" class="small" role="status"></p>
         </aside>
       </div>
     </main>

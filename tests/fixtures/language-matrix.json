@@ -1,0 +1,22 @@
+﻿[
+  {"locale":"en","language":"English","question":"What time is check-in?","unknown":"What is the helicopter shuttle schedule?"},
+  {"locale":"es","language":"Spanish","question":"¿A qué hora es el registro de entrada?","unknown":"¿Cuál es el horario del transporte en helicóptero?"},
+  {"locale":"fr","language":"French","question":"À quelle heure peut-on arriver à l'hôtel ?","unknown":"Quels sont les horaires de la navette en hélicoptère ?"},
+  {"locale":"de","language":"German","question":"Ab wann kann ich einchecken?","unknown":"Wann fährt der Hubschrauber-Shuttle?"},
+  {"locale":"it","language":"Italian","question":"A che ora si può fare il check-in?","unknown":"Quali sono gli orari della navetta in elicottero?"},
+  {"locale":"pt","language":"Portuguese","question":"A que horas é o check-in?","unknown":"Qual é o horário do transporte de helicóptero?"},
+  {"locale":"nl","language":"Dutch","question":"Hoe laat kan ik inchecken?","unknown":"Wat is de dienstregeling van de helikoptershuttle?"},
+  {"locale":"sv","language":"Swedish","question":"Vilken tid kan jag checka in?","unknown":"Vad är tidtabellen för helikoptertransfer?"},
+  {"locale":"da","language":"Danish","question":"Hvornår kan jeg tjekke ind?","unknown":"Hvad er tidsplanen for helikoptertransport?"},
+  {"locale":"no","language":"Norwegian","question":"Når kan jeg sjekke inn?","unknown":"Hva er rutetidene for helikoptertransport?"},
+  {"locale":"fi","language":"Finnish","question":"Mihin aikaan voin kirjautua sisään?","unknown":"Mikä on helikopterikuljetuksen aikataulu?"},
+  {"locale":"pl","language":"Polish","question":"O której godzinie mogę się zameldować?","unknown":"Jaki jest rozkład transferów helikopterem?"},
+  {"locale":"tr","language":"Turkish","question":"Otele saat kaçta giriş yapabilirim?","unknown":"Helikopter servisinin saatleri nedir?"},
+  {"locale":"ru","language":"Russian","question":"Во сколько можно заселиться?","unknown":"Какое расписание у вертолётного трансфера?"},
+  {"locale":"uk","language":"Ukrainian","question":"О котрій годині можна заселитися?","unknown":"Який розклад вертолітного трансферу?"},
+  {"locale":"ar","language":"Arabic","question":"في أي وقت يمكن تسجيل الوصول؟","unknown":"ما هو جدول خدمة النقل بالمروحية؟"},
+  {"locale":"hi","language":"Hindi","question":"चेक-इन का समय क्या है?","unknown":"हेलीकॉप्टर शटल का समय क्या है?"},
+  {"locale":"ja","language":"Japanese","question":"チェックインは何時からですか？","unknown":"ヘリコプター送迎の時刻表を教えてください。"},
+  {"locale":"ko","language":"Korean","question":"체크인은 몇 시부터 가능한가요?","unknown":"헬리콥터 셔틀 시간표는 어떻게 되나요?"},
+  {"locale":"zh","language":"Chinese","question":"几点可以办理入住？","unknown":"直升机接送服务的时刻表是什么？"}
+]

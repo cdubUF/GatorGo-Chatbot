@@ -12,15 +12,19 @@ from fastapi import APIRouter, Depends, FastAPI, Header, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 
 from .config import ROOT, load_settings
-from .policy import injection_attempt
+from .usage import Usage
+from .speech import MAX_AUDIO_BYTES, transcribe, synthesize
+from .languages import LANGUAGES, UNKNOWN, route, translate
+from .provider import ProviderUnavailable
+from .policy import injection_attempt, sensitive
 from .provider import ModelAdapter
 from .retrieval import Retriever, normalize, read_records, validate_records
 from .reservations import HOTELS, SQLiteReservations, Verification, reservation_router
-from .schemas import ChatRequest, ChatResponse, ConsentRequest, DispositionRequest
+from .schemas import VoiceRequest, ChatRequest, ChatResponse, ConsentRequest, DispositionRequest
 from .service import Concierge
 from .sessions import Sessions
 
@@ -41,7 +45,8 @@ class BodyLimit:
             if message["type"] == "http.disconnect":
                 return
             size += len(message.get("body", b""))
-            if size > self.limit:
+            limit = MAX_AUDIO_BYTES if scope.get("path") == "/api/speech" else self.limit
+            if size > limit:
                 response = JSONResponse({"detail": "Request too large"}, status_code=413)
                 return await response(scope, receive, send)
             chunks.append(message.get("body", b""))
@@ -81,12 +86,13 @@ def create_app(settings=None, records=None, provider=None):
             aliases_path = ROOT / "knowledge/dataset-phrases.json"
             if settings.sample_knowledge and aliases_path.exists():
                 aliases = json.loads(aliases_path.read_text("utf-8"))
+    usage = Usage(settings)
     sessions = Sessions(settings.session_ttl)
     queue, metrics = {}, Counter()
     reservations = json.loads((ROOT / "knowledge/reservations.json").read_text("utf-8")) if settings.demo else []
     service = Concierge(settings, Retriever(records, settings.demo or settings.sample_knowledge,
                                              settings.threshold, aliases=aliases),
-                        provider or ModelAdapter(settings), reservations)
+                        provider or ModelAdapter(settings, usage=usage), reservations)
 
     def prune():
         sessions.prune()
@@ -118,40 +124,51 @@ def create_app(settings=None, records=None, provider=None):
         verification = Verification(SQLiteReservations(reservation_path), allowed_hotels={"gatorgo"})
 
     app = FastAPI(title="Gator Go Concierge", version="1.0.0", lifespan=lifespan)
+    app.state.usage = usage
     app.state.sessions, app.state.queue, app.state.service = sessions, queue, service
-    origins = [f"http://localhost:{settings.port}", f"http://127.0.0.1:{settings.port}"]
+    origins = list(settings.guest_origins) or [f"http://localhost:{settings.port}", f"http://127.0.0.1:{settings.port}"]
     app.add_middleware(CORSMiddleware, allow_origins=origins,
                        allow_methods=["GET", "POST", "DELETE", "PATCH"],
                        allow_headers=["Content-Type", "Authorization"])
     app.add_middleware(BodyLimit)
-    app.add_middleware(TrustedHostMiddleware, allowed_hosts=["localhost", "127.0.0.1", "testserver"])
+    app.add_middleware(TrustedHostMiddleware, allowed_hosts=list(settings.trusted_hosts))
 
     @app.middleware("http")
     async def boundary(request: Request, call_next):
         request_id = str(uuid4())
         started = time.monotonic()
-        if request.method not in {"GET", "HEAD", "OPTIONS"} and (
+        restricted = request.url.path.startswith(("/api/staff", "/api/reservations", "/api/handoffs")) or request.url.path in {"/staff.html", "/staff.js"}
+        if settings.profile != "local" and restricted:
+            response = JSONResponse({"detail": "Not found"}, status_code=404)
+        elif request.method not in {"GET", "HEAD", "OPTIONS"} and (
             request.headers.get("origin") and request.headers["origin"] not in origins
         ):
             response = JSONResponse({"detail": "Origin not allowed"}, status_code=403)
         else:
             try:
+                if request.url.path in {"/api/chat", "/api/speech", "/api/voice"} and request.method == "POST":
+                    usage.admit(speech=request.url.path in {"/api/speech", "/api/voice"})
                 response = await call_next(request)
+            except HTTPException as error:
+                response = JSONResponse({"detail": error.detail}, status_code=error.status_code)
             except Exception as error:
                 metrics["errors"] += 1
                 logger.error("Request failed: type=%s request_id=%s", type(error).__name__, request_id)
                 response = JSONResponse({"detail": "Service unavailable. Please retry."}, status_code=503)
         if request.url.path.startswith("/api/"):
             logger.info("%s %s status=%s duration_ms=%s request_id=%s", request.method,
-                        request.url.path, response.status_code,
+                        getattr(request.scope.get("route"), "path", "/api/unknown"), response.status_code,
                         round((time.monotonic() - started) * 1000), request_id)
+        response.headers["Permissions-Policy"] = "camera=(self), microphone=(self), geolocation=()"
+        if settings.profile != "local":
+            response.headers["Strict-Transport-Security"] = "max-age=31536000"
         response.headers["X-Request-ID"] = request_id
         response.headers["Cache-Control"] = "no-store"
         response.headers["X-Content-Type-Options"] = "nosniff"
         response.headers["Referrer-Policy"] = "no-referrer"
         response.headers["Content-Security-Policy"] = (
             "default-src 'self'; img-src 'self'; style-src 'self'; script-src 'self'; "
-            "connect-src 'self'; object-src 'none'; frame-ancestors 'none'; base-uri 'none'"
+            "connect-src 'self'; media-src 'self' blob:; object-src 'none'; frame-ancestors 'none'; base-uri 'none'"
         )
         return response
 
@@ -177,7 +194,41 @@ def create_app(settings=None, records=None, provider=None):
     @router.get("/health")
     async def health():
         return {"status": "ok", "mode": settings.provider, "demo": settings.demo,
-                "staff_notifications": False, "version": "1.0.0"}
+                "staff_notifications": False, "version": "1.1.0", "profile": settings.profile,
+                "reservation_testing": settings.profile == "local" and settings.reservation_mode == "synthetic",
+                "sample_knowledge": settings.demo or settings.sample_knowledge,
+                "speech_enabled": settings.speech_enabled and settings.provider == "openai",
+                "languages": LANGUAGES if settings.multilingual and settings.provider == "openai" else {"en": "English"}}
+
+    @router.get("/ready")
+    async def ready():
+        approved = [r for r in records if r.status == "approved" and
+                    (r.expires is None or r.expires >= date.today()) and not injection_attempt(r.answer)]
+        if settings.profile == "public" and not approved:
+            raise HTTPException(503, "Approved property knowledge is missing")
+        return {"status": "ready", "sample_knowledge": settings.demo or settings.sample_knowledge}
+
+    @router.post("/voice")
+    async def voice(body: VoiceRequest):
+        if not settings.speech_enabled or settings.provider != "openai":
+            raise HTTPException(503, "AI voice is not configured.")
+        audio = await synthesize(settings, usage, body.text, body.guide)
+        return Response(audio, media_type="audio/wav", headers={"Cache-Control": "no-store"})
+
+    @router.post("/speech")
+    async def speech(request: Request, locale: str = "auto"):
+        if not settings.speech_enabled or settings.provider != "openai":
+            raise HTTPException(503, "Speech is not configured. Please type your question.")
+        if locale != "auto" and locale not in LANGUAGES:
+            raise HTTPException(422, "Unsupported language")
+        if request.headers.get("content-type", "").split(";")[0] != "audio/wav":
+            raise HTTPException(415, "Use audio/wav")
+        data = await request.body()
+        try:
+            text = await transcribe(settings, usage, data, locale)
+            return {"text": text}
+        finally:
+            del data
 
     @router.get("/knowledge")
     async def knowledge():
@@ -187,6 +238,8 @@ def create_app(settings=None, records=None, provider=None):
 
     @router.post("/chat", response_model=ChatResponse)
     async def chat(body: ChatRequest, authorization: str = Header(default="")):
+        if body.locale != "auto" and body.locale not in LANGUAGES:
+            raise HTTPException(422, "Unsupported language")
         reservation_context = None
         if authorization:
             if verification is None:
@@ -208,7 +261,29 @@ def create_app(settings=None, records=None, provider=None):
             if len(session.requests) >= 30:
                 raise HTTPException(429, "Please wait a minute before sending more messages.")
             session.requests.append(now)
-            result = await service.chat(session, body.message, reservation_context)
+            detected, query = "en", body.message
+            multilingual = settings.multilingual and settings.provider == "openai"
+            if multilingual and not sensitive(body.message) and not injection_attempt(body.message):
+                try:
+                    detected, query = await route(service.provider, body.message)
+                except ProviderUnavailable:
+                    raise HTTPException(503, "Language service unavailable. Please retry.") from None
+            elif body.locale not in {"auto", "en"}:
+                raise HTTPException(503, "This local provider supports English only.")
+            locale = detected if body.locale == "auto" else body.locale
+            result = await service.chat(session, query, reservation_context)
+            result.detected_locale, result.reply_locale = detected, locale
+            if locale != "en":
+                try:
+                    result.reply = UNKNOWN[locale] if result.decision.category in {"unknown", "repeated_failure"} and not result.sources else await translate(service.provider, result.reply, locale)
+                    if result.handoff:
+                        result.handoff.summary = await translate(service.provider, result.handoff.summary, locale)
+                        result.handoff.next_step = await translate(service.provider, result.handoff.next_step, locale)
+                    result.suggestions = []
+                except ProviderUnavailable:
+                    result.reply = UNKNOWN[locale]
+                    result.sources, result.handoff, result.suggestions = [], None, []
+                    result.status, result.mode = "fallback", "faq_fallback"
             session.touched = time.monotonic()
             metrics["requests"] += 1
             metrics[result.decision.level] += 1

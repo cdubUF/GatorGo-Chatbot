@@ -165,8 +165,8 @@ def test_live_provider_failure_is_visible_without_leaking_diagnostics():
     with TestClient(create_app(Settings(provider="openai", api_key="test", demo=False),
                                provider=FailedProvider())) as client:
         result = chat(client, "What is check-in time?")
-        assert result["mode"] == "faq_fallback" and result["status"] == "fallback"
-        assert "temporarily unavailable" in result["reply"]
+        assert result["status"] == "needs_human"
+        assert "verified information" in result["reply"]
         assert "private provider" not in str(result)
 
 

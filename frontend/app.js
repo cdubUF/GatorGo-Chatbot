@@ -1,4 +1,5 @@
 import {request} from './api.js';
+import {avatarPath, setThinking, speakReply, stopPlayback, cancelRecording, releaseMedia, replyLocale, configureMedia, conversationFailed} from './guest.js';
 
 const messages = document.querySelector('#messages');
 const form = document.querySelector('#chatForm');
@@ -24,8 +25,8 @@ function element(tag, className, text) {
 function bubble(text, who = 'agent', target = messages) {
   const wrap = element('div', `message ${who}`);
   if (who === 'agent') {
-    const avatar = element('img', 'mini-avatar');
-    avatar.src = 'avatar.svg'; avatar.alt = '';
+    const avatar = element('span', 'mini-avatar mascot-sprite');
+    avatar.dataset.character = avatarPath(); avatar.setAttribute('aria-hidden', 'true');
     wrap.append(avatar);
   }
   const body = element('div', 'message-body');
@@ -47,7 +48,8 @@ function suggestions(prompts = defaults) {
 }
 
 function setBusy(value) {
-  busy = value;
+  busy = value; setThinking(value);
+  document.querySelector("#recordStart").disabled = value || !config.speech_enabled;
   send.disabled = value || !input.value.trim();
   document.querySelectorAll('.chip, [data-prompt], #demoCheckin').forEach(b => b.disabled = value);
   messages.setAttribute('aria-busy', String(value));
@@ -195,6 +197,7 @@ function handoffCard(body, handoff) {
 async function submit(raw, retry = false) {
   const text = raw.trim();
   if (!text || busy) return;
+  stopPlayback(); cancelRecording();
   const turn = epoch;
   if (/\b(change|modify|reschedule|cancel)\w*\b/i.test(text) && /\b(reservation|booking|stay|room|dates?)\b/i.test(text)) {
     reservationIntent = 'Your chat mentioned a possible reservation change. After verification, you can review the stay and request a change.';
@@ -202,7 +205,7 @@ async function submit(raw, retry = false) {
     reservationIntent = 'Your chat mentioned arrival or departure. Verify a test stay to ask about its dates in AI chat.';
   }
   invalidateHandoff();
-  if (!reservationToken && /\b(reservation|booking)\b/i.test(text) && /\b(check|find|show|view|retrieve|look up)\b/i.test(text)
+  if (config.reservation_testing && !reservationToken && /\b(reservation|booking)\b/i.test(text) && /\b(check|find|show|view|retrieve|look up)\b/i.test(text)
       && !/\b(cancel|refund|change|policy|policies|terms|rules|fees)\b/i.test(text)) {
     input.value = ''; setBusy(false); setView('reservation'); return;
   }
@@ -212,12 +215,15 @@ async function submit(raw, retry = false) {
   controller = new AbortController();
   try {
     const result = await request('/chat', {method: 'POST', signal: controller.signal,
-      token: reservationToken, body: {session_id: sessionId, message: text}});
+      token: reservationToken, body: {session_id: sessionId, message: text, locale: replyLocale()}});
     if (turn !== epoch) return;
     sessionId = result.session_id;
-    config = {mode: result.mode, demo: result.demo};
+    config = {...config, mode: result.mode, demo: result.demo};
     showMode(result.mode, result.demo);
     const body = bubble(result.reply);
+    body.querySelector('.bubble').dir = result.reply_locale === 'ar' ? 'rtl' : 'auto';
+    body.querySelector('.bubble').lang = result.reply_locale || 'en';
+    speakReply(result.reply, result.reply_locale || 'en');
     if (result.sources?.length) {
       body.append(element('p', 'source-note', 'Sources: ' + result.sources.map(s =>
         s.status === 'demo_only' ? `${s.topic} [${s.id}] · project test data` :
@@ -233,6 +239,7 @@ async function submit(raw, retry = false) {
       return;
     }
     showMode('offline');
+    conversationFailed();
     const body = bubble('The service is unavailable. Please retry or contact a hotel employee directly. No staff has been contacted.');
     const retryButton = element('button', 'outline-button', 'Retry message');
     retryButton.addEventListener('click', () => { retryButton.disabled = true; submit(text, true); });
@@ -247,6 +254,7 @@ async function submit(raw, retry = false) {
 }
 
 function setView(view) {
+  releaseMedia();
   const reservation = view === 'reservation';
   document.querySelector('#chatViewBtn').setAttribute('aria-pressed', String(!reservation));
   document.querySelector('#reservationViewBtn').setAttribute('aria-pressed', String(reservation));
@@ -287,6 +295,10 @@ reset();
 try {
   config = await request('/health');
   showMode(config.mode, config.demo);
+  configureMedia(config);
+  document.querySelector('.view-switcher').hidden = !config.reservation_testing;
+  if (!config.reservation_testing) document.querySelector('.reservation-intro').replaceChildren();
+  document.querySelector('#dataNotice').firstChild.textContent = config.sample_knowledge ? 'Using project test data. ' : 'Using approved property knowledge only. ';
 } catch {
   config.demo = false;
   showMode('offline');

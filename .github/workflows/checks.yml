@@ -21,16 +21,7 @@ jobs:
       - run: npm ci && npm run check
       - run: npx playwright install --with-deps chromium
       - name: Browser checks
-        shell: bash
-        run: |
-          MODEL_PROVIDER=mock DEMO_MODE=false python scripts/serve.py > /tmp/gatorgo.log 2>&1 &
-          server_pid=$!
-          trap 'kill "$server_pid"' EXIT
-          for attempt in {1..30}; do
-            if curl --fail --silent http://127.0.0.1:8000/api/health; then break; fi
-            sleep 1
-          done
-          npm run test:ui
+        run: npm run test:ui
       - uses: actions/upload-artifact@v4
         if: always()
         with:

@@ -4,8 +4,10 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "check": "node --check frontend/app.js && node --check frontend/api.js && node --check frontend/staff.js",
+    "check": "node --check frontend/app.js && node --check frontend/api.js && node --check frontend/staff.js && node --check frontend/guest.js",
     "test:ui": "playwright test"
   },
-  "devDependencies": {"@playwright/test": "1.56.1"}
+  "devDependencies": {
+    "@playwright/test": "1.56.1"
+  }
 }

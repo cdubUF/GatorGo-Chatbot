@@ -1,0 +1,54 @@
+[
+  {
+    "id": "fixture-breakfast",
+    "category": "Dining",
+    "topic": "Breakfast",
+    "answer": "Breakfast at Cypress Cafe is served 7:00 AM to 10:00 AM.",
+    "tags": [
+      "breakfast",
+      "dining"
+    ],
+    "source": "Fictional automated-test fixture; not property-approved",
+    "status": "approved",
+    "updated": "2026-11-18"
+  },
+  {
+    "id": "fixture-arrival",
+    "category": "Arrival",
+    "topic": "Check-in",
+    "answer": "Check-in starts at 3:00 PM.",
+    "tags": [
+      "checkin",
+      "arrival"
+    ],
+    "source": "Fictional automated-test fixture; not property-approved",
+    "status": "approved",
+    "updated": "2026-11-18"
+  },
+  {
+    "id": "fixture-pool",
+    "category": "Amenities",
+    "topic": "Pool",
+    "answer": "The pool opens at 8:00 AM and closes at 9:00 PM.",
+    "tags": [
+      "pool",
+      "swimming"
+    ],
+    "source": "Fictional automated-test fixture; not property-approved",
+    "status": "approved",
+    "updated": "2026-11-18"
+  },
+  {
+    "id": "fixture-transport",
+    "category": "Transportation",
+    "topic": "Transportation contact",
+    "answer": "Contact the front desk for transportation. No shuttle schedule is verified.",
+    "tags": [
+      "transportation",
+      "contact"
+    ],
+    "source": "Fictional automated-test fixture; not property-approved",
+    "status": "approved",
+    "updated": "2026-11-18"
+  }
+]

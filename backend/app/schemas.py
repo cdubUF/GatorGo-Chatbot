@@ -10,6 +10,7 @@ class StrictModel(BaseModel):
 
 
 class ChatRequest(StrictModel):
+    locale: str = Field(default="auto", max_length=10)
     session_id: UUID | None = None
     message: str = Field(min_length=1, max_length=1000)
 
@@ -57,6 +58,8 @@ class Handoff(StrictModel):
 
 
 class ChatResponse(StrictModel):
+    detected_locale: str = "en"
+    reply_locale: str = "en"
     session_id: UUID
     reply: str
     status: Literal["ok", "needs_human", "fallback"] = "ok"
@@ -76,3 +79,8 @@ class ConsentRequest(StrictModel):
 
 class DispositionRequest(StrictModel):
     disposition: Literal["open", "in_review", "resolved"]
+
+
+class VoiceRequest(StrictModel):
+    text: str = Field(min_length=1, max_length=4000)
+    guide: Literal["desk", "pool", "trail"] = "desk"

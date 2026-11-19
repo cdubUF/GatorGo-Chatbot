@@ -17,7 +17,8 @@ class ProviderUnavailable(Exception):
 
 
 class ModelAdapter:
-    def __init__(self, settings, transport=None):
+    def __init__(self, settings, transport=None, usage=None):
+        self.usage = usage
         self.settings = settings
         self.transport = transport
         self.prompt = (ROOT / "backend/app/prompts/concierge-v1.txt").read_text("utf-8")
@@ -85,6 +86,8 @@ class ModelAdapter:
                 async with httpx.AsyncClient(timeout=self.settings.provider_timeout,
                                               transport=self.transport) as client:
                     for attempt in range(2):
+                        if self.usage:
+                            self.usage.reserve()
                         response = await client.post("https://api.openai.com/v1/responses",
                             headers={"Authorization": f"Bearer {self.settings.api_key}"},
                             json=payload)

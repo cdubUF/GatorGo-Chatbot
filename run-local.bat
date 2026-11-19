@@ -1,0 +1,9 @@
+@echo off
+set "APP_PROFILE=local"
+set "MODEL_PROVIDER=mock"
+set "DEMO_MODE=false"
+set "SAMPLE_KNOWLEDGE=true"
+set "RESERVATION_MODE=disabled"
+set "MEWS_SANDBOX_ENABLED=false"
+set "SPEECH_ENABLED=false"
+call "%~dp0run.bat"

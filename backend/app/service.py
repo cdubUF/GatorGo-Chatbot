@@ -94,6 +94,20 @@ class Concierge:
             if (not hits and re.search(r"\b(recommend|suggest|things to do|what should i do)\b", q)
                 and not re.search(r"\b(nearby|local|attraction|attractions|offsite|off-site)\b", q)):
                 hits = self.retriever.search("resort amenities spa dining")
+            strict_unknown = (not hits and not self.settings.demo and not self.settings.sample_knowledge
+                              and (self.settings.profile != "local" or re.search(
+                                  r"\b(hotel|resort|shuttle|airport|pool|spa|breakfast|dining|check.?in|check.?out|parking|restaurant|transport)\b", q)))
+            if strict_unknown:
+                response.reply = ("I don't have verified information to answer that. Please contact the hotel directly. "
+                                  "No booking was made and no staff was notified.")
+                response.decision = Decision(level="assisted", category="unknown")
+                response.status = "needs_human"
+                contacts = self.retriever.search("front desk contact")
+                contacts = [(r, source) for r, source in contacts if r.status == "approved" and "contact" in r.tags]
+                if contacts:
+                    response.reply += " " + contacts[0][0].answer
+                    response.sources = [contacts[0][1]]
+                return response
             if self.settings.provider == "openai":
                 try:
                     args = (safe_history(query), session.history, [r for r, _ in hits])
@@ -105,8 +119,8 @@ class Concierge:
                     if response.sources:
                         session.topic = response.sources[0].topic
                     session.failures = 0
-                except ProviderUnavailable as error:
-                    logger.warning("Live answer unavailable: %s", error.reason)
+                except ProviderUnavailable:
+                    logger.warning("Live answer unavailable; returning safe fallback")
                     response.mode, response.status = "faq_fallback", "fallback"
                     if hits:
                         record, source = hits[0]
