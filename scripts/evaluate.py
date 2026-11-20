@@ -50,5 +50,32 @@ def evaluate():
     return 0 if report["passed"] == len(rows) else 1
 
 
+def coverage_report(records, cases):
+    """Group missing curated expectations; never collect real guest questions."""
+    from backend.app.retrieval import Retriever
+    retriever = Retriever(records, demo=True)
+    groups = {}
+    for case in cases:
+        matched = {r.id for r, _ in retriever.search(case['question'], limit=100)}
+        expected = case['expected_record']
+        key = (case['topic'], expected)
+        group = groups.setdefault(key, {'topic': key[0], 'expected_record': expected, 'missing': [], 'resolved': []})
+        group['resolved' if expected in matched else 'missing'].append(case['id'])
+    return {'mode': 'curated fixtures; no guest text', 'gaps': [g for g in groups.values() if g['missing']],
+            'resolved': [g for g in groups.values() if not g['missing']]}
+
+
 if __name__ == "__main__":
-    sys.exit(evaluate())
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--coverage', action='store_true')
+    parser.add_argument('--records', type=Path, default=ROOT / 'knowledge/venues.json')
+    parser.add_argument('--fixtures', type=Path, default=ROOT / 'tests/fixtures/coverage-gaps.json')
+    args = parser.parse_args()
+    if args.coverage:
+        from backend.app.retrieval import read_records
+        report = coverage_report(read_records(args.records), json.loads(args.fixtures.read_text('utf-8')))
+        (ROOT / 'artifacts/coverage-gaps.json').write_text(json.dumps(report, indent=2), encoding='utf-8')
+        print(json.dumps(report, indent=2))
+    else:
+        sys.exit(evaluate())

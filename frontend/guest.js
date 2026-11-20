@@ -1,23 +1,35 @@
+import {setConversationState} from './conversation-state.js';
+import {captionStart, captionAt, captionStop} from './captions.js';
 const $ = id => document.getElementById(id);
 const guides = {desk: 'Front Desk Gator', pool: 'Poolside Gator', trail: 'Trail Guide Gator'};
-let selected = 'desk', thinking = false, speaking = false, spokenGeneration = 0;
+let selected = 'trail', thinking = false, speaking = false, spokenGeneration = 0;
 let cameraStream, cameraGeneration = 0, recordingGeneration = 0, recording = null, upload;
 let lastReply = '', lastLocale = 'en';
-try { selected = sessionStorage.getItem('gator') || 'desk'; } catch { /* Storage is optional. */ }
+document.addEventListener('call-reply', event => { lastReply = event.detail.reply; lastLocale = event.detail.reply_locale || 'en'; });
+try { selected = sessionStorage.getItem('gator') || 'trail'; } catch { /* Storage is optional. */ }
 if (!guides[selected]) selected = 'desk';
 export const avatarPath = () => selected;
+export const guideProfile = () => ({
+  desk: {greeting: "Welcome! Let's get you settled in. Ask me about arrival, dining, or your stay.", questions: ['What time is check-in?', 'Tell me about Palm Grill', 'What amenities do you have?']},
+  pool: {greeting: "Hello, sunshine! Ready for a little poolside relaxation?", questions: ['What are Lagoon Pool hours today?', 'Where is Lagoon Pool?', 'Tell me about Blue Heron Cafe']},
+  trail: {greeting: "Adventure starts here. Let's explore the resort together.", questions: ['Where is Nature Walk?', 'What are Nature Walk hours?', 'Tell me about Garden Discovery Walk']}
+})[selected];
 export const replyLocale = () => $('replyLocale').value;
 const note = text => { $('mediaStatus').textContent = text; };
+let callActive = false;
+document.addEventListener('call-active', event => { callActive = event.detail; });
 function pose() {
+  if (callActive) return;
   const state = thinking ? 'thinking' : speaking ? 'speaking' : 'idle';
-  $('gatorStage').dataset.state = state;
-  $('guideArt').classList.toggle('talking', speaking && !thinking);
-  $('gatorState').textContent = {thinking: 'Thinking…', speaking: 'Speaking', idle: 'Ready to help'}[state];
+  setConversationState(state, {thinking: 'Thinking?', speaking: 'Speaking', idle: 'Ready to help'}[state]);
 }
 export function setThinking(value) { thinking = value; pose(); }
 export function conversationFailed() { endConversation(); }
 function choose(key) {
   selected = key;
+  document.querySelector('.gator-panel').dataset.scene = key;
+  $('guideWelcome').textContent = guideProfile().greeting;
+  document.dispatchEvent(new CustomEvent('guide-changed', {detail: key}));
   try { sessionStorage.setItem('gator', key); } catch { /* Storage is optional. */ }
   document.querySelectorAll('[data-gator]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.gator === key)));
   for (const id of ['pickerPreview', 'guideArt']) $(id).dataset.character = selected;
@@ -26,12 +38,12 @@ function choose(key) {
   document.querySelectorAll('.avatar .mascot-sprite, .mini-avatar').forEach(img => { img.dataset.character = selected; });
 }
 let voiceContext, voiceSource, voiceFetch, mouthFrame, pendingAudio;
-let liveConversation = false;
 async function unlockAudio() {
   voiceContext ||= new AudioContext();
   await voiceContext.resume();
 }
 export function stopPlayback() {
+  captionStop();
   spokenGeneration += 1;
   voiceFetch?.abort(); voiceFetch = null;
   if (voiceSource) { voiceSource.onended = null; try { voiceSource.stop(); } catch { /* Already ended. */ } voiceSource.disconnect(); }
@@ -52,8 +64,11 @@ async function playBuffer(buffer, generation) {
   analyser.fftSize = 256; source.buffer = buffer;
   source.connect(analyser); analyser.connect(voiceContext.destination); voiceSource = source;
   const samples = new Uint8Array(analyser.fftSize);
+  const playbackStarted = voiceContext.currentTime;
+  captionStart(lastReply);
   const animate = () => {
     if (generation !== spokenGeneration) return;
+    captionAt(voiceContext.currentTime - playbackStarted, buffer.duration);
     analyser.getByteTimeDomainData(samples);
     const energy = Math.sqrt(samples.reduce((sum, v) => sum + ((v - 128) / 128) ** 2, 0) / samples.length);
     $('guideArt').classList.toggle('mouth-open', energy > 0.025);
@@ -61,10 +76,9 @@ async function playBuffer(buffer, generation) {
   };
   source.onended = () => {
     if (generation !== spokenGeneration) return;
-    cancelAnimationFrame(mouthFrame); source.disconnect(); analyser.disconnect(); voiceSource = null;
+    captionStop(); cancelAnimationFrame(mouthFrame); source.disconnect(); analyser.disconnect(); voiceSource = null;
     speaking = false; $('guideArt').classList.remove('mouth-open'); pose();
-    note(liveConversation ? 'Your turn. Listening again...' : 'Your turn. Tap Talk to gator to ask another question.');
-    if (liveConversation && !document.hidden) startRecording();
+    note('Your turn. Tap Talk to gator to record another question, or Start call for hands-free conversation.');
   };
   speaking = true; pose(); source.start(); animate(); note('');
 }
@@ -87,7 +101,8 @@ export async function speakReply(text, locale = 'en') {
   }
 }
 function endConversation() {
-  liveConversation = false; $('liveTalk').setAttribute('aria-pressed', 'false'); $('liveTalk').textContent = 'Start conversation';
+  if (callActive) return;
+  $('liveTalk').setAttribute('aria-pressed', 'false'); $('liveTalk').textContent = 'Start call';
 }
 function recordButtons(state) {
   $('recordStart').hidden = state !== 'idle';
@@ -128,7 +143,7 @@ async function stopRecording() {
   try {
     const blob = wav(current.chunks, current.size, current.context.sampleRate);
     current.chunks = [];
-    if (blob.size <= 44 || (liveConversation && !current.heardSpeech)) { endConversation(); pose(); note('No speech detected. Tap Start conversation to try again.'); return; }
+    if (blob.size <= 44) { endConversation(); pose(); note('No speech detected. Tap Talk to gator to try again.'); return; }
     if (blob.size > 4 * 1024 * 1024) throw new Error('Invalid recording');
     const response = await fetch(`/api/speech?locale=${encodeURIComponent(replyLocale())}`, {
       method: 'POST', headers: {'Content-Type': 'audio/wav'}, body: blob,
@@ -140,7 +155,7 @@ async function stopRecording() {
     $('messageInput').dispatchEvent(new Event('input'));
     $('messageInput').focus();
     note('Transcript ready. Review or correct it, then press Send.');
-    if (liveConversation || $('autoSend').checked) {
+    if ($('autoSend').checked) {
       upload = null; recordButtons('idle');
       $('chatForm').requestSubmit();
     }
@@ -174,7 +189,7 @@ async function startRecording() {
       const rms = Math.sqrt(samples.reduce((sum, v) => sum + v * v, 0) / samples.length);
       if (rms > 0.018) { recording.heardSpeech = true; recording.quietSamples = 0; }
       else recording.quietSamples += samples.length;
-      if (recording.size >= context.sampleRate * 30 || (liveConversation && recording.heardSpeech && recording.quietSamples > context.sampleRate * 1.4)) stopRecording();
+      if (recording.size >= context.sampleRate * 30) stopRecording();
     };
     source.connect(processor); processor.connect(context.destination);
     stream.getAudioTracks().forEach(track => track.onended = () => {
@@ -212,7 +227,12 @@ export function configureMedia(config) {
   $('recordStart').disabled = config.speech_enabled !== true;
   $('liveTalk').disabled = config.speech_enabled !== true;
   $('speakReplies').checked = config.speech_enabled === true;
-  if (!config.speech_enabled) note('Voice input is not configured. Typed chat is ready.');
+  $('speakReplies').disabled = config.speech_enabled !== true;
+  $('replayVoice').disabled = config.speech_enabled !== true;
+  if (!config.speech_enabled) {
+    note(config.service_notice || 'Voice input is not configured. Typed chat is ready.');
+    $('callStatus').textContent = config.service_notice || 'Voice is unavailable. Typed chat is ready.';
+  }
   const selectedLocale = replyLocale();
   $('replyLocale').replaceChildren(new Option('Detect automatically', 'auto'));
   Object.entries(config.languages || {en: 'English'}).forEach(([key, name]) => $('replyLocale').add(new Option(name, key)));
@@ -222,12 +242,6 @@ document.querySelectorAll('[data-gator]').forEach(button => button.addEventListe
 $('continueGator').addEventListener('click', () => { $('gatorPicker').hidden = true; $('conciergeScreen').hidden = false; document.querySelector('.content').scrollTop = 0; $('liveTalk').focus({preventScroll: true}); });
 $('changeGator').addEventListener('click', () => { releaseMedia(); $('conciergeScreen').hidden = true; $('gatorPicker').hidden = false; document.querySelector(`[data-gator=${selected}]`).focus(); });
 $('recordStart').addEventListener('click', () => { unlockAudio().catch(() => {}); startRecording(); });
-$('liveTalk').addEventListener('click', () => {
-  if (liveConversation) { endConversation(); cancelRecording(); stopPlayback(); note('Conversation paused.'); return; }
-  liveConversation = true; $('speakReplies').checked = true;
-  $('liveTalk').textContent = 'End conversation'; $('liveTalk').setAttribute('aria-pressed', 'true');
-  unlockAudio().catch(() => {}); startRecording();
-});
 $('resumeVoice').addEventListener('click', () => { if (pendingAudio) { const next = pendingAudio; pendingAudio = null; $('resumeVoice').hidden = true; playBuffer(next.buffer, next.generation); } });
 $('replayVoice').addEventListener('click', () => { unlockAudio().catch(() => {}); if (lastReply) speakReply(lastReply, lastLocale); });
 $('recordStop').addEventListener('click', stopRecording);

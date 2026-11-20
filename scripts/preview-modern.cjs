@@ -1,0 +1,2 @@
+﻿const {chromium}=require('playwright');
+(async()=>{const browser=await chromium.launch();const page=await browser.newPage({viewport:{width:1440,height:900}});await page.goto('http://127.0.0.1:8011');await page.screenshot({path:'artifacts/modern-picker.png'});await page.click('#continueGator');await page.waitForTimeout(500);await page.screenshot({path:'artifacts/modern-desktop.png'});await page.setViewportSize({width:390,height:844});await page.screenshot({path:'artifacts/modern-mobile.png'});await browser.close();})();

@@ -1,0 +1,114 @@
+/* Modern guest experience. Functional scene and animation rules live in styles.css. */
+.modern-concierge{--ink:#18334a;--muted:#64798a;--border:#e3eaef;--jade:#087e58;background:#f3f6f9;color:var(--ink)}
+.modern-concierge button,.modern-concierge select{font-family:inherit}
+.modern-concierge button{transition:background .18s,box-shadow .18s,transform .18s}
+.modern-concierge button:focus-visible,.modern-concierge summary:focus-visible{outline:3px solid #378df3;outline-offset:3px}
+.modern-concierge .main,.modern-concierge .app-shell{background:#f3f6f9}
+.modern-concierge .topbar{height:88px;padding:0 26px;background:#fff;border-bottom:1px solid #e4ebf0;gap:20px}
+.modern-concierge .top-title{font:800 30px/1.1 system-ui,sans-serif;letter-spacing:-1.4px;color:#145cc5;white-space:nowrap}
+.modern-concierge .top-title>span{color:#16845d}
+.modern-concierge .top-title small{display:inline-flex;align-items:center;gap:14px;font:500 13px/1.3 system-ui,sans-serif;letter-spacing:0;color:#64798a;margin-left:20px;padding-left:20px;border-color:#e0e7ee}
+.live-label{font-size:9px;font-weight:750;letter-spacing:1px;background:#eaf7f0;color:#16734e;border:1px solid #d3eddf;border-radius:6px;padding:5px 7px}
+.modern-concierge .top-actions{gap:6px}
+.modern-concierge .outline-button{border:1px solid #dfe7ed;border-radius:10px;background:#fff;color:#456176;font-size:12px;font-weight:600;padding:10px 13px;min-height:38px;box-shadow:none}
+.modern-concierge .outline-button:hover{background:#edf4fb;border-color:#bed4ea}
+.modern-concierge .top-actions .outline-button{border-color:transparent;background:transparent}
+.modern-concierge .top-actions #changeGator{background:#eef4fb;color:#215fa1}
+.modern-concierge .top-actions #resetBtn{border-color:#e0e8ef;margin-left:5px}
+.modern-concierge .content{padding:18px;gap:18px;background:#f3f6f9;overflow:hidden}
+.modern-concierge .chat-panel{flex:0 0 350px;min-width:0;max-width:350px;min-height:0;border:1px solid #e2e9ef;border-radius:22px;background:#fff;overflow:hidden;box-shadow:0 5px 24px #142d4805}
+.modern-concierge .chat-titlebar{height:83px;min-height:83px;background:#fff;color:#18334a;border-bottom:1px solid #edf1f5;padding:18px;gap:12px}
+.modern-concierge .avatar{width:42px;height:42px;background:#e7f4e9;box-shadow:0 0 0 4px #f4f8f5}
+.modern-concierge .agent-detail strong{font-size:14px;font-weight:700;letter-spacing:-.2px}
+.modern-concierge .agent-detail>span{font-size:11px;color:#748795}
+.modern-concierge .conversation{padding:20px 16px;background:#fff;gap:22px;max-height:none}
+.modern-concierge .message-body{max-width:calc(100% - 32px)}
+.modern-concierge .bubble{font-size:14px;line-height:1.7;padding:13px 15px}
+.modern-concierge .message.agent .bubble{background:#f2f6fa;border:1px solid #eaf0f5;border-radius:4px 16px 16px}
+.modern-concierge .message.user .bubble{background:#236bc4;border-radius:16px 4px 16px 16px}
+.modern-concierge .msg-time{font-size:10px;color:#8595a2}
+.modern-concierge .composer-area{padding:14px;background:#fff;border-top:1px solid #edf1f5}
+.modern-concierge .media-tools{gap:8px}
+.modern-concierge .media-tools select{max-width:155px;font-size:12px;border-color:#e1e8ee;background:#f8fafc;color:#61798b;min-height:36px}
+.modern-concierge #recordStart{background:#eaf7f0;border-color:#d7ebdf;color:#17754e;font-size:12px}
+.modern-concierge .auto-send{font-size:11px;color:#728693;margin:10px 0 0}
+.modern-concierge input[type=checkbox]{accent-color:#13855b}
+.modern-concierge .chips{margin:12px 0 8px;gap:6px;max-height:92px;white-space:normal}
+.modern-concierge .chip{background:#fff;border:1px solid #dfe8ee;border-radius:10px;padding:8px 10px;font-size:11px;color:#48677d;min-height:34px}
+.modern-concierge .chip:hover{background:#edf5fd;color:#195fa5;border-color:#bfd8ef}
+.modern-concierge .composer{border:1px solid #dae4ec;border-radius:14px;padding:6px;background:#f8fafc;box-shadow:none}
+.modern-concierge .composer input{font-size:14px;height:40px;padding-left:9px}
+.modern-concierge .composer button{background:#167b59;width:40px;height:40px;border-radius:10px}
+.modern-concierge .footnote{font-size:10px;line-height:1.6;color:#8293a1;flex-wrap:wrap;margin-top:10px}
+.modern-concierge .footnote a{color:#567891;text-decoration:none}
+.modern-concierge .gator-panel{border-radius:24px;box-shadow:0 8px 28px #14334d12;overflow:hidden;border:1px solid #dfe8ee}
+.modern-concierge .gator-panel::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,#09253c9c,transparent 32%,transparent 62%,#082c4970);pointer-events:none;z-index:0}
+.modern-concierge .gator-panel .scene-label{top:20px;left:26px;font-size:9px;letter-spacing:2.5px;font-weight:650;color:#d7eaf0;margin:0}
+.modern-concierge .gator-panel h2{top:42px;left:25px;font:650 27px/1.2 system-ui,sans-serif;letter-spacing:-.8px;text-shadow:0 2px 12px #1239}
+.modern-concierge .guide-welcome{display:none}
+.modern-concierge .gator-panel #gatorState{top:86px;left:26px;background:#f4fffaee;color:#24654f;border:1px solid #ffffff66;box-shadow:0 4px 12px #142b4410;font-size:11px;padding:7px 11px;backdrop-filter:blur(12px)}
+.modern-concierge #gatorState::before{content:'';display:inline-block;width:6px;height:6px;border-radius:50%;background:#2ca575;margin-right:6px;vertical-align:1px}
+.modern-concierge .gator-stage{bottom:22%;width:min(76cqw,68cqh,720px);height:min(76cqw,68cqh,720px)}
+.modern-concierge .outdoor-desk{bottom:12%;height:62%}
+.voice-dock{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);width:min(94%,510px);padding:15px 18px 12px;background:#102e43ed;color:white;border:1px solid #ffffff26;border-radius:22px;box-shadow:0 12px 40px #001c3b33;backdrop-filter:blur(20px);z-index:5}
+.modern-concierge .voice-dock .call-controls{position:static;transform:none;width:100%;padding:0;background:none;box-shadow:none;border-radius:0}
+.modern-concierge .call-controls .primary-button{background:#52d6a0;color:#083e32;min-width:180px;min-height:46px;font-size:14px;border:1px solid #80ebbb;border-radius:12px;padding:12px 24px;box-shadow:0 4px 15px #002c3120}
+.modern-concierge .call-controls .primary-button:hover{background:#7ee5b9;transform:translateY(-1px)}
+.modern-concierge .call-controls .primary-button[aria-pressed=true]{background:#236bc4;color:#fff;border-color:#5597e7}
+.modern-concierge .call-controls p{color:#c3d6e2;font-size:11px;line-height:1.5;margin:9px 0 12px}
+.modern-concierge .voice-dock .playback-controls{position:static;transform:none;width:100%;max-width:none;border-radius:0;box-shadow:none;border-top:1px solid #ffffff1c;padding:10px 0 0;background:none;justify-content:center;gap:12px;color:#c8dae6;font-size:11px;flex-wrap:wrap}
+.modern-concierge .voice-dock .outline-button{background:#ffffff0b;color:#e3edf6;border-color:#ffffff20;font-size:11px;min-height:32px;padding:7px 9px;border-radius:8px}
+.modern-concierge .voice-dock .outline-button:hover{background:#ffffff20}
+.modern-concierge .call-details{bottom:187px;left:18px;background:#f8fcffee;border:1px solid #ffffff77;border-radius:10px;color:#33566c;padding:8px 11px;font-size:11px;max-width:290px;backdrop-filter:blur(10px)}
+.modern-concierge .call-details summary{cursor:pointer}
+.modern-concierge .stage-captions{bottom:225px;background:#0b283fea;border:1px solid #ffffff24;font-size:17px;line-height:1.5;border-radius:16px}
+.modern-concierge .gator-panel #cameraToggle{top:21px;right:20px;background:#ffffffeb;color:#325a74;font-size:11px;border-color:#fff6;backdrop-filter:blur(10px)}
+.modern-concierge .camera-placement{top:69px;right:20px;font-size:10px;max-width:145px;background:#f9fcffed;color:#42647d;border-radius:10px}
+.modern-concierge .gator-panel:has(#cameraTile[hidden]) .camera-placement{display:none}
+.modern-concierge .gator-panel #cameraTile{border-radius:16px;border:3px solid #ffffffd9;bottom:224px}
+.modern-concierge .gator-panel #cameraStatus:empty{display:none}
+.modern-concierge .gator-stage[data-state=thinking]::after{content:'•••'}
+/* The welcome screen shares the same visual language. */
+.modern-concierge .picker{background:radial-gradient(ellipse at 15% 10%,#e5f4ed,transparent 48%),radial-gradient(ellipse at 95% 95%,#e4effe,transparent 50%),#f7f9fc;padding:35px 28px 25px}
+.modern-concierge .picker-brand{font:800 32px/1 system-ui,sans-serif;letter-spacing:-1.5px;color:#145cc5;margin:0 auto 37px;max-width:1050px;text-align:left;display:flex;align-items:center;flex-wrap:wrap}
+.modern-concierge .picker-brand .brand-go{color:#16845d}
+.modern-concierge .picker-brand small{font:600 9px/1.5 system-ui,sans-serif;letter-spacing:2px;color:#67818e;margin:0 0 0 auto}
+.modern-concierge .picker>.picker-eyebrow{display:block;font-size:10px;color:#208064;letter-spacing:2px;margin:0 auto 15px}
+.modern-concierge .picker h1{font:700 clamp(36px,4.2vw,58px)/1.12 system-ui,sans-serif;letter-spacing:-2.5px;color:#19384f;margin:0 0 16px}
+.modern-concierge .picker>p{font-size:14px;color:#698190;max-width:480px;line-height:1.6}
+.modern-concierge .gator-cards{max-width:940px;gap:23px;margin:32px auto 24px}
+.modern-concierge .gator-card{padding:8px 8px 22px;background:#fff;border:1px solid #e0e9ef;border-radius:22px;box-shadow:0 10px 30px #18365007;text-align:left;transition:transform .2s,border-color .2s,box-shadow .2s}
+.modern-concierge .gator-card:hover{transform:translateY(-4px);background:#fff;box-shadow:0 14px 30px #1f527615}
+.modern-concierge .gator-card[aria-pressed=true]{border:1px solid #318d70;box-shadow:0 0 0 3px #319f771c,0 10px 30px #1836500a}
+.modern-concierge .gator-card>.mascot-sprite{border-radius:15px;background-color:#e1eee7}
+.modern-concierge .gator-card strong{font:650 18px/1.3 system-ui,sans-serif;letter-spacing:-.35px;color:#23485a;padding:0 14px;margin:18px 0 5px}
+.modern-concierge .gator-card>span:last-child{font-size:12px;color:#78909d;padding:0 14px}
+.modern-concierge .gator-card>.selection-mark{width:28px;height:28px;font-size:15px;border:2px solid white;background:#178363;top:19px;right:19px}
+.modern-concierge .picker-preview{font-size:12px;color:#547283;height:22px}
+.modern-concierge .picker>.primary-button{background:#1769c7;border:1px solid #1769c7;border-radius:13px;box-shadow:0 6px 15px #1769c71a;min-width:230px;font-size:15px;padding:15px 24px;margin:14px}
+.modern-concierge .picker>.picker-note{font-size:11px;margin-top:8px;color:#8396a2}
+.modern-concierge dialog{background:#fff;border:1px solid #e0e8ef;border-radius:22px;box-shadow:0 25px 90px #0a284533}
+.modern-concierge dialog header h2{font:650 25px system-ui,sans-serif;letter-spacing:-.7px}
+.modern-concierge .event-card{background:#f7fafc;border-color:#e2eaf0}
+@media(min-width:1800px){.modern-concierge .chat-panel{flex-basis:390px;max-width:390px}}
+@media(max-width:1200px){.modern-concierge .top-title small{display:none}.modern-concierge .chat-panel{flex-basis:320px;max-width:320px}.modern-concierge .topbar{padding:0 20px}.modern-concierge .content{padding:12px;gap:12px}}
+@media(max-width:850px) and (min-width:651px){.modern-concierge .topbar{height:104px;flex-wrap:wrap;gap:4px;padding:10px 16px}.modern-concierge .top-actions{width:100%;justify-content:space-between}.modern-concierge .top-title{font-size:25px}.modern-concierge .chat-panel{flex-basis:290px;max-width:290px}.modern-concierge .gator-panel h2{font-size:21px;left:15px}.modern-concierge .gator-panel .scene-label,.modern-concierge .gator-panel #gatorState{left:15px}.modern-concierge .gator-panel #cameraToggle{top:120px;right:12px}.voice-dock{padding:12px 9px}.modern-concierge .voice-dock .playback-controls{gap:5px}}
+@media(max-width:650px){
+ .modern-concierge .topbar{height:108px;display:block;padding:14px 12px 8px}.modern-concierge .top-title{font-size:27px}.modern-concierge .top-title small{display:none}.modern-concierge .top-actions{margin-top:13px;gap:2px;justify-content:space-between}.modern-concierge .top-actions .outline-button{font-size:10px;padding:5px 6px;min-height:30px;border-radius:7px}.modern-concierge .top-actions #resetBtn{margin-left:0}.modern-concierge .top-actions #resetBtn::after{font-size:10px}
+ .modern-concierge .content{padding:8px;display:block}.modern-concierge .gator-panel{height:100%;width:100%;border-radius:18px;min-height:0}.modern-concierge .gator-panel h2{top:34px;left:16px;font-size:21px}.modern-concierge .gator-panel .scene-label{display:block;top:17px;left:17px;font-size:8px;letter-spacing:1.8px}.modern-concierge .gator-panel #gatorState{left:16px;top:66px;font-size:10px;padding:6px 9px}
+ .modern-concierge .gator-stage{width:min(92cqw,60cqh);height:min(92cqw,60cqh);bottom:27%}.modern-concierge .outdoor-desk{bottom:20%;height:57%}.modern-concierge .gator-panel #cameraToggle{top:106px;right:12px;font-size:10px;padding:6px 9px;min-height:32px}.modern-concierge .camera-placement{top:145px;right:12px;max-width:120px}.modern-concierge .gator-panel #cameraStatus{top:145px;right:12px}.modern-concierge .gator-panel #cameraTile[data-corner=top-right]{top:224px}.modern-concierge .gator-panel #cameraTile[data-corner=top-left]{top:108px}
+ .voice-dock{bottom:12px;width:calc(100% - 20px);padding:12px 10px;border-radius:18px}.modern-concierge .call-controls .primary-button{min-width:155px;font-size:14px;margin:0 4px;padding:10px 18px;min-height:43px}.modern-concierge .call-controls p{font-size:10px;margin:7px 0 10px}.modern-concierge .voice-dock .playback-controls{gap:7px;font-size:10px}.modern-concierge .voice-dock .outline-button{font-size:10px;padding:6px;min-height:30px}.modern-concierge .call-details{bottom:190px;left:12px;font-size:10px;max-width:200px}.modern-concierge .stage-captions{bottom:235px;font-size:15px}
+ .modern-concierge .chat-panel{max-width:none;width:calc(100% - 16px);inset:90px 8px 190px;border-radius:18px;min-height:0;box-shadow:0 10px 50px #082b4a35}.modern-concierge .chat-panel .conversation{padding:14px}.modern-concierge .chat-panel .composer-area{padding:10px}.modern-concierge .chat-panel .composer input{font-size:16px}.modern-concierge .chat-panel .bubble{font-size:14px}.modern-concierge #closeChatDrawer{font-size:11px;min-height:32px}
+ .modern-concierge .picker{padding:26px 20px}.modern-concierge .picker-brand{margin-bottom:35px;font-size:28px}.modern-concierge .picker-brand small{font-size:8px;letter-spacing:1px;max-width:130px;text-align:right}.modern-concierge .picker>.picker-eyebrow{font-size:8px;letter-spacing:1.5px}.modern-concierge .picker h1{font-size:37px;letter-spacing:-1.6px}.modern-concierge .picker>p{font-size:13px}.modern-concierge .gator-cards{gap:13px;margin:24px auto 18px}.modern-concierge .gator-card{grid-template-columns:102px 1fr;padding:6px;min-height:114px;border-radius:17px}.modern-concierge .gator-card>.mascot-sprite{width:102px;border-radius:12px}.modern-concierge .gator-card strong{font-size:15px;margin:17px 0 5px;padding:0 12px}.modern-concierge .gator-card>span:last-child{font-size:11px;padding:0 12px}.modern-concierge .gator-card>.selection-mark{width:22px;height:22px;font-size:11px;right:11px;top:10px}
+}
+@media(max-height:650px) and (min-width:651px){.modern-concierge .topbar{height:66px}.modern-concierge .content{padding:10px;gap:10px}.modern-concierge .chat-titlebar{height:65px;min-height:65px}.voice-dock{bottom:10px;padding:10px 14px}.modern-concierge .call-controls p{margin:5px 0 7px}.modern-concierge .voice-dock .playback-controls{padding-top:7px}.modern-concierge .call-details{bottom:170px}.modern-concierge .gator-panel h2{font-size:23px}.modern-concierge .gator-stage{bottom:25%;width:min(76cqw,65cqh);height:min(76cqw,65cqh)}}
+@media(max-height:550px) and (max-width:950px){.modern-concierge .topbar{height:62px;padding:8px 12px;display:flex;flex-wrap:nowrap}.modern-concierge .top-actions{margin:0}.modern-concierge .top-title{font-size:23px}.modern-concierge .voice-dock{bottom:7px;padding:6px 10px}.modern-concierge .call-controls p{display:none}.modern-concierge .voice-dock .playback-controls{padding-top:4px;margin-top:4px}.modern-concierge .call-details{bottom:124px}.modern-concierge .gator-stage{bottom:28%;height:58cqh;width:58cqh}}
+
+/* The conversation can be tucked away without ending a call. */
+.modern-concierge #chatDrawerToggle{display:inline-flex}
+@media(min-width:651px){
+ .modern-concierge .chat-panel{position:relative}
+ .modern-concierge.chat-collapsed .chat-panel{display:none}
+ .modern-concierge #closeChatDrawer{display:block;position:absolute;right:10px;top:12px;z-index:2;padding:6px 9px;font-size:12px}
+ .modern-concierge .chat-titlebar{padding-right:85px}
+}

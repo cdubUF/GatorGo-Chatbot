@@ -1,32 +1,41 @@
 import asyncio
+import base64
 import hmac
 import json
 import logging
+import re
+import secrets
 import time
 from collections import Counter
 from contextlib import asynccontextmanager
 from datetime import date, datetime, timezone
+from dataclasses import replace
 from uuid import UUID, uuid4
 
 from fastapi import APIRouter, Depends, FastAPI, Header, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
-from fastapi.responses import JSONResponse, Response
+from fastapi.responses import JSONResponse, Response, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 
 from .config import ROOT, load_settings
 from .usage import Usage
-from .speech import MAX_AUDIO_BYTES, transcribe, synthesize
-from .languages import LANGUAGES, UNKNOWN, route, translate
-from .provider import ProviderUnavailable
-from .policy import injection_attempt, sensitive
+from .realtime import session_config, negotiate
+from .sample_customers import load_customers, customer_records
+from .speech import MAX_AUDIO_BYTES, transcribe, synthesize, stream_speech
+from .languages import LANGUAGES
+from .policy import injection_attempt
 from .provider import ModelAdapter
 from .retrieval import Retriever, normalize, read_records, validate_records
-from .reservations import HOTELS, SQLiteReservations, Verification, reservation_router
-from .schemas import VoiceRequest, ChatRequest, ChatResponse, ConsentRequest, DispositionRequest
+from .reservations import SQLiteReservations, Verification, reservation_router
+from .schemas import ToolCall, VoiceTurn, FeedbackRequest, VoiceRequest, ChatRequest, ChatResponse, ConsentRequest, DispositionRequest
 from .service import Concierge
+from .conversation import ConversationEngine
+from .memory import snapshot
+from .tools import ToolExecutor
 from .sessions import Sessions
+from .venues import local_day, available_venues
 
 logger = logging.getLogger("gatorgo.http")
 
@@ -45,7 +54,7 @@ class BodyLimit:
             if message["type"] == "http.disconnect":
                 return
             size += len(message.get("body", b""))
-            limit = MAX_AUDIO_BYTES if scope.get("path") == "/api/speech" else self.limit
+            limit = MAX_AUDIO_BYTES if scope.get("path") in {"/api/speech", "/api/call"} else (65536 if scope.get("path") == "/api/realtime" else self.limit)
             if size > limit:
                 response = JSONResponse({"detail": "Request too large"}, status_code=413)
                 return await response(scope, receive, send)
@@ -83,16 +92,46 @@ def create_app(settings=None, records=None, provider=None):
                 validate_records(general)
                 records += [record for record in general if record.id not in approved_ids
                             and normalize(record.topic) not in approved_topics]
+            if settings.sample_knowledge and (ROOT / "knowledge/venues.json").exists():
+                venues = read_records(ROOT / "knowledge/venues.json")
+                records += [r for r in venues if r.id not in approved_ids and normalize(r.topic) not in approved_topics]
+            if settings.sample_knowledge and (ROOT / "knowledge/expanded.json").exists():
+                expanded = read_records(ROOT / "knowledge/expanded.json")
+                records += [r for r in expanded if r.id not in approved_ids and normalize(r.topic) not in approved_topics]
+                records += customer_records(load_customers(settings))
+                validate_records(records)
             aliases_path = ROOT / "knowledge/dataset-phrases.json"
             if settings.sample_knowledge and aliases_path.exists():
                 aliases = json.loads(aliases_path.read_text("utf-8"))
     usage = Usage(settings)
     sessions = Sessions(settings.session_ttl)
     queue, metrics = {}, Counter()
+    feedback_counts = Counter()
+    app_events = json.loads((ROOT / "knowledge/events.json").read_text("utf-8")) if settings.sample_knowledge and (ROOT / "knowledge/events.json").exists() else []
     reservations = json.loads((ROOT / "knowledge/reservations.json").read_text("utf-8")) if settings.demo else []
     service = Concierge(settings, Retriever(records, settings.demo or settings.sample_knowledge,
                                              settings.threshold, aliases=aliases),
                         provider or ModelAdapter(settings, usage=usage), reservations)
+
+    fallback_settings = replace(settings, provider="mock")
+    fallback_service = Concierge(fallback_settings, service.retriever, ModelAdapter(fallback_settings), reservations)
+    budget_notice = "AI allowance reached. Sourced English text answers, maps and activities remain available. AI voice is paused."
+
+    def fast_voice_question(text, locale):
+        # Only complete, narrowly defined English requests skip language/model routing.
+        # Negations, compound requests and unfamiliar wording use the full AI path.
+        if locale not in {"auto", "en"}:
+            return False
+        q = normalize(text)
+        if re.fullmatch(r"(?:what time is |when is |what are the )?(?:checkin|checkout)(?: time| times| hours)?", q):
+            return True
+        names = "|".join(r" ?".join(re.escape(part) for part in normalize(r.venue.name).split()) for r in available_venues(service.retriever))
+        if names and re.fullmatch(r"(?:where is |where is the |what are the hours for |when does )?(?:" + names + r")(?: hours| location| open| close| today| tomorrow)?", q):
+            return True
+        return q in {"where is it", "when does it close", "what about the pool"}
+
+    def call_available():
+        return usage.available(2 * settings.speech_call_reserve_usd + 2 * settings.text_call_reserve_usd)
 
     def prune():
         sessions.prune()
@@ -123,7 +162,10 @@ def create_app(settings=None, records=None, provider=None):
             raise ValueError("Run scripts/seed_reservations.py before enabling synthetic reservations")
         verification = Verification(SQLiteReservations(reservation_path), allowed_hotels={"gatorgo"})
 
+    engine = ConversationEngine(settings, service, fallback_service, sessions, usage, verification, app_events, metrics)
     app = FastAPI(title="Gator Go Concierge", version="1.0.0", lifespan=lifespan)
+    app.state.engine = engine
+    tool_executor = ToolExecutor(engine)
     app.state.usage = usage
     app.state.sessions, app.state.queue, app.state.service = sessions, queue, service
     origins = list(settings.guest_origins) or [f"http://localhost:{settings.port}", f"http://127.0.0.1:{settings.port}"]
@@ -146,8 +188,8 @@ def create_app(settings=None, records=None, provider=None):
             response = JSONResponse({"detail": "Origin not allowed"}, status_code=403)
         else:
             try:
-                if request.url.path in {"/api/chat", "/api/speech", "/api/voice"} and request.method == "POST":
-                    usage.admit(speech=request.url.path in {"/api/speech", "/api/voice"})
+                if request.url.path in {"/api/chat", "/api/speech", "/api/voice", "/api/call", "/api/feedback"} and request.method == "POST":
+                    usage.admit(speech=request.url.path in {"/api/speech", "/api/voice", "/api/call"})
                 response = await call_next(request)
             except HTTPException as error:
                 response = JSONResponse({"detail": error.detail}, status_code=error.status_code)
@@ -193,12 +235,14 @@ def create_app(settings=None, records=None, provider=None):
 
     @router.get("/health")
     async def health():
-        return {"status": "ok", "mode": settings.provider, "demo": settings.demo,
+        return {"status": "ok", "mode": settings.provider if usage.available() else "faq_fallback", "demo": settings.demo,
                 "staff_notifications": False, "version": "1.1.0", "profile": settings.profile,
                 "reservation_testing": settings.profile == "local" and settings.reservation_mode == "synthetic",
                 "sample_knowledge": settings.demo or settings.sample_knowledge,
-                "speech_enabled": settings.speech_enabled and settings.provider == "openai",
-                "languages": LANGUAGES if settings.multilingual and settings.provider == "openai" else {"en": "English"}}
+                "realtime_enabled": settings.realtime_enabled and settings.profile == "local" and not settings.local_budget_cutoff,
+                "speech_enabled": settings.speech_enabled and settings.provider == "openai" and call_available(),
+                "service_notice": budget_notice if settings.provider == "openai" and not call_available() else "",
+                "languages": LANGUAGES if settings.multilingual and settings.provider == "openai" and usage.available() else {"en": "English"}}
 
     @router.get("/ready")
     async def ready():
@@ -207,6 +251,111 @@ def create_app(settings=None, records=None, provider=None):
         if settings.profile == "public" and not approved:
             raise HTTPException(503, "Approved property knowledge is missing")
         return {"status": "ready", "sample_knowledge": settings.demo or settings.sample_knowledge}
+
+    @router.post("/realtime")
+    async def realtime(request: Request, guide: str = 'desk', locale: str = 'auto', session_id: UUID | None = None):
+        if not (settings.realtime_enabled and settings.profile == 'local' and not settings.local_budget_cutoff
+                and settings.speech_enabled and settings.provider == 'openai'):
+            raise HTTPException(503, 'Realtime calling is not enabled for this profile')
+        if request.headers.get('origin') != str(request.base_url).rstrip('/'):
+            raise HTTPException(403, 'Unexpected call origin')
+        if guide not in {'desk', 'pool', 'trail'} or (locale != 'auto' and locale not in LANGUAGES):
+            raise HTTPException(422, 'Invalid call configuration')
+        if request.headers.get('content-type', '').split(';')[0] != 'application/sdp':
+            raise HTTPException(415, 'Use application/sdp')
+        offer = (await request.body()).decode('utf-8', errors='replace')
+        if not offer.startswith('v=0'):
+            raise HTTPException(422, 'Invalid call offer')
+        try:
+            session = sessions.get(session_id)
+        except OverflowError:
+            raise HTTPException(503, 'Conversation capacity reached') from None
+        async with session.lock:
+            answer = await negotiate(settings, usage, offer, session_config(settings, service.retriever, app_events, guide, locale, session=session))
+            session.voice_token = secrets.token_urlsafe(32)
+        return Response(answer, media_type='application/sdp', headers={'Cache-Control': 'no-store',
+                        'X-Conversation-ID': session.id, 'X-Voice-Token': session.voice_token})
+
+    @router.post('/conversations')
+    async def create_conversation():
+        usage.admit()
+        try:
+            return snapshot(sessions.get())
+        except OverflowError:
+            raise HTTPException(503, 'Conversation capacity reached') from None
+
+    def voice_session(session_id, authorization):
+        sessions.prune()
+        session = sessions.items.get(str(session_id))
+        if (settings.profile != 'local' or session is None or not session.voice_token
+                or not hmac.compare_digest(authorization, 'Bearer ' + session.voice_token)):
+            raise HTTPException(401, 'Voice session authorization required')
+        return session
+
+    @router.post('/conversations/{session_id}/voice-turn')
+    async def voice_turn(session_id: UUID, body: VoiceTurn, authorization: str = Header(default='')):
+        session = voice_session(session_id, authorization)
+        usage.admit()
+        async with session.lock:
+            now = time.monotonic()
+            session.voice_requests[:] = [t for t in session.voice_requests if now - t < 60]
+            if len(session.voice_requests) >= 60:
+                raise HTTPException(429, 'Too many voice turns')
+            session.voice_requests.append(now)
+            if body.turn_id not in session.voice_turns:
+                # Derive memory from validated application logic, never accept an assistant transcript as facts.
+                await fallback_service.chat(session, body.transcript)
+                session.history[-1]['content'] = '[Voice turn: spoken wording omitted; do not assume a full reply was heard]'
+                session.voice_turns[body.turn_id] = True
+                while len(session.voice_turns) > 100:
+                    del session.voice_turns[next(iter(session.voice_turns))]
+            session.touched = time.monotonic()
+            return {'session_id': session.id, 'revision': session.revision}
+
+    @router.post('/conversations/{session_id}/tools')
+    async def run_tool(session_id: UUID, body: ToolCall, authorization: str = Header(default='')):
+        session = voice_session(session_id, authorization)
+        usage.admit()
+        return {'ok': True, 'result': await tool_executor.execute(session, body)}
+
+    @router.get('/diagnostics')
+    async def diagnostics():
+        if settings.profile != 'local':
+            raise HTTPException(404, 'Not found')
+        return {'metrics': dict(metrics), 'active_sessions': len(sessions.items),
+                'contains_guest_text': False, 'live_voice_targets_verified': False}
+
+    @router.post("/call")
+    async def call_turn(request: Request, session_id: UUID | None = None, guide: str = 'desk', locale: str = 'auto'):
+        if not settings.speech_enabled or settings.provider != 'openai':
+            raise HTTPException(503, 'Live calling is not configured')
+        if not call_available():
+            raise HTTPException(503, budget_notice)
+        if guide not in {'desk', 'pool', 'trail'} or (locale != 'auto' and locale not in LANGUAGES):
+            raise HTTPException(422, 'Invalid call configuration')
+        if request.headers.get('content-type', '').split(';')[0] != 'audio/wav':
+            raise HTTPException(415, 'Use audio/wav')
+        data = await request.body()
+        def event(kind, **values):
+            return json.dumps({'type': kind, **values}) + '\n'
+        async def stream():
+            try:
+                text = await transcribe(settings, usage, data, locale)
+                result = await execute_chat(ChatRequest(message=text, session_id=session_id, locale=locale, guide=guide), authorization='',
+                                            fast_local=fast_voice_question(text, locale))
+                yield event('reply', reply=result.model_dump(mode='json'), transcript=text)
+                async for chunk in stream_speech(settings, usage, result.reply, guide):
+                    yield event('audio', pcm=base64.b64encode(chunk).decode('ascii'), rate=24000)
+                yield event('done')
+            except asyncio.CancelledError:
+                raise
+            except HTTPException as error:
+                yield event('error', message=budget_notice if not call_available() else str(error.detail))
+            except Exception:
+                logger.warning('Call turn unavailable')
+                yield event('error', message='The call could not finish. Try again or use text chat.')
+        return StreamingResponse(stream(), media_type='application/x-ndjson',
+                                 headers={'Cache-Control': 'no-store', 'X-Accel-Buffering': 'no'})
 
     @router.post("/voice")
     async def voice(body: VoiceRequest):
@@ -232,65 +381,42 @@ def create_app(settings=None, records=None, provider=None):
 
     @router.get("/knowledge")
     async def knowledge():
-        return [{"topic": r.topic, "category": r.category, "answer": r.answer, "status": r.status}
+        return [r.model_dump(mode="json")
                 for r in service.retriever.records if r.status in {"approved", "demo_only"}
                 and (r.expires is None or r.expires >= date.today()) and not injection_attempt(r.answer)]
 
+    @router.get("/activities")
+    async def activities():
+        venues = {r.id for r in available_venues(service.retriever)}
+        return {"timezone": settings.resort_timezone, "today": local_day(settings).isoformat(),
+                "events": [e for e in app_events if e['venue_id'] in venues]}
+
+    @router.post("/feedback")
+    async def feedback(body: FeedbackRequest):
+        session = sessions.items.get(str(body.session_id))
+        item = session.feedback.get(str(body.reply_id)) if session else None
+        if item is None:
+            raise HTTPException(404, "Reply not available in this session")
+        if item['flagged']:
+            raise HTTPException(409, "Feedback already recorded")
+        item['flagged'] = True
+        for record_id in item['sources'] or ['unanswered']:
+            feedback_counts[(record_id, body.reason)] += 1
+        return {"recorded": True}
+
+    @router.get("/feedback/aggregate")
+    async def feedback_aggregate():
+        if settings.profile != 'local':
+            raise HTTPException(404, "Not found")
+        return [{"record_id": key[0], "reason": key[1], "count": count}
+                for key, count in sorted(feedback_counts.items())]
+
     @router.post("/chat", response_model=ChatResponse)
     async def chat(body: ChatRequest, authorization: str = Header(default="")):
-        if body.locale != "auto" and body.locale not in LANGUAGES:
-            raise HTTPException(422, "Unsupported language")
-        reservation_context = None
-        if authorization:
-            if verification is None:
-                raise HTTPException(401, "Reservation verification required or expired.")
-            hotel, reservation_id = verification.authorized(authorization)
-            row = await asyncio.to_thread(verification.providers[hotel].by_id, reservation_id)
-            if not row:
-                raise HTTPException(401, "Reservation verification required or expired.")
-            reservation_context = {"hotel": HOTELS[hotel], "provider": hotel,
-                                   **{key: row[key] for key in
-                                      ("check_in", "check_out", "room_type", "guests", "status")}}
-        try:
-            session = sessions.get(body.session_id)
-        except OverflowError:
-            raise HTTPException(503, "Conversation capacity reached. Please try later.") from None
-        async with session.lock:
-            now = time.monotonic()
-            session.requests[:] = [t for t in session.requests if now - t < 60]
-            if len(session.requests) >= 30:
-                raise HTTPException(429, "Please wait a minute before sending more messages.")
-            session.requests.append(now)
-            detected, query = "en", body.message
-            multilingual = settings.multilingual and settings.provider == "openai"
-            if multilingual and not sensitive(body.message) and not injection_attempt(body.message):
-                try:
-                    detected, query = await route(service.provider, body.message)
-                except ProviderUnavailable:
-                    raise HTTPException(503, "Language service unavailable. Please retry.") from None
-            elif body.locale not in {"auto", "en"}:
-                raise HTTPException(503, "This local provider supports English only.")
-            locale = detected if body.locale == "auto" else body.locale
-            result = await service.chat(session, query, reservation_context)
-            result.detected_locale, result.reply_locale = detected, locale
-            if locale != "en":
-                try:
-                    result.reply = UNKNOWN[locale] if result.decision.category in {"unknown", "repeated_failure"} and not result.sources else await translate(service.provider, result.reply, locale)
-                    if result.handoff:
-                        result.handoff.summary = await translate(service.provider, result.handoff.summary, locale)
-                        result.handoff.next_step = await translate(service.provider, result.handoff.next_step, locale)
-                    result.suggestions = []
-                except ProviderUnavailable:
-                    result.reply = UNKNOWN[locale]
-                    result.sources, result.handoff, result.suggestions = [], None, []
-                    result.status, result.mode = "fallback", "faq_fallback"
-            session.touched = time.monotonic()
-            metrics["requests"] += 1
-            metrics[result.decision.level] += 1
-            metrics[result.mode] += 1
-            metrics["sourced"] += bool(result.sources)
-            metrics["latency_ms_total"] += round((time.monotonic() - now) * 1000)
-            return result
+        return await execute_chat(body, authorization)
+
+    async def execute_chat(body, authorization="", fast_local=False):
+        return await engine.reply(body, authorization, fast_local)
 
     @router.delete("/sessions/{session_id}", status_code=204)
     async def reset(session_id: UUID):

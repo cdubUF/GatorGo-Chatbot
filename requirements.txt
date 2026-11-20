@@ -5,3 +5,5 @@ pydantic==2.12.3
 python-dotenv==1.2.1
 pytest==8.4.2
 ruff==0.14.3
+
+tzdata==2026.6

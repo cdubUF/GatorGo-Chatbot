@@ -2,8 +2,146 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "type": "array",
   "items": {
+    "$defs": {
+      "HoursException": {
+        "additionalProperties": false,
+        "properties": {
+          "date": {
+            "format": "date",
+            "title": "Date",
+            "type": "string"
+          },
+          "closed": {
+            "default": false,
+            "title": "Closed",
+            "type": "boolean"
+          },
+          "hours": {
+            "default": "",
+            "maxLength": 200,
+            "title": "Hours",
+            "type": "string"
+          },
+          "note": {
+            "default": "",
+            "maxLength": 300,
+            "title": "Note",
+            "type": "string"
+          }
+        },
+        "required": [
+          "date"
+        ],
+        "title": "HoursException",
+        "type": "object"
+      },
+      "Venue": {
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Name",
+            "type": "string"
+          },
+          "kind": {
+            "maxLength": 40,
+            "title": "Kind",
+            "type": "string"
+          },
+          "location": {
+            "default": "",
+            "maxLength": 300,
+            "title": "Location",
+            "type": "string"
+          },
+          "hours": {
+            "default": "",
+            "maxLength": 200,
+            "title": "Hours",
+            "type": "string"
+          },
+          "weekly_hours": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "propertyNames": {
+              "enum": [
+                "monday",
+                "tuesday",
+                "wednesday",
+                "thursday",
+                "friday",
+                "saturday",
+                "sunday"
+              ]
+            },
+            "title": "Weekly Hours",
+            "type": "object"
+          },
+          "menu_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Menu Url"
+          },
+          "pin": {
+            "anyOf": [
+              {
+                "maxItems": 2,
+                "minItems": 2,
+                "prefixItems": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ],
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Pin"
+          },
+          "exceptions": {
+            "items": {
+              "$ref": "#/$defs/HoursException"
+            },
+            "title": "Exceptions",
+            "type": "array"
+          }
+        },
+        "required": [
+          "name",
+          "kind"
+        ],
+        "title": "Venue",
+        "type": "object"
+      }
+    },
     "additionalProperties": false,
     "properties": {
+      "venue": {
+        "anyOf": [
+          {
+            "$ref": "#/$defs/Venue"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
       "id": {
         "pattern": "^[a-z0-9_-]{1,64}$",
         "title": "Id",

@@ -1,0 +1,9 @@
+/* Each row is a mood; columns are closed/open mouth. Audio remains in charge of mouth-open. */
+.safari-concierge #guideArt[data-expression]:not([data-expression="neutral"]){
+  background-image:url('assets/gator-expressions.png');background-size:200% 300%;
+  background-position:0 var(--expression-row);position:relative;
+}
+.safari-concierge #guideArt[data-expression="cheerful"]{--expression-row:0%}
+.safari-concierge #guideArt[data-expression="curious"]{--expression-row:50%}
+.safari-concierge #guideArt[data-expression="empathetic"]{--expression-row:100%}
+.safari-concierge #guideArt[data-expression]:not([data-expression="neutral"]).mouth-open{background-position:100% var(--expression-row)}

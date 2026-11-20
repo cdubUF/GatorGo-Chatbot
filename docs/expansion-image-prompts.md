@@ -27,3 +27,7 @@ Speech integration was checked against the [official OpenAI transcription guide]
 Built-in image generation produced `frontend/assets/gator-blink.png` by editing the existing 3x2 atlas: preserve exact positions, costumes and mouth poses; change all eyes to closed eyelids; transparent background. Original output: exec-93fef628-87e8-4b4c-86f5-c723e230643d.png.
 
 Built-in image generation produced `frontend/assets/outdoor-desk.png`: photorealistic honey-teak outdoor cabana desk, transparent upper space, blue laptop on left, pineapple drink and hibiscus on right, straight-on seated guest view, no character or text. Original output: exec-31e124e6-b0e9-4b97-b974-9202a7ae5902.png. Originals remain in the Codex generated_images directory.
+
+
+## Poolside guide backdrop (twenty-ticket expansion)
+Built-in image generation; final asset `frontend/assets/poolside-cabana.png`. Prompt: photorealistic wide sunny poolside cabana, blue/green accents, white curtains, teak roof, turquoise lagoon, palms, blue-cushioned loungers, open center foreground for existing sprite/desk layers; no people, character, desk, or lettering. Original generated output `exec-48a89158-40e8-4b81-bef2-5cd6a32f1ebf.png` retained in the Codex generated_images directory.

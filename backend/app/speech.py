@@ -4,7 +4,10 @@ import io
 import wave
 
 import httpx
+
 from fastapi import HTTPException
+
+from .personalities import PROFILES
 
 MAX_AUDIO_BYTES = 4 * 1024 * 1024
 MAX_RECORDING_SECONDS = 30
@@ -58,10 +61,28 @@ async def synthesize(settings, usage, text, guide, transport=None):
                     headers={'Authorization': f'Bearer {settings.api_key}'},
                     json={'model': settings.voice_model, 'voice': 'marin' if guide == 'desk' else 'cedar',
                           'input': text, 'response_format': 'wav',
-                          'instructions': 'You are a friendly resort concierge. Speak naturally and warmly, with a relaxed conversational pace and gentle enthusiasm. Read the supplied text exactly in its language.'})
+                          'instructions': PROFILES.get(guide, PROFILES['desk']) + ' Read the supplied text exactly in its language, warmly and naturally.'})
                 response.raise_for_status()
                 if not response.content.startswith(b'RIFF') or len(response.content) > 16 * 1024 * 1024:
                     raise ValueError()
                 return response.content
     except (httpx.HTTPError, TimeoutError, ValueError):
         raise HTTPException(503, 'AI voice unavailable. Your answer is still in chat.') from None
+
+async def stream_speech(settings, usage, text, guide, transport=None):
+    """Yield provider PCM as it arrives; never buffer the whole spoken reply."""
+    usage.reserve(speech=True)
+    async with asyncio.timeout(settings.provider_timeout):
+        async with httpx.AsyncClient(timeout=settings.provider_timeout, transport=transport) as client:
+            async with client.stream('POST', 'https://api.openai.com/v1/audio/speech',
+                headers={'Authorization': f'Bearer {settings.api_key}'},
+                json={'model': settings.voice_model, 'voice': 'marin' if guide == 'desk' else 'cedar',
+                      'input': text[:4000], 'response_format': 'pcm',
+                      'instructions': PROFILES.get(guide, PROFILES['desk']) + ' Read the supplied text exactly in its language, warmly and naturally.'}) as response:
+                response.raise_for_status()
+                size = 0
+                async for chunk in response.aiter_bytes(2400):
+                    size += len(chunk)
+                    if size > 16 * 1024 * 1024:
+                        raise ValueError('Audio limit exceeded')
+                    yield chunk

@@ -1,0 +1,128 @@
+[
+  {
+    "id": "palm-grill",
+    "category": "restaurant",
+    "topic": "Palm Grill",
+    "answer": "Palm Grill. Located beside the lagoon, on the east terrace. Hours: 11:00 AM - 9:00 PM.",
+    "source": "Fictional GatorGo sample venue directory, November 2026",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "palm grill",
+      "restaurant"
+    ],
+    "venue": {
+      "name": "Palm Grill",
+      "kind": "restaurant",
+      "location": "Located beside the lagoon, on the east terrace.",
+      "hours": "11:00 AM - 9:00 PM",
+      "pin": [
+        72,
+        55
+      ],
+      "exceptions": []
+    }
+  },
+  {
+    "id": "blue-heron",
+    "category": "restaurant",
+    "topic": "Blue Heron Cafe",
+    "answer": "Blue Heron Cafe. Located in the lobby courtyard, ground floor. Hours: 7:00 AM - 3:00 PM.",
+    "source": "Fictional GatorGo sample venue directory, November 2026",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "blue heron cafe",
+      "restaurant"
+    ],
+    "venue": {
+      "name": "Blue Heron Cafe",
+      "kind": "restaurant",
+      "location": "Located in the lobby courtyard, ground floor.",
+      "hours": "7:00 AM - 3:00 PM",
+      "pin": [
+        32,
+        32
+      ],
+      "exceptions": []
+    }
+  },
+  {
+    "id": "lagoon-pool",
+    "category": "pool",
+    "topic": "Lagoon Pool",
+    "answer": "Lagoon Pool. Located in the central garden, beside the cabanas. Hours: 8:00 AM - 8:00 PM.",
+    "source": "Fictional GatorGo sample venue directory, November 2026",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "lagoon pool",
+      "pool"
+    ],
+    "venue": {
+      "name": "Lagoon Pool",
+      "kind": "pool",
+      "location": "Located in the central garden, beside the cabanas.",
+      "hours": "8:00 AM - 8:00 PM",
+      "pin": [
+        51,
+        57
+      ],
+      "exceptions": [
+        {
+          "date": "2026-11-19",
+          "closed": true,
+          "note": "Sample scheduled maintenance closure"
+        }
+      ]
+    }
+  },
+  {
+    "id": "sunset-lounge",
+    "category": "restaurant",
+    "topic": "Sunset Lounge",
+    "answer": "Sunset Lounge. Located on the west terrace, ground floor. Hours unconfirmed.",
+    "source": "Fictional GatorGo sample venue directory, November 2026",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "sunset lounge",
+      "restaurant"
+    ],
+    "venue": {
+      "name": "Sunset Lounge",
+      "kind": "restaurant",
+      "location": "Located on the west terrace, ground floor.",
+      "hours": "",
+      "pin": [
+        20,
+        62
+      ],
+      "exceptions": []
+    }
+  },
+  {
+    "id": "nature-walk",
+    "category": "trail",
+    "topic": "Nature Walk",
+    "answer": "Nature Walk. Located at the north garden gate. Hours: 7:00 AM - 6:00 PM.",
+    "source": "Fictional GatorGo sample venue directory, November 2026",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "nature walk",
+      "trail"
+    ],
+    "venue": {
+      "name": "Nature Walk",
+      "kind": "trail",
+      "location": "Located at the north garden gate.",
+      "hours": "7:00 AM - 6:00 PM",
+      "pin": [
+        70,
+        22
+      ],
+      "exceptions": []
+    }
+  }
+]

@@ -1,0 +1,11 @@
+ticket,title,status,evidence
+1,Use the Palm House Gator across guest screens,Implemented and verified,"Consistent clean four-frame olive safari atlas on welcome, conversation, preview and map head crop; screenshot review."
+2,Rebuild the welcome screen around one voice action,Implemented and verified,Welcome Talk to Gator starts live call; typed welcome form and three starter topics work; realtime browser test.
+3,Keep live replies and call controls together,Implemented and verified,Realtime input transcription and output events deduplicated by turn; ordered late transcription; real mute/unmute and end; 10 live provider turns.
+4,Connect concierge answers to selected map venues,Implemented and verified,"Illustrated map with selected venue pin, matching photo tile, title, location, source and Ask Gator action; browser map tests."
+5,Carry the selected venue into a follow-up,Implemented and verified,Map Ask Gator preserves earlier turns and establishes Palm Grill for opening-hours follow-up; browser integration test.
+6,Add a Settings tab to guest navigation,Implemented and verified,"Settings reachable from welcome, concierge and map; closing restores draft, transcript and map selection; browser tests."
+7,"Add Lagoon, Palm House and Coastal Deco themes",Implemented and verified,Three independently selectable artwork/accent themes; shared mascot and layout; browser tests.
+8,"Support Light, Dark and System modes",Implemented and verified,Light/Dark/System affect guest surfaces; live matchMedia change and selection tests.
+9,Show and remember appearance preferences,Implemented and verified,Validated localStorage preferences only; visible checkmarks plus pressed state; refresh restoration test.
+10,Verify themes on narrow screens and with keyboard input,Implemented and verified,"Six phone theme/mode combinations; keyboard Enter selection and visible focus; composer, call strip, map details reachable without horizontal scrolling."

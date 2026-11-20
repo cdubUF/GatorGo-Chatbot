@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "check": "node --check frontend/app.js && node --check frontend/api.js && node --check frontend/staff.js && node --check frontend/guest.js",
+    "check": "node --check frontend/app.js && node --check frontend/api.js && node --check frontend/staff.js && node --check frontend/guest.js && node --check frontend/call.js && node --check frontend/realtime.js && node --check frontend/conversation.js && node --check frontend/conversation-state.js && node --check frontend/expressions.js && node --check frontend/captions.js && node --check frontend/resort.js && node --check frontend/knowledge.js",
     "test:ui": "playwright test"
   },
   "devDependencies": {

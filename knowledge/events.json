@@ -1,0 +1,32 @@
+[
+  {
+    "id": "sunrise-stretch",
+    "title": "Sunrise Stretch",
+    "venue_id": "lagoon-pool",
+    "date": "2026-11-18",
+    "start_time": "08:30",
+    "description": "A gentle guided stretch by the pool.",
+    "source": "Fictional GatorGo activities calendar",
+    "status": "demo_only"
+  },
+  {
+    "id": "garden-discovery",
+    "title": "Garden Discovery Walk",
+    "venue_id": "nature-walk",
+    "date": "2026-11-18",
+    "start_time": "10:00",
+    "description": "Explore the sample resort garden with a guide.",
+    "source": "Fictional GatorGo activities calendar",
+    "status": "demo_only"
+  },
+  {
+    "id": "sunset-music",
+    "title": "Sunset Acoustic Music",
+    "venue_id": "sunset-lounge",
+    "date": "2026-11-19",
+    "start_time": "17:30",
+    "description": "An acoustic set on the west terrace.",
+    "source": "Fictional GatorGo activities calendar",
+    "status": "demo_only"
+  }
+]

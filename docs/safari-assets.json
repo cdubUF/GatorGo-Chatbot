@@ -1,0 +1,23 @@
+{
+  "tool": "built-in image_gen",
+  "assets": [
+    {
+      "path": "frontend/assets/safari-lobby.png",
+      "prompt": "Create a production website background asset, wide landscape 3:2, no text, no UI, no logos, no people or animals. An elegant Florida tropical resort concierge lobby matching a warm safari resort aesthetic: cream plaster arches, sage olive walls, rattan pendant lamps, leafy palms, glass doors looking onto a turquoise pool and terracotta-roof villas, warm natural daylight, high quality 3D editorial realism. Empty center foreground for an animated alligator concierge composited later. No desk in foreground; the desk is a separate existing layer. Architectural scene fills the whole frame. Save the generated asset for use in the local GatorGo project."
+    },
+    {
+      "path": "frontend/assets/resort-map.png",
+      "prompt": "Create a detailed illustrated sample resort map asset for a website, 3:2 landscape, painterly aerial isometric resort illustration. NO TEXT NO LABELS NO PINS NO UI. Entire image is map. Florida tropical resort with terracotta roofs, cream buildings, lush palms and winding cream paths. Main lobby building top center at x50% y23%; nature trail upper left x20% y32%; large turquoise lagoon pool center x52% y57%; open air restaurant with terracotta roof east of pool at x81% y48%; small cafe lower left x24% y75%; sunset lounge on waterfront lower right x78% y79%; turquoise coastline along bottom. Warm cream, olive green, clear light blue. Detailed attractive resort brochure illustration. Must be entirely fictional, not a navigation map."
+    },
+    {
+      "path": "frontend/assets/palm-house-gator-clean.png",
+      "source_reference": "Four user-supplied welcome, conversation, map and settings mockups; original atlas retained as palm-house-gator.png",
+      "prompt": "Production animation sprite atlas for GatorGo. The four attached UI mockups are CHARACTER STYLE REFERENCES only. Extract/recreate the SAME smiling olive-green alligator concierge character, cream safari shirt, tan safari hat, amber eyes, friendly facial proportions from references. NO UI, NO SCENE, NO DESK, NO LETTERING. Transparent background. Exactly FOUR equally sized aligned cells in a 2 by 2 grid, no borders. Each cell contains identical waist-up character straight-on, both hands low at waist, entire hat visible with generous transparent padding. IDENTICAL camera, pose, proportions and position in all cells for seamless animation. TOP LEFT: eyes open, mouth gently closed smile. TOP RIGHT: eyes open mouth open speaking. BOTTOM LEFT: eyes fully closed blinking, mouth closed smile. BOTTOM RIGHT: eyes fully closed blinking, mouth open speaking. Same character as user mockups, detailed stylized 3D realism, olive green scales, beige safari uniform. Grid is square with each character in a square cell; perfectly aligned.",
+      "final_edit_prompt": "Clean up this animation atlas. Preserve all FOUR characters, exact 2x2 cell alignment, positions, proportions, expressions and uniform unchanged. Remove ALL colored speckles, all red/yellow/grey halos, shadows and noise outside the character silhouettes. Everything outside the gators must be truly transparent alpha zero, with clean tight smooth antialiased edges. Do not add anything. Exact same image dimensions and four frame grid. Professional clean PNG game sprite transparency."
+    },
+    {
+      "path": "frontend/assets/venue-photos.png",
+      "prompt": "A production image atlas of FOUR distinct Florida tropical resort venue photos in a seamless 2x2 grid, equal square cells, no gaps, no text, no borders, no people. Warm luxurious natural daylight, cream and olive palette, terracotta roofing, photorealistic 3D resort. Top left: open-air Palm Grill restaurant terrace with set dining tables by turquoise pool. Top right: cozy Blue Heron Cafe with coffee cups, rattan chairs and cream arched windows. Bottom left: Sunset Lounge waterfront pavilion with relaxed seating at warm sunset. Bottom right: Nature Walk lush palm garden winding pathway with flowering tropical plants. Each tile independently composed, no objects cross between cells."
+    }
+  ]
+}

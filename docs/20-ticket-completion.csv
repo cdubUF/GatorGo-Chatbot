@@ -1,0 +1,21 @@
+ticket,title,status,evidence
+1,Validate live speech-to-speech conversation on the demo laptop,Implemented; current physical-device recheck not performed,Current live-provider and simulated-device checks pass. Original no-user-transcript criterion superseded by new concierge ticket 3. Hands-free interruption is opt-in; default protects full replies.
+2,Give each resort venue a searchable guest card,Complete,Backend and browser acceptance contracts; see 20-ticket-verification.md
+3,Open the underlying knowledge record from a chat answer,Complete,Backend and browser acceptance contracts; see 20-ticket-verification.md
+4,Clarify ambiguous resort questions,Complete,Backend and browser acceptance contracts; see 20-ticket-verification.md
+5,Carry the selected venue into follow-up questions,Complete,Backend and browser acceptance contracts; see 20-ticket-verification.md
+6,Handle date-specific hours and temporary closures,Complete,Backend and browser acceptance contracts; see 20-ticket-verification.md
+7,Show a resort map beside a location answer,Complete,Backend and browser acceptance contracts; see 20-ticket-verification.md
+8,Build a sample resort activities calendar,Complete,Backend and browser acceptance contracts; see 20-ticket-verification.md
+9,Let guests save activities during their session,Complete,Backend and browser acceptance contracts; see 20-ticket-verification.md
+10,Offer the next question for the current topic,Complete,Backend and browser acceptance contracts; see 20-ticket-verification.md
+11,Add optional on-stage captions for spoken replies,Complete,Backend and browser acceptance contracts; see 20-ticket-verification.md
+12,Recover hands-free mode after a microphone disconnect,Complete,Backend and browser acceptance contracts; see 20-ticket-verification.md
+13,Add a chat drawer for small screens,Complete,Backend and browser acceptance contracts; see 20-ticket-verification.md
+14,Let the guest reposition the local camera preview,Complete,Backend and browser acceptance contracts; see 20-ticket-verification.md
+15,Give each guide its own welcome and first questions,Complete,Backend and browser acceptance contracts; see 20-ticket-verification.md
+16,Add a poolside cabana scene for Poolside Gator,Complete,Backend and browser acceptance contracts; see 20-ticket-verification.md
+17,Let guests copy the staff handoff summary,Complete,Backend and browser acceptance contracts; see 20-ticket-verification.md
+18,Capture why an answer missed the mark,Complete,Backend and browser acceptance contracts; see 20-ticket-verification.md
+19,Report coverage gaps from unanswered questions,Complete,Backend and browser acceptance contracts; see 20-ticket-verification.md
+20,Measure the delay from end of speech to first reply audio,Complete,"Latest safari build: 10 live-provider turns, 10 full playbacks, 10 guest transcripts; median 1263.4 ms, slowest 1466.3 ms. Generated input, browser output estimate; not physical acoustic timing. artifacts/safari-ten-turn-voice.json"

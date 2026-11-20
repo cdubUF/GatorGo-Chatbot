@@ -1,5 +1,7 @@
+import {conversationId, adoptConversation, resetConversation, flushConversation} from './conversation.js';
+import {enhanceReply, enhanceSpokenReply, addCopySummary, resetPlans} from './resort.js';
 import {request} from './api.js';
-import {avatarPath, setThinking, speakReply, stopPlayback, cancelRecording, releaseMedia, replyLocale, configureMedia, conversationFailed} from './guest.js';
+import {avatarPath, guideProfile, setThinking, speakReply, stopPlayback, cancelRecording, releaseMedia, replyLocale, configureMedia, conversationFailed} from './guest.js';
 
 const messages = document.querySelector('#messages');
 const form = document.querySelector('#chatForm');
@@ -7,7 +9,7 @@ const input = document.querySelector('#messageInput');
 const chips = document.querySelector('#quickReplies');
 const status = document.querySelector('#chatStatus');
 const send = document.querySelector('#sendBtn');
-let sessionId = null, busy = false, epoch = 0, controller;
+let busy = false, epoch = 0, controller;
 let config = {mode: 'unknown', demo: false};
 let activeHandoff = null;
 let reservationGeneration = 0, reservationStarted = false, reservationToken = null;
@@ -171,12 +173,13 @@ function handoffCard(body, handoff) {
   const card = element('section', 'handoff-card');
   const label = element('strong', '', `${handoff.urgency.toUpperCase()} · Summary prepared`);
   card.append(label, element('p', '', handoff.summary), element('p', '', handoff.next_step));
+  addCopySummary(card, handoff);
   if (!config.demo) { body.append(card); return; }
   card.append(element('p', 'small', 'Only this summary goes to the local demo queue with your permission. It does not notify real staff.'));
   const action = element('button', 'outline-button', 'Allow demo queue submission');
   const decline = element('button', 'outline-button', 'Keep private');
   card.append(action, decline);
-  const cardSession = sessionId;
+  const cardSession = conversationId();
   async function consent(allowed) {
     action.disabled = decline.disabled = true;
     try {
@@ -212,23 +215,23 @@ async function submit(raw, retry = false) {
   if (!retry) bubble(text, 'user');
   input.value = '';
   setBusy(true);
+  document.dispatchEvent(new CustomEvent('concierge-reaction', {detail: {role: 'user', text}}));
   controller = new AbortController();
   try {
-    const result = await request('/chat', {method: 'POST', signal: controller.signal,
-      token: reservationToken, body: {session_id: sessionId, message: text, locale: replyLocale()}});
+    await flushConversation();
     if (turn !== epoch) return;
-    sessionId = result.session_id;
+    const result = await request('/chat', {method: 'POST', signal: controller.signal,
+      token: reservationToken, body: {session_id: conversationId(), message: text, locale: replyLocale(), guide: avatarPath()}});
+    if (turn !== epoch) return;
+    adoptConversation(result.session_id);
     config = {...config, mode: result.mode, demo: result.demo};
     showMode(result.mode, result.demo);
     const body = bubble(result.reply);
     body.querySelector('.bubble').dir = result.reply_locale === 'ar' ? 'rtl' : 'auto';
     body.querySelector('.bubble').lang = result.reply_locale || 'en';
+    document.dispatchEvent(new CustomEvent('concierge-reaction', {detail: {role: 'agent', text: result.reply, decision: result.decision}}));
     speakReply(result.reply, result.reply_locale || 'en');
-    if (result.sources?.length) {
-      body.append(element('p', 'source-note', 'Sources: ' + result.sources.map(s =>
-        s.status === 'demo_only' ? `${s.topic} [${s.id}] · project test data` :
-          `${s.topic} [${s.id}] · ${s.status === 'general' ? 'general guidance' : s.status} · ${s.source}`).join('; ')));
-    }
+    enhanceReply(body, result);
     if (result.handoff) handoffCard(body, result.handoff);
     suggestions(result.suggestions);
   } catch (error) {
@@ -240,6 +243,7 @@ async function submit(raw, retry = false) {
     }
     showMode('offline');
     conversationFailed();
+    document.dispatchEvent(new CustomEvent('concierge-reaction', {detail: {role: 'agent', text: 'Service unavailable'}}));
     const body = bubble('The service is unavailable. Please retry or contact a hotel employee directly. No staff has been contacted.');
     const retryButton = element('button', 'outline-button', 'Retry message');
     retryButton.addEventListener('click', () => { retryButton.disabled = true; submit(text, true); });
@@ -262,20 +266,21 @@ function setView(view) {
   document.querySelector('#composerArea').hidden = reservation;
   document.querySelector('#reservationView').hidden = !reservation;
   const intent = document.querySelector('#reservationIntent');
-  intent.textContent = reservationIntent; intent.hidden = !reservationIntent;
+  if (intent) {intent.textContent = reservationIntent; intent.hidden = !reservationIntent;}
   if (reservation && !reservationStarted) reservationLookup();
   if (!reservation) input.focus();
 }
 
 async function reset() {
+  resetPlans(); voiceMessages.clear(); voiceEvidence.clear();
   epoch += 1;
   reservationGeneration += 1; reservationStarted = false; reservationIntent = ''; disconnectReservation(); reservationMessages.replaceChildren();
   setView('chat');
   controller?.abort();
-  const oldSession = sessionId;
-  sessionId = null;
-  invalidateHandoff(); messages.replaceChildren(); setBusy(false); suggestions();
-  bubble("Welcome to Gator Go Resort & Spa! I'm your virtual AI concierge. I can help answer questions, but I can't make bookings or contact staff. Please don't enter personal details.");
+  const oldSession = conversationId();
+  resetConversation();
+  invalidateHandoff(); messages.replaceChildren(); setBusy(false); suggestions(guideProfile().questions);
+  bubble(guideProfile().greeting + " I am an AI concierge. No bookings or staff notifications. What is your trip ID? For this demo, enter demo. Please avoid real personal details.");
   input.focus();
   if (oldSession) {
     try { await request(`/sessions/${oldSession}`, {method: 'DELETE'}); }
@@ -283,6 +288,41 @@ async function reset() {
   }
 }
 
+const voiceMessages = new Map(), voiceEvidence = new Map();
+function showVoiceEvidence(id, body) {
+  const result = voiceEvidence.get(id);
+  if (!result) return;
+  let details = body.querySelector('.voice-evidence');
+  if (!details) {details = element('div', 'voice-evidence'); body.append(details);}
+  details.replaceChildren();
+  enhanceReply(details, result);
+  const handoff = result.handoff || (result.requires_guest_review ? result : null);
+  if (handoff) handoffCard(details, handoff);
+}
+document.addEventListener('voice-evidence', event => {
+  const {id, result} = event.detail;
+  if (!id || !result) return;
+  const previous = voiceEvidence.get(id) || {};
+  voiceEvidence.set(id, {...previous,...result,
+    sources:[...new Map([...(previous.sources || []),...(result.sources || [])].map(s=>[s.id,s])).values()]});
+  while (voiceEvidence.size > 100) voiceEvidence.delete(voiceEvidence.keys().next().value);
+  const body = voiceMessages.get(`${id}-agent`);
+  if (body) showVoiceEvidence(id, body);
+});
+document.addEventListener('conversation-sync-error', () => {
+  status.textContent = 'Conversation memory is waiting to sync. Your next typed message will retry it.';
+});
+document.addEventListener('voice-message',event=>{
+ const {id,role,text}=event.detail;if(!id||!text||!['user','agent'].includes(role))return;
+ const key=`${id}-${role}`;let body=voiceMessages.get(key);
+ if(!body){body=bubble(text,role);body.parentElement.dataset.voiceTurn=id;voiceMessages.set(key,body);
+  if(role==='user'){const reply=voiceMessages.get(`${id}-agent`);if(reply)messages.insertBefore(body.parentElement,reply.parentElement);}
+ }else body.querySelector('.bubble').textContent=text;
+ if(role==='agent'){enhanceSpokenReply(body,text);showVoiceEvidence(id,body);}
+ messages.scrollTop=messages.scrollHeight;
+});
+document.addEventListener('guest-question', event => submit(event.detail));
+document.addEventListener('guide-changed', () => { if (!messages.querySelector('.message.user')) { const welcome = messages.querySelector('.bubble'); if (welcome) welcome.textContent = guideProfile().greeting + ' I am an AI concierge.'; suggestions(guideProfile().questions); } });
 form.addEventListener('submit', event => { event.preventDefault(); submit(input.value); });
 input.addEventListener('input', () => send.disabled = busy || !input.value.trim());
 document.querySelectorAll('[data-prompt]').forEach(button => button.addEventListener('click', () => { setView('chat'); submit(button.dataset.prompt); }));

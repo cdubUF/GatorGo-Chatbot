@@ -1,0 +1,382 @@
+[
+  {
+    "id": "GUEST-001",
+    "name": "Alex Morgan",
+    "fictional": true,
+    "room": "201",
+    "room_type": "Garden King",
+    "arrival": "2026-11-17",
+    "departure": "2026-11-20",
+    "party_size": 2,
+    "breakfast_included": true,
+    "preferences": [
+      "firm pillows",
+      "quiet room"
+    ],
+    "activities": [
+      "Garden Discovery Walk at 10:00 AM on November 19, 2026"
+    ],
+    "notes": "Fictional itinerary only; no real booking, payment or identity verification."
+  },
+  {
+    "id": "GUEST-002",
+    "name": "Jamie Rivera",
+    "fictional": true,
+    "room": "202",
+    "room_type": "Lagoon Twin",
+    "arrival": "2026-11-18",
+    "departure": "2026-11-22",
+    "party_size": 2,
+    "breakfast_included": false,
+    "preferences": [
+      "oat milk",
+      "garden views"
+    ],
+    "activities": [
+      "Poolside reading at 2:00 PM on November 19, 2026"
+    ],
+    "notes": "Fictional itinerary only; no real booking, payment or identity verification."
+  },
+  {
+    "id": "GUEST-003",
+    "name": "Taylor Chen",
+    "fictional": true,
+    "room": "203",
+    "room_type": "Family Suite",
+    "arrival": "2026-11-19",
+    "departure": "2026-11-24",
+    "party_size": 4,
+    "breakfast_included": true,
+    "preferences": [
+      "extra blankets",
+      "family activities"
+    ],
+    "activities": [
+      "Family games at 4:00 PM on November 19, 2026"
+    ],
+    "notes": "Fictional itinerary only; no real booking, payment or identity verification."
+  },
+  {
+    "id": "GUEST-004",
+    "name": "Jordan Brooks",
+    "fictional": true,
+    "room": "204",
+    "room_type": "Cabana Suite",
+    "arrival": "2026-11-17",
+    "departure": "2026-11-23",
+    "party_size": 2,
+    "breakfast_included": false,
+    "preferences": [
+      "soft pillows",
+      "morning walks"
+    ],
+    "activities": [
+      "Yoga deck visit at 8:00 AM on November 19, 2026"
+    ],
+    "notes": "Fictional itinerary only; no real booking, payment or identity verification."
+  },
+  {
+    "id": "GUEST-005",
+    "name": "Casey Patel",
+    "fictional": true,
+    "room": "205",
+    "room_type": "Garden King",
+    "arrival": "2026-11-18",
+    "departure": "2026-11-21",
+    "party_size": 2,
+    "breakfast_included": true,
+    "preferences": [
+      "firm pillows",
+      "quiet room"
+    ],
+    "activities": [
+      "Garden Discovery Walk at 10:00 AM on November 19, 2026"
+    ],
+    "notes": "Fictional itinerary only; no real booking, payment or identity verification."
+  },
+  {
+    "id": "GUEST-006",
+    "name": "Riley Thompson",
+    "fictional": true,
+    "room": "206",
+    "room_type": "Lagoon Twin",
+    "arrival": "2026-11-19",
+    "departure": "2026-11-23",
+    "party_size": 2,
+    "breakfast_included": false,
+    "preferences": [
+      "oat milk",
+      "garden views"
+    ],
+    "activities": [
+      "Poolside reading at 2:00 PM on November 19, 2026"
+    ],
+    "notes": "Fictional itinerary only; no real booking, payment or identity verification."
+  },
+  {
+    "id": "GUEST-007",
+    "name": "Morgan Ellis",
+    "fictional": true,
+    "room": "207",
+    "room_type": "Family Suite",
+    "arrival": "2026-11-17",
+    "departure": "2026-11-22",
+    "party_size": 4,
+    "breakfast_included": true,
+    "preferences": [
+      "extra blankets",
+      "family activities"
+    ],
+    "activities": [
+      "Family games at 4:00 PM on November 19, 2026"
+    ],
+    "notes": "Fictional itinerary only; no real booking, payment or identity verification."
+  },
+  {
+    "id": "GUEST-008",
+    "name": "Avery Kim",
+    "fictional": true,
+    "room": "208",
+    "room_type": "Cabana Suite",
+    "arrival": "2026-11-18",
+    "departure": "2026-11-24",
+    "party_size": 2,
+    "breakfast_included": false,
+    "preferences": [
+      "soft pillows",
+      "morning walks"
+    ],
+    "activities": [
+      "Yoga deck visit at 8:00 AM on November 19, 2026"
+    ],
+    "notes": "Fictional itinerary only; no real booking, payment or identity verification."
+  },
+  {
+    "id": "GUEST-009",
+    "name": "Quinn Parker",
+    "fictional": true,
+    "room": "209",
+    "room_type": "Garden King",
+    "arrival": "2026-11-19",
+    "departure": "2026-11-22",
+    "party_size": 2,
+    "breakfast_included": true,
+    "preferences": [
+      "firm pillows",
+      "quiet room"
+    ],
+    "activities": [
+      "Garden Discovery Walk at 10:00 AM on November 19, 2026"
+    ],
+    "notes": "Fictional itinerary only; no real booking, payment or identity verification."
+  },
+  {
+    "id": "GUEST-010",
+    "name": "Cameron Lee",
+    "fictional": true,
+    "room": "210",
+    "room_type": "Lagoon Twin",
+    "arrival": "2026-11-17",
+    "departure": "2026-11-21",
+    "party_size": 2,
+    "breakfast_included": false,
+    "preferences": [
+      "oat milk",
+      "garden views"
+    ],
+    "activities": [
+      "Poolside reading at 2:00 PM on November 19, 2026"
+    ],
+    "notes": "Fictional itinerary only; no real booking, payment or identity verification."
+  },
+  {
+    "id": "GUEST-011",
+    "name": "Skyler Davis",
+    "fictional": true,
+    "room": "211",
+    "room_type": "Family Suite",
+    "arrival": "2026-11-18",
+    "departure": "2026-11-23",
+    "party_size": 4,
+    "breakfast_included": true,
+    "preferences": [
+      "extra blankets",
+      "family activities"
+    ],
+    "activities": [
+      "Family games at 4:00 PM on November 19, 2026"
+    ],
+    "notes": "Fictional itinerary only; no real booking, payment or identity verification."
+  },
+  {
+    "id": "GUEST-012",
+    "name": "Reese Wilson",
+    "fictional": true,
+    "room": "212",
+    "room_type": "Cabana Suite",
+    "arrival": "2026-11-19",
+    "departure": "2026-11-25",
+    "party_size": 2,
+    "breakfast_included": false,
+    "preferences": [
+      "soft pillows",
+      "morning walks"
+    ],
+    "activities": [
+      "Yoga deck visit at 8:00 AM on November 19, 2026"
+    ],
+    "notes": "Fictional itinerary only; no real booking, payment or identity verification."
+  },
+  {
+    "id": "GUEST-013",
+    "name": "Peyton Garcia",
+    "fictional": true,
+    "room": "213",
+    "room_type": "Garden King",
+    "arrival": "2026-11-17",
+    "departure": "2026-11-20",
+    "party_size": 2,
+    "breakfast_included": true,
+    "preferences": [
+      "firm pillows",
+      "quiet room"
+    ],
+    "activities": [
+      "Garden Discovery Walk at 10:00 AM on November 19, 2026"
+    ],
+    "notes": "Fictional itinerary only; no real booking, payment or identity verification."
+  },
+  {
+    "id": "GUEST-014",
+    "name": "Rowan Bennett",
+    "fictional": true,
+    "room": "214",
+    "room_type": "Lagoon Twin",
+    "arrival": "2026-11-18",
+    "departure": "2026-11-22",
+    "party_size": 2,
+    "breakfast_included": false,
+    "preferences": [
+      "oat milk",
+      "garden views"
+    ],
+    "activities": [
+      "Poolside reading at 2:00 PM on November 19, 2026"
+    ],
+    "notes": "Fictional itinerary only; no real booking, payment or identity verification."
+  },
+  {
+    "id": "GUEST-015",
+    "name": "Emerson Clark",
+    "fictional": true,
+    "room": "215",
+    "room_type": "Family Suite",
+    "arrival": "2026-11-19",
+    "departure": "2026-11-24",
+    "party_size": 4,
+    "breakfast_included": true,
+    "preferences": [
+      "extra blankets",
+      "family activities"
+    ],
+    "activities": [
+      "Family games at 4:00 PM on November 19, 2026"
+    ],
+    "notes": "Fictional itinerary only; no real booking, payment or identity verification."
+  },
+  {
+    "id": "GUEST-016",
+    "name": "Finley Adams",
+    "fictional": true,
+    "room": "216",
+    "room_type": "Cabana Suite",
+    "arrival": "2026-11-17",
+    "departure": "2026-11-23",
+    "party_size": 2,
+    "breakfast_included": false,
+    "preferences": [
+      "soft pillows",
+      "morning walks"
+    ],
+    "activities": [
+      "Yoga deck visit at 8:00 AM on November 19, 2026"
+    ],
+    "notes": "Fictional itinerary only; no real booking, payment or identity verification."
+  },
+  {
+    "id": "GUEST-017",
+    "name": "Harper Nguyen",
+    "fictional": true,
+    "room": "217",
+    "room_type": "Garden King",
+    "arrival": "2026-11-18",
+    "departure": "2026-11-21",
+    "party_size": 2,
+    "breakfast_included": true,
+    "preferences": [
+      "firm pillows",
+      "quiet room"
+    ],
+    "activities": [
+      "Garden Discovery Walk at 10:00 AM on November 19, 2026"
+    ],
+    "notes": "Fictional itinerary only; no real booking, payment or identity verification."
+  },
+  {
+    "id": "GUEST-018",
+    "name": "Dakota Reed",
+    "fictional": true,
+    "room": "218",
+    "room_type": "Lagoon Twin",
+    "arrival": "2026-11-19",
+    "departure": "2026-11-23",
+    "party_size": 2,
+    "breakfast_included": false,
+    "preferences": [
+      "oat milk",
+      "garden views"
+    ],
+    "activities": [
+      "Poolside reading at 2:00 PM on November 19, 2026"
+    ],
+    "notes": "Fictional itinerary only; no real booking, payment or identity verification."
+  },
+  {
+    "id": "GUEST-019",
+    "name": "Sage Miller",
+    "fictional": true,
+    "room": "219",
+    "room_type": "Family Suite",
+    "arrival": "2026-11-17",
+    "departure": "2026-11-22",
+    "party_size": 4,
+    "breakfast_included": true,
+    "preferences": [
+      "extra blankets",
+      "family activities"
+    ],
+    "activities": [
+      "Family games at 4:00 PM on November 19, 2026"
+    ],
+    "notes": "Fictional itinerary only; no real booking, payment or identity verification."
+  },
+  {
+    "id": "GUEST-020",
+    "name": "Blake Carter",
+    "fictional": true,
+    "room": "220",
+    "room_type": "Cabana Suite",
+    "arrival": "2026-11-18",
+    "departure": "2026-11-24",
+    "party_size": 2,
+    "breakfast_included": false,
+    "preferences": [
+      "soft pillows",
+      "morning walks"
+    ],
+    "activities": [
+      "Yoga deck visit at 8:00 AM on November 19, 2026"
+    ],
+    "notes": "Fictional itinerary only; no real booking, payment or identity verification."
+  }
+]

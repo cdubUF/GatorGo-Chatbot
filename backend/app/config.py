@@ -11,15 +11,19 @@ ROOT = Path(__file__).resolve().parents[2]
 
 @dataclass(frozen=True)
 class Settings:
+    resort_timezone: str = "America/New_York"
     profile: str = "local"
     trusted_hosts: tuple[str, ...] = ("localhost", "127.0.0.1", "testserver")
     guest_origins: tuple[str, ...] = ()
     multilingual: bool = False
+    realtime_enabled: bool = False
+    realtime_model: str = "gpt-realtime-2.1-mini"
     speech_enabled: bool = False
     speech_model: str = "gpt-4o-transcribe"
     voice_model: str = "gpt-4o-mini-tts"
     public_requests_per_minute: int = 120
     speech_requests_per_minute: int = 10
+    local_budget_cutoff: bool = True
     provider_budget_usd: float = 10.0
     text_call_reserve_usd: float = 1.0
     speech_call_reserve_usd: float = 1.0
@@ -41,6 +45,8 @@ class Settings:
     mews_access_token: str = field(default="", repr=False)
 
     def __post_init__(self):
+        from zoneinfo import ZoneInfo
+        ZoneInfo(self.resort_timezone)
         if self.profile not in {"local", "staging", "public"}:
             raise ValueError("APP_PROFILE must be local, staging or public")
         if self.profile != "local" and (self.demo or self.reservation_mode != "disabled" or self.mews_sandbox):
@@ -87,15 +93,19 @@ def load_settings():
     if sandbox not in {"true", "false"}:
         raise ValueError("MEWS_SANDBOX_ENABLED must be true or false")
     return Settings(
+        resort_timezone=os.getenv("RESORT_TIMEZONE", "America/New_York"),
         profile=os.getenv("APP_PROFILE", "local"),
         trusted_hosts=tuple(os.getenv("TRUSTED_HOSTS", "localhost,127.0.0.1,testserver").split(",")),
         guest_origins=tuple(filter(None, os.getenv("GUEST_ORIGINS", "").split(","))),
         multilingual=os.getenv("MULTILINGUAL_ENABLED", "true").lower() == "true",
+        realtime_enabled=os.getenv("REALTIME_ENABLED", "false").lower() == "true",
+        realtime_model=os.getenv("REALTIME_MODEL", "gpt-realtime-2.1-mini"),
         speech_enabled=os.getenv("SPEECH_ENABLED", "false").lower() == "true",
         speech_model=os.getenv("SPEECH_MODEL", "gpt-4o-transcribe"),
         voice_model=os.getenv("VOICE_MODEL", "gpt-4o-mini-tts"),
         public_requests_per_minute=int(os.getenv("REQUESTS_PER_MINUTE", "120")),
         speech_requests_per_minute=int(os.getenv("SPEECH_REQUESTS_PER_MINUTE", "10")),
+        local_budget_cutoff=os.getenv("LOCAL_BUDGET_CUTOFF", "true").lower() != "false",
         provider_budget_usd=float(os.getenv("PROVIDER_BUDGET_USD", "0")),
         text_call_reserve_usd=float(os.getenv("TEXT_CALL_RESERVE_USD", "1")),
         speech_call_reserve_usd=float(os.getenv("SPEECH_CALL_RESERVE_USD", "1")),

@@ -11,6 +11,21 @@ class Session:
     id: str = field(default_factory=lambda: str(uuid4()))
     touched: float = field(default_factory=time.monotonic)
     history: list = field(default_factory=list)
+    preferences: list = field(default_factory=list)
+    memory_topics: list = field(default_factory=list)
+    revision: int = 0
+    voice_token: str = field(default='', repr=False)
+    voice_requests: list = field(default_factory=list)
+    voice_turns: dict = field(default_factory=dict)
+    tool_results: dict = field(default_factory=dict)
+    tool_requests: list = field(default_factory=list)
+    tool_lock: asyncio.Lock = field(default_factory=asyncio.Lock)
+    active_venue: str = ""
+    active_customer: str = ""
+    demo_trip: bool = False
+    trip_question: str = ""
+    venue_question: str = ""
+    feedback: dict = field(default_factory=dict)
     topic: str = ""
     concern: str = ""
     stage: str = ""

@@ -32,9 +32,25 @@ class Usage:
             if speech:
                 self.speech.append(now)
 
+    def cutoff_enabled(self):
+        return self.settings.profile != "local" or self.settings.local_budget_cutoff
+
+    def available(self, amount=None):
+        """Read-only affordability check; reserve remains the atomic spending guard."""
+        if not self.cutoff_enabled():
+            return True
+        if amount is None:
+            amount = self.settings.text_call_reserve_usd
+        with self.lock:
+            reserved = self.db.execute("SELECT reserved FROM budget WHERE id=1").fetchone()[0]
+        return reserved + amount <= self.settings.provider_budget_usd
+
     def reserve(self, speech=False):
         amount = self.settings.speech_call_reserve_usd if speech else self.settings.text_call_reserve_usd
         with self.lock, self.db:
+            if not self.cutoff_enabled():
+                self.db.execute("UPDATE budget SET reserved = reserved + ? WHERE id=1", (amount,))
+                return
             cursor = self.db.execute('UPDATE budget SET reserved = reserved + ? WHERE id=1 AND reserved + ? <= ?',
                                      (amount, amount, self.settings.provider_budget_usd))
             if cursor.rowcount != 1:

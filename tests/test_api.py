@@ -147,7 +147,7 @@ def test_provider_failure_safe_fallback(settings):
 
 def test_live_provider_is_used_without_any_approved_records():
     class LiveProvider:
-        async def answer(self, query, history, records):
+        async def answer(self, query, history, records, *, guide="desk"):
             assert query == "Can you suggest how to pack for a trip?"
             assert records == []
             return "Pack comfortable clothes and any essentials you need.", []
@@ -160,7 +160,7 @@ def test_live_provider_is_used_without_any_approved_records():
 
 def test_live_provider_failure_is_visible_without_leaking_diagnostics():
     class FailedProvider:
-        async def answer(self, *args):
+        async def answer(self, *args, **kwargs):
             raise ProviderUnavailable("private provider diagnostic")
     with TestClient(create_app(Settings(provider="openai", api_key="test", demo=False),
                                provider=FailedProvider())) as client:
@@ -172,7 +172,7 @@ def test_live_provider_failure_is_visible_without_leaking_diagnostics():
 
 def test_live_provider_receives_labeled_samples_without_demo_mode():
     class SampleProvider:
-        async def answer(self, query, history, records):
+        async def answer(self, query, history, records, *, guide="desk"):
             assert records and records[0].id == "checkin"
             assert records[0].status == "demo_only"
             return "The sample says check-in is at 3:00 PM.", ["checkin"]
@@ -186,7 +186,7 @@ def test_live_provider_receives_labeled_samples_without_demo_mode():
 
 def test_live_provider_outage_can_show_labeled_sample():
     class FailedProvider:
-        async def answer(self, *args):
+        async def answer(self, *args, **kwargs):
             raise ProviderUnavailable("http_429")
     with TestClient(create_app(Settings(provider="openai", api_key="test", demo=False,
                                         sample_knowledge=True), provider=FailedProvider())) as client:
@@ -205,7 +205,7 @@ def test_live_provider_outage_can_show_labeled_sample():
 ])
 def test_general_questions_reach_retrieved_guidance(question, source_id):
     class GuidanceProvider:
-        async def answer(self, query, history, records):
+        async def answer(self, query, history, records, *, guide="desk"):
             matching = [entry for entry in records if entry.id == source_id]
             assert matching, f"Missing {source_id} for {query}"
             return matching[0].answer, [source_id]
@@ -268,7 +268,7 @@ def test_summary_preserves_issue_without_unrelated_faq(client):
 def test_resort_knowledge_is_visible_and_recommendations_use_it():
     class RecordingProvider:
         calls = []
-        async def answer(self, query, history, records):
+        async def answer(self, query, history, records, *, guide="desk"):
             self.calls.append((query, records))
             return "I recommend enjoying the resort amenities.", [records[0].id] if records else []
 

@@ -1,0 +1,20 @@
+[
+  {
+    "id": "dining-location",
+    "topic": "Dining",
+    "expected_record": "palm-grill",
+    "question": "Where is Palm Grill?"
+  },
+  {
+    "id": "airport-transfer",
+    "topic": "Transport",
+    "expected_record": "airport-shuttle",
+    "question": "What are the airport shuttle hours?"
+  },
+  {
+    "id": "kids-club",
+    "topic": "Family",
+    "expected_record": "kids-club",
+    "question": "What are the kids club hours?"
+  }
+]

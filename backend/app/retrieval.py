@@ -76,6 +76,10 @@ class Retriever:
                 ({"owner", "birthday", "built"}, {"owner", "birthday", "built"}),
             ]
             query_words = set(q.split())
+            domains = query_words & {'pool', 'spa', 'parking', 'wifi', 'shuttle', 'breakfast', 'restaurant', 'dining', 'laundry'}
+            record_domains = tokens(r.topic + ' ' + r.category + ' ' + ' '.join(r.tags))
+            if domains and not domains & record_domains:
+                continue
             answer_words = set(normalize(r.answer).split())
             if any(query_words & asked and not answer_words & needed for asked, needed in attributes):
                 continue

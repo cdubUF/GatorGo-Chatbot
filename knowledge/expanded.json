@@ -1,0 +1,1367 @@
+[
+  {
+    "id": "expanded-001",
+    "category": "Arrival",
+    "topic": "Arrival lounge",
+    "answer": "The arrival lounge is located beside reception and opens daily from 6:00 AM to midnight.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "arrival lounge",
+      "where can i wait before check-in?"
+    ]
+  },
+  {
+    "id": "expanded-002",
+    "category": "Arrival",
+    "topic": "Bag drop counter",
+    "answer": "The sample bag drop counter is located beside reception, open 6:00 AM to midnight; same-day storage is complimentary.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "bag drop counter",
+      "where can i leave my luggage?"
+    ]
+  },
+  {
+    "id": "expanded-003",
+    "category": "Arrival",
+    "topic": "Welcome drinks",
+    "answer": "The arrival lounge offers complimentary citrus water from 10:00 AM to 6:00 PM.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "welcome drinks",
+      "is there a welcome drink?"
+    ]
+  },
+  {
+    "id": "expanded-004",
+    "category": "Arrival",
+    "topic": "Early arrival lounge access",
+    "answer": "Registered sample guests may use the arrival lounge before their room is ready; room access still requires staff confirmation.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "early arrival lounge access",
+      "can i use the lounge before my room is ready?"
+    ]
+  },
+  {
+    "id": "expanded-005",
+    "category": "Arrival",
+    "topic": "Departure lounge",
+    "answer": "The departure seating area is located beside reception; it is available until midnight.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "departure lounge",
+      "where can i relax after checking out?"
+    ]
+  },
+  {
+    "id": "expanded-006",
+    "category": "Arrival",
+    "topic": "Bell cart pickup",
+    "answer": "Luggage carts are located at the main entrance; ask the bell desk for assistance.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "bell cart pickup",
+      "where are the luggage carts?"
+    ]
+  },
+  {
+    "id": "expanded-007",
+    "category": "Arrival",
+    "topic": "Resort orientation",
+    "answer": "The orientation board is located opposite reception and displays the sample resort map.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "resort orientation",
+      "where is the orientation board?"
+    ]
+  },
+  {
+    "id": "expanded-008",
+    "category": "Arrival",
+    "topic": "Welcome packet",
+    "answer": "Printed welcome packets are located at reception and include the sample map and activity calendar.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "welcome packet",
+      "where can i get a welcome packet?"
+    ]
+  },
+  {
+    "id": "expanded-009",
+    "category": "Arrival",
+    "topic": "Express departure box",
+    "answer": "The sample key return box is located on the reception counter; dropping a key does not confirm checkout or settle a bill.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "express departure box",
+      "where is the departure box?"
+    ]
+  },
+  {
+    "id": "expanded-010",
+    "category": "Arrival",
+    "topic": "Arrival taxi stand",
+    "answer": "The taxi pickup point is located outside the main lobby beneath the blue canopy; staff must arrange any ride.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "arrival taxi stand",
+      "where is the taxi pickup point?"
+    ]
+  },
+  {
+    "id": "expanded-011",
+    "category": "Rooms",
+    "topic": "Garden King room",
+    "answer": "The fictional Garden King room has one king bed, a garden-facing balcony, a desk and a walk-in shower; maximum occupancy is two adults.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "garden king room",
+      "what is a garden king room?"
+    ]
+  },
+  {
+    "id": "expanded-012",
+    "category": "Rooms",
+    "topic": "Lagoon Twin room",
+    "answer": "The fictional Lagoon Twin room has two twin beds, a lagoon-facing window and a desk; maximum occupancy is two guests.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "lagoon twin room",
+      "what is a lagoon twin room?"
+    ]
+  },
+  {
+    "id": "expanded-013",
+    "category": "Rooms",
+    "topic": "Family Suite room",
+    "answer": "The fictional Family Suite has one king bedroom, a living room with a sofa bed and a kitchenette; maximum occupancy is four guests.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "family suite room",
+      "what is in a family suite?"
+    ]
+  },
+  {
+    "id": "expanded-014",
+    "category": "Rooms",
+    "topic": "Cabana Suite room",
+    "answer": "The fictional Cabana Suite has one king bed, a sitting area and a private patio; maximum occupancy is two adults.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "cabana suite room",
+      "what is a cabana suite?"
+    ]
+  },
+  {
+    "id": "expanded-015",
+    "category": "Rooms",
+    "topic": "Room mini fridge",
+    "answer": "All sample guest rooms include an empty mini fridge. No minibar purchases are available through the assistant.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "room mini fridge",
+      "do rooms have a mini fridge?"
+    ]
+  },
+  {
+    "id": "expanded-016",
+    "category": "Rooms",
+    "topic": "Room coffee maker",
+    "answer": "All sample rooms include a capsule coffee maker and two complimentary capsules per day.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "room coffee maker",
+      "is there a coffee maker in the room?"
+    ]
+  },
+  {
+    "id": "expanded-017",
+    "category": "Rooms",
+    "topic": "Room kettle",
+    "answer": "Electric kettles are listed as available on request from staff, subject to availability; the assistant cannot deliver one.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "room kettle",
+      "can i get a kettle?"
+    ]
+  },
+  {
+    "id": "expanded-018",
+    "category": "Rooms",
+    "topic": "Balcony furniture",
+    "answer": "Garden King balconies contain two chairs and a small table in the fictional room specification.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "balcony furniture",
+      "what furniture is on a balcony?"
+    ]
+  },
+  {
+    "id": "expanded-019",
+    "category": "Rooms",
+    "topic": "Television casting",
+    "answer": "Sample room televisions support casting through the on-screen pairing instructions; disconnect your device before departure.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "television casting",
+      "can i cast to the room television?"
+    ]
+  },
+  {
+    "id": "expanded-020",
+    "category": "Rooms",
+    "topic": "Room safe instructions",
+    "answer": "Follow the instructions printed inside the sample room safe door; contact staff if it will not open. The assistant has no override codes.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "room safe instructions",
+      "how do i use the room safe?"
+    ]
+  },
+  {
+    "id": "expanded-021",
+    "category": "Guest services",
+    "topic": "Pillow options",
+    "answer": "The sample pillow menu lists firm, soft and feather-free options, subject to staff availability.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "pillow options",
+      "what pillows can i request?"
+    ]
+  },
+  {
+    "id": "expanded-022",
+    "category": "Guest services",
+    "topic": "Extra blankets",
+    "answer": "Extra blankets may be requested from staff; the assistant cannot submit or fulfill the request.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "extra blankets",
+      "can i request an extra blanket?"
+    ]
+  },
+  {
+    "id": "expanded-023",
+    "category": "Guest services",
+    "topic": "Ironing equipment",
+    "answer": "Each sample guest room has an iron and folding ironing board in the wardrobe.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "ironing equipment",
+      "is there an iron in the room?"
+    ]
+  },
+  {
+    "id": "expanded-024",
+    "category": "Guest services",
+    "topic": "Guest laundry location",
+    "answer": "The guest laundry is located on the second floor of the east wing, open from 8:00 AM to 8:00 PM.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "guest laundry location",
+      "where is the guest laundry?"
+    ]
+  },
+  {
+    "id": "expanded-025",
+    "category": "Guest services",
+    "topic": "Guest laundry prices",
+    "answer": "The fictional laundry price is $4 per wash and $3 per drying cycle; detergent is included in the sample wash price.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "guest laundry prices",
+      "how much is the guest laundry?"
+    ]
+  },
+  {
+    "id": "expanded-026",
+    "category": "Guest services",
+    "topic": "Laundry turnaround",
+    "answer": "A sample wash cycle takes about 35 minutes and a drying cycle about 45 minutes; actual machine availability is not tracked.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "laundry turnaround",
+      "how long does laundry take?"
+    ]
+  },
+  {
+    "id": "expanded-027",
+    "category": "Guest services",
+    "topic": "Dry cleaning collection",
+    "answer": "The dry-cleaning inquiry point is located at the reception service counter; ask staff for options and a quote; no external service has been arranged.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "dry cleaning collection",
+      "where can i ask about dry cleaning?"
+    ]
+  },
+  {
+    "id": "expanded-028",
+    "category": "Guest services",
+    "topic": "Shoe cleaning station",
+    "answer": "A self-service shoe brush is located in the east-wing entrance vestibule.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "shoe cleaning station",
+      "where can i clean my shoes?"
+    ]
+  },
+  {
+    "id": "expanded-029",
+    "category": "Guest services",
+    "topic": "Reusable water bottles",
+    "answer": "Two reusable bottles are provided in each fictional guest room and may be refilled at marked stations.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "reusable water bottles",
+      "are reusable bottles provided?"
+    ]
+  },
+  {
+    "id": "expanded-030",
+    "category": "Guest services",
+    "topic": "Refill station locations",
+    "answer": "Refill stations are located beside reception, outside the fitness center and at the north garden gate.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "refill station locations",
+      "where are the water refill stations?"
+    ]
+  },
+  {
+    "id": "expanded-031",
+    "category": "Dining",
+    "topic": "Palm Grill vegetarian dishes",
+    "answer": "The fictional Palm Grill menu lists a grilled vegetable bowl and a black bean burger; staff must confirm current ingredients.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "palm grill vegetarian dishes",
+      "does palm grill have vegetarian food?"
+    ]
+  },
+  {
+    "id": "expanded-032",
+    "category": "Dining",
+    "topic": "Palm Grill children's menu",
+    "answer": "The sample children's menu lists pasta, grilled chicken and fruit cups; menu availability must be confirmed by staff.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "palm grill children's menu",
+      "does palm grill have a kids menu?"
+    ]
+  },
+  {
+    "id": "expanded-033",
+    "category": "Dining",
+    "topic": "Palm Grill dress code",
+    "answer": "Palm Grill's sample dress code is casual resort wear with shoes and a cover-up over swimwear.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "palm grill dress code",
+      "what should i wear to palm grill?"
+    ]
+  },
+  {
+    "id": "expanded-034",
+    "category": "Dining",
+    "topic": "Palm Grill reservations",
+    "answer": "Palm Grill accepts sample reservation inquiries through dining staff; the assistant cannot book or guarantee a table.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "palm grill reservations",
+      "does palm grill take reservations?"
+    ]
+  },
+  {
+    "id": "expanded-035",
+    "category": "Dining",
+    "topic": "Palm Grill takeaway",
+    "answer": "Takeaway is listed as available from Palm Grill during its published opening hours, subject to dining staff confirmation.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "palm grill takeaway",
+      "can i get takeaway from palm grill?"
+    ]
+  },
+  {
+    "id": "expanded-036",
+    "category": "Dining",
+    "topic": "Blue Heron coffee choices",
+    "answer": "The sample cafe menu includes espresso, americano, cappuccino, latte and decaf coffee.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "blue heron coffee choices",
+      "what coffee does blue heron cafe serve?"
+    ]
+  },
+  {
+    "id": "expanded-037",
+    "category": "Dining",
+    "topic": "Blue Heron plant milk",
+    "answer": "The sample cafe menu lists oat and soy milk; staff must confirm stock and ingredient details.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "blue heron plant milk",
+      "does blue heron cafe have plant milk?"
+    ]
+  },
+  {
+    "id": "expanded-038",
+    "category": "Dining",
+    "topic": "Blue Heron bakery",
+    "answer": "The fictional bakery menu includes plain croissants, blueberry muffins and banana bread; items may sell out.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "blue heron bakery",
+      "what pastries are at blue heron cafe?"
+    ]
+  },
+  {
+    "id": "expanded-039",
+    "category": "Dining",
+    "topic": "Palmetto breakfast options",
+    "answer": "The sample breakfast buffet includes oatmeal, eggs, fruit, toast and yogurt; ask dining staff about ingredients.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "palmetto breakfast options",
+      "what is served for breakfast at palmetto kitchen?"
+    ]
+  },
+  {
+    "id": "expanded-040",
+    "category": "Dining",
+    "topic": "Packed picnic baskets",
+    "answer": "A sample picnic basket inquiry can be made with Palm Grill staff by 5:00 PM the previous day; no order is placed by this chat.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "packed picnic baskets",
+      "can i get a picnic basket?"
+    ]
+  },
+  {
+    "id": "expanded-041",
+    "category": "Dining",
+    "topic": "Garden picnic area",
+    "answer": "The designated picnic tables are located in the north garden beside the walking trail entrance.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "garden picnic area",
+      "where can i eat a picnic?"
+    ]
+  },
+  {
+    "id": "expanded-042",
+    "category": "Dining",
+    "topic": "Dining allergy questions",
+    "answer": "Speak directly with dining staff about ingredients and preparation. This demo cannot verify allergen safety or provide medical advice.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "dining allergy questions",
+      "how do i ask about food ingredients?"
+    ]
+  },
+  {
+    "id": "expanded-043",
+    "category": "Dining",
+    "topic": "Dining high chairs",
+    "answer": "High chairs are listed as available at Palmetto Kitchen and Palm Grill, subject to staff confirmation.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "dining high chairs",
+      "are high chairs available?"
+    ]
+  },
+  {
+    "id": "expanded-044",
+    "category": "Dining",
+    "topic": "Dining reusable cups",
+    "answer": "Blue Heron Cafe's sample policy allows clean reusable cups; ask the barista before ordering.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "dining reusable cups",
+      "can i bring a reusable cup?"
+    ]
+  },
+  {
+    "id": "expanded-045",
+    "category": "Dining",
+    "topic": "Dining room service",
+    "answer": "Room service is not available at the fictional sample property; guests may ask Palm Grill about takeaway.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "dining room service",
+      "is room service available?"
+    ]
+  },
+  {
+    "id": "expanded-046",
+    "category": "Pools",
+    "topic": "Pool towel station",
+    "answer": "The pool towel station is located at the Lagoon Pool entrance and operates during that pool's published hours.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "pool towel station",
+      "where is the pool towel station?"
+    ]
+  },
+  {
+    "id": "expanded-047",
+    "category": "Pools",
+    "topic": "Pool depth markers",
+    "answer": "Depth markers are located around the pool edge; check the signs before entering and follow staff instructions.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "pool depth markers",
+      "where can i check the pool depth?"
+    ]
+  },
+  {
+    "id": "expanded-048",
+    "category": "Pools",
+    "topic": "Pool supervision",
+    "answer": "This sample dataset does not confirm lifeguard coverage. Ask staff and follow posted safety rules; do not assume supervision.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "pool supervision",
+      "is a lifeguard guaranteed?"
+    ]
+  },
+  {
+    "id": "expanded-049",
+    "category": "Pools",
+    "topic": "Pool inflatables",
+    "answer": "Large inflatables require approval from pool staff under the fictional pool rules.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "pool inflatables",
+      "can i use a large inflatable at the pool?"
+    ]
+  },
+  {
+    "id": "expanded-050",
+    "category": "Pools",
+    "topic": "Pool glass policy",
+    "answer": "Glass containers are prohibited in the fictional pool area; use shatter-resistant drinkware.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "pool glass policy",
+      "can i bring glass to the pool?"
+    ]
+  },
+  {
+    "id": "expanded-051",
+    "category": "Pools",
+    "topic": "Pool cabana seating",
+    "answer": "The sample cabanas are located along the east side of Lagoon Pool; staff must confirm seating availability.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "pool cabana seating",
+      "where are the pool cabanas?"
+    ]
+  },
+  {
+    "id": "expanded-052",
+    "category": "Pools",
+    "topic": "Cabana booking inquiries",
+    "answer": "The assistant cannot reserve a cabana; ask pool staff about fictional availability and pricing.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "cabana booking inquiries",
+      "can you reserve a pool cabana?"
+    ]
+  },
+  {
+    "id": "expanded-053",
+    "category": "Pools",
+    "topic": "Pool lockers",
+    "answer": "Day-use lockers are located beside the Lagoon Pool changing rooms; staff can explain their operation.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "pool lockers",
+      "where are the pool lockers?"
+    ]
+  },
+  {
+    "id": "expanded-054",
+    "category": "Pools",
+    "topic": "Pool changing rooms",
+    "answer": "Pool changing rooms are located at the south entrance to Lagoon Pool.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "pool changing rooms",
+      "where can i change for swimming?"
+    ]
+  },
+  {
+    "id": "expanded-055",
+    "category": "Pools",
+    "topic": "Pool weather closure",
+    "answer": "Staff may close outdoor pools during unsafe weather. Follow posted notices and staff instructions; this demo has no live weather feed.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "pool weather closure",
+      "what happens to swimming during a storm?"
+    ]
+  },
+  {
+    "id": "expanded-056",
+    "category": "Wellness",
+    "topic": "Spa reception location",
+    "answer": "Serenity Spa reception is located in the west wing on the ground floor.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "spa reception location",
+      "where is serenity spa reception?"
+    ]
+  },
+  {
+    "id": "expanded-057",
+    "category": "Wellness",
+    "topic": "Spa arrival guidance",
+    "answer": "The fictional spa asks guests to arrive 15 minutes before their scheduled appointment.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "spa arrival guidance",
+      "how early should i arrive for a spa appointment?"
+    ]
+  },
+  {
+    "id": "expanded-058",
+    "category": "Wellness",
+    "topic": "Spa sample massage",
+    "answer": "The fictional Serenity Spa menu lists a 50-minute relaxation massage; ask spa staff about suitability, price and availability.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "spa sample massage",
+      "what massage is on the spa menu?"
+    ]
+  },
+  {
+    "id": "expanded-059",
+    "category": "Wellness",
+    "topic": "Spa sample facial",
+    "answer": "The fictional spa menu lists a 30-minute botanical facial; staff must confirm ingredients, suitability and price.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "spa sample facial",
+      "what facial is on the spa menu?"
+    ]
+  },
+  {
+    "id": "expanded-060",
+    "category": "Wellness",
+    "topic": "Spa cancellation inquiries",
+    "answer": "Contact Serenity Spa staff directly to review appointment terms; this assistant cannot modify an appointment.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "spa cancellation inquiries",
+      "how do i change a spa appointment?"
+    ]
+  },
+  {
+    "id": "expanded-061",
+    "category": "Wellness",
+    "topic": "Fitness equipment",
+    "answer": "The sample fitness center contains treadmills, stationary bikes, dumbbells and yoga mats.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "fitness equipment",
+      "what equipment is in the gym?"
+    ]
+  },
+  {
+    "id": "expanded-062",
+    "category": "Wellness",
+    "topic": "Fitness location",
+    "answer": "The fitness center is located on the ground floor of the east wing; its existing sample policy lists 24-hour guest access.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "fitness location",
+      "where is the fitness center?"
+    ]
+  },
+  {
+    "id": "expanded-063",
+    "category": "Wellness",
+    "topic": "Yoga deck location",
+    "answer": "The yoga deck is located behind Serenity Spa overlooking the west garden.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "yoga deck location",
+      "where is the yoga deck?"
+    ]
+  },
+  {
+    "id": "expanded-064",
+    "category": "Wellness",
+    "topic": "Yoga mat borrowing",
+    "answer": "Sample yoga mats can be requested at spa reception, subject to availability; this assistant cannot reserve equipment.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "yoga mat borrowing",
+      "can i borrow a yoga mat?"
+    ]
+  },
+  {
+    "id": "expanded-065",
+    "category": "Wellness",
+    "topic": "Wellness hydration station",
+    "answer": "A complimentary water station is located in the Serenity Spa reception lounge during spa opening hours.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "wellness hydration station",
+      "where is water near the spa?"
+    ]
+  },
+  {
+    "id": "expanded-066",
+    "category": "Activities",
+    "topic": "Garden birdwatching",
+    "answer": "The fictional birdwatching viewpoint is located on the north garden trail; keep distance from wildlife and remain on marked paths.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "garden birdwatching",
+      "where can i watch birds?"
+    ]
+  },
+  {
+    "id": "expanded-067",
+    "category": "Activities",
+    "topic": "Nature Walk footwear",
+    "answer": "Comfortable closed-toe walking shoes are recommended for the sample Nature Walk; follow posted path conditions.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "nature walk footwear",
+      "what shoes should i wear for nature walk?"
+    ]
+  },
+  {
+    "id": "expanded-068",
+    "category": "Activities",
+    "topic": "Nature Walk route length",
+    "answer": "The fictional marked Nature Walk loop is 0.8 miles; actual completion time depends on the guest's pace.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "nature walk route length",
+      "how long is the nature walk route?"
+    ]
+  },
+  {
+    "id": "expanded-069",
+    "category": "Activities",
+    "topic": "Nature Walk benches",
+    "answer": "Three shaded benches are listed along the fictional Nature Walk loop.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "nature walk benches",
+      "are there benches along nature walk?"
+    ]
+  },
+  {
+    "id": "expanded-070",
+    "category": "Activities",
+    "topic": "Garden photography",
+    "answer": "Personal photography is permitted in sample public gardens; respect other guests and ask staff before organized shoots.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "garden photography",
+      "can i take photos in the garden?"
+    ]
+  },
+  {
+    "id": "expanded-071",
+    "category": "Activities",
+    "topic": "Bike rental desk",
+    "answer": "The bike inquiry desk is located beside the north garden gate, open 9:00 AM to 5:00 PM; availability is not live.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "bike rental desk",
+      "where can i ask about bike rentals?"
+    ]
+  },
+  {
+    "id": "expanded-072",
+    "category": "Activities",
+    "topic": "Board games",
+    "answer": "Sample chess, checkers and domino sets are located in the guest lounge; ask reception about borrowing a set.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "board games",
+      "where can i borrow board games?"
+    ]
+  },
+  {
+    "id": "expanded-073",
+    "category": "Activities",
+    "topic": "Library nook",
+    "answer": "The reading nook is located on the mezzanine above the lobby and is open from 7:00 AM to 10:00 PM.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "library nook",
+      "where is the reading area?"
+    ]
+  },
+  {
+    "id": "expanded-074",
+    "category": "Activities",
+    "topic": "Rainy day activities",
+    "answer": "Sample indoor options include the reading nook, guest lounge board games and the fitness center; spa services require appointments.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "rainy day activities",
+      "what can i do indoors on a rainy day?"
+    ]
+  },
+  {
+    "id": "expanded-075",
+    "category": "Activities",
+    "topic": "Activity enrollment",
+    "answer": "The assistant can explain sample activities and save them to your session plan, but cannot enroll a guest or contact an activity leader.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "activity enrollment",
+      "can the assistant sign me up for an activity?"
+    ]
+  },
+  {
+    "id": "expanded-076",
+    "category": "Family",
+    "topic": "Children's craft table",
+    "answer": "The fictional craft table is located in the family lounge; activity times must be confirmed with staff.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "children's craft table",
+      "where is the craft table?"
+    ]
+  },
+  {
+    "id": "expanded-077",
+    "category": "Family",
+    "topic": "Family lounge location",
+    "answer": "The family lounge is located on the ground floor of the east wing beside the guest laundry staircase.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "family lounge location",
+      "where is the family lounge?"
+    ]
+  },
+  {
+    "id": "expanded-078",
+    "category": "Family",
+    "topic": "Baby cot requests",
+    "answer": "Sample baby cots may be requested from staff, subject to room suitability and availability; no request is submitted by the assistant.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "baby cot requests",
+      "can i request a baby cot?"
+    ]
+  },
+  {
+    "id": "expanded-079",
+    "category": "Family",
+    "topic": "Stroller storage",
+    "answer": "The stroller storage location is unconfirmed; reception can advise; do not leave strollers blocking corridors or exits.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "stroller storage",
+      "where can i store a stroller?"
+    ]
+  },
+  {
+    "id": "expanded-080",
+    "category": "Family",
+    "topic": "Family restroom",
+    "answer": "The sample family restroom is located beside the lobby courtyard entrance.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "family restroom",
+      "where is the family restroom?"
+    ]
+  },
+  {
+    "id": "expanded-081",
+    "category": "Family",
+    "topic": "Children supervision",
+    "answer": "The fictional resort requires an accompanying responsible adult for children's activities; the assistant does not provide supervision.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "children supervision",
+      "can children visit activities alone?"
+    ]
+  },
+  {
+    "id": "expanded-082",
+    "category": "Family",
+    "topic": "Games room hours",
+    "answer": "The fictional games room is located in the family lounge and is open from 9:00 AM to 9:00 PM.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "games room hours",
+      "when is the games room open?"
+    ]
+  },
+  {
+    "id": "expanded-083",
+    "category": "Family",
+    "topic": "Games room equipment",
+    "answer": "The sample games room contains a table football game, puzzles and a small drawing table.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "games room equipment",
+      "what is in the games room?"
+    ]
+  },
+  {
+    "id": "expanded-084",
+    "category": "Family",
+    "topic": "Teen lounge",
+    "answer": "No separate teen lounge is listed in the sample dataset; the family lounge and games room are available under posted rules.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "teen lounge",
+      "is there a teen lounge?"
+    ]
+  },
+  {
+    "id": "expanded-085",
+    "category": "Family",
+    "topic": "Family movie inquiries",
+    "answer": "No dated movie event is confirmed in this dataset. Ask staff rather than assuming a screening is scheduled.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "family movie inquiries",
+      "is there a family movie tonight?"
+    ]
+  },
+  {
+    "id": "expanded-086",
+    "category": "Accessibility",
+    "topic": "Accessible route map",
+    "answer": "The fictional step-free route map is located at reception; staff must confirm current route conditions and individual requirements.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "accessible route map",
+      "where can i find an accessible route map?"
+    ]
+  },
+  {
+    "id": "expanded-087",
+    "category": "Accessibility",
+    "topic": "Lobby elevator",
+    "answer": "The main guest elevator is located to the right of reception, beside the east-wing corridor.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "lobby elevator",
+      "where is the lobby elevator?"
+    ]
+  },
+  {
+    "id": "expanded-088",
+    "category": "Accessibility",
+    "topic": "Pool step-free route",
+    "answer": "The sample map shows a step-free route through the central garden; staff must confirm current accessibility and pool access equipment.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "pool step-free route",
+      "is there a step-free route to lagoon pool?"
+    ]
+  },
+  {
+    "id": "expanded-089",
+    "category": "Accessibility",
+    "topic": "Hearing assistance inquiries",
+    "answer": "This dataset cannot confirm hearing assistance equipment availability; please ask staff about your requirements.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "hearing assistance inquiries",
+      "is hearing assistance equipment available?"
+    ]
+  },
+  {
+    "id": "expanded-090",
+    "category": "Accessibility",
+    "topic": "Large print information",
+    "answer": "The sample reception service offers large-print maps on request; ask staff to confirm availability.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "large print information",
+      "can i get large print resort information?"
+    ]
+  },
+  {
+    "id": "expanded-091",
+    "category": "Accessibility",
+    "topic": "Rest area locations",
+    "answer": "Shaded seating is located in the lobby courtyard, west garden and beside the north garden trail entrance.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "rest area locations",
+      "where are shaded rest areas?"
+    ]
+  },
+  {
+    "id": "expanded-092",
+    "category": "Accessibility",
+    "topic": "Low stimulation space",
+    "answer": "The sample reading nook is a quieter seating area; sound levels and availability are not guaranteed.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "low stimulation space",
+      "is there a quieter place to sit?"
+    ]
+  },
+  {
+    "id": "expanded-093",
+    "category": "Accessibility",
+    "topic": "Accessible shuttle inquiries",
+    "answer": "Accessible transport details are not verified in this dataset; staff should confirm vehicle specifications before travel.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "accessible shuttle inquiries",
+      "is accessible transport available?"
+    ]
+  },
+  {
+    "id": "expanded-094",
+    "category": "Accessibility",
+    "topic": "Assistance animal facilities",
+    "answer": "The assistance animal inquiry point is located at reception; ask staff about suitable relief areas and accommodation needs; service animals remain welcome under the existing sample policy.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "assistance animal facilities",
+      "where can i ask about assistance animal facilities?"
+    ]
+  },
+  {
+    "id": "expanded-095",
+    "category": "Accessibility",
+    "topic": "Accessible dining seating",
+    "answer": "Dining staff can discuss seating requirements and current layout; the assistant cannot guarantee or reserve a specific table.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "accessible dining seating",
+      "can dining staff help with accessible seating?"
+    ]
+  },
+  {
+    "id": "expanded-096",
+    "category": "Travel and services",
+    "topic": "EV charging location",
+    "answer": "Two fictional EV charging bays are located in the east parking area; compatibility, prices and availability must be checked with staff.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "ev charging location",
+      "where are the ev chargers?"
+    ]
+  },
+  {
+    "id": "expanded-097",
+    "category": "Travel and services",
+    "topic": "Bicycle parking",
+    "answer": "Bicycle racks are located beside the north garden entrance; guests should use their own lock.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "bicycle parking",
+      "where can i park a bicycle?"
+    ]
+  },
+  {
+    "id": "expanded-098",
+    "category": "Travel and services",
+    "topic": "Rideshare meeting point",
+    "answer": "The fictional rideshare meeting point is located outside the main lobby under the blue canopy.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "rideshare meeting point",
+      "where do rideshare drivers meet guests?"
+    ]
+  },
+  {
+    "id": "expanded-099",
+    "category": "Travel and services",
+    "topic": "Coach drop-off",
+    "answer": "The sample coach drop-off bay is located beside the south entrance; drivers must follow staff direction.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "coach drop-off",
+      "where can a coach drop off passengers?"
+    ]
+  },
+  {
+    "id": "expanded-100",
+    "category": "Travel and services",
+    "topic": "Lost property inquiries",
+    "answer": "Contact reception with a description of the item; this assistant cannot check a live lost-property inventory or notify staff.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "lost property inquiries",
+      "how do i ask about lost property?"
+    ]
+  },
+  {
+    "id": "expanded-101",
+    "category": "Travel and services",
+    "topic": "Recycling locations",
+    "answer": "Marked recycling stations are located near reception, the pool entrance and the east-wing elevator.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "recycling locations",
+      "where are the recycling bins?"
+    ]
+  },
+  {
+    "id": "expanded-102",
+    "category": "Travel and services",
+    "topic": "Printing service",
+    "answer": "The sample business nook beside reception offers printing inquiries through staff; prices and availability must be confirmed.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "printing service",
+      "can i print a document?"
+    ]
+  },
+  {
+    "id": "expanded-103",
+    "category": "Travel and services",
+    "topic": "Meeting nook",
+    "answer": "The fictional business nook is located beside reception; quiet seating availability is not guaranteed.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "meeting nook",
+      "where can i take a work call?"
+    ]
+  },
+  {
+    "id": "expanded-104",
+    "category": "Travel and services",
+    "topic": "Souvenir shop location",
+    "answer": "The sample gift shop is located in the lobby courtyard and opens from 10:00 AM to 6:00 PM.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "souvenir shop location",
+      "where is the souvenir shop?"
+    ]
+  },
+  {
+    "id": "expanded-105",
+    "category": "Travel and services",
+    "topic": "Postal drop inquiries",
+    "answer": "Reception can explain local postal options; this assistant cannot arrange collection or guarantee delivery.",
+    "source": "Fictional GatorGo demo handbook — not real property information",
+    "status": "demo_only",
+    "updated": "2026-11-18",
+    "tags": [
+      "postal drop inquiries",
+      "can i mail a postcard?"
+    ]
+  }
+]

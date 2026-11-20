@@ -1,6 +1,6 @@
 from datetime import date
 from typing import Literal
-from uuid import UUID
+from uuid import UUID, uuid4
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
@@ -10,12 +10,46 @@ class StrictModel(BaseModel):
 
 
 class ChatRequest(StrictModel):
+    guide: Literal["desk", "pool", "trail"] = "desk"
     locale: str = Field(default="auto", max_length=10)
     session_id: UUID | None = None
     message: str = Field(min_length=1, max_length=1000)
 
 
+class HoursException(StrictModel):
+    date: date
+    closed: bool = False
+    hours: str = Field(default="", max_length=200)
+    note: str = Field(default="", max_length=300)
+
+
+class Venue(StrictModel):
+    name: str = Field(min_length=1, max_length=120)
+    kind: str = Field(max_length=40)
+    location: str = Field(default="", max_length=300)
+    hours: str = Field(default="", max_length=200)
+    weekly_hours: dict[Literal['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'], str] = Field(default_factory=dict)
+    menu_url: str | None = None
+    pin: tuple[float, float] | None = None
+    exceptions: list[HoursException] = Field(default_factory=list)
+
+    @field_validator("menu_url")
+    @classmethod
+    def safe_menu(cls, value):
+        if value and not value.startswith("https://"):
+            raise ValueError("Menu must use HTTPS")
+        return value
+
+    @field_validator("pin")
+    @classmethod
+    def safe_pin(cls, value):
+        if value and not all(0 <= coordinate <= 100 for coordinate in value):
+            raise ValueError("Map coordinates must be percentages")
+        return value
+
+
 class KnowledgeRecord(StrictModel):
+    venue: Venue | None = None
     id: str = Field(pattern=r"^[a-z0-9_-]{1,64}$")
     category: str = Field(min_length=1, max_length=80)
     topic: str = Field(min_length=1, max_length=120)
@@ -58,6 +92,12 @@ class Handoff(StrictModel):
 
 
 class ChatResponse(StrictModel):
+    trace_id: UUID = Field(default_factory=uuid4)
+    timings_ms: dict[str, float] = Field(default_factory=dict)
+    reply_id: UUID = Field(default_factory=uuid4)
+    venue_id: str | None = None
+    choices: list[dict[str, str]] = Field(default_factory=list)
+    actions: list[dict[str, str]] = Field(default_factory=list)
     detected_locale: str = "en"
     reply_locale: str = "en"
     session_id: UUID
@@ -84,3 +124,21 @@ class DispositionRequest(StrictModel):
 class VoiceRequest(StrictModel):
     text: str = Field(min_length=1, max_length=4000)
     guide: Literal["desk", "pool", "trail"] = "desk"
+
+
+class FeedbackRequest(StrictModel):
+    session_id: UUID
+    reply_id: UUID
+    reason: Literal['wrong_venue', 'outdated_hours', 'unclear_answer']
+
+
+class VoiceTurn(StrictModel):
+    turn_id: str = Field(pattern=r'^[a-zA-Z0-9_-]{1,80}$')
+    transcript: str = Field(min_length=1, max_length=1000)
+    interrupted: bool = False
+
+
+class ToolCall(StrictModel):
+    call_id: str = Field(pattern=r'^[a-zA-Z0-9_-]{1,80}$')
+    name: Literal['lookup_resort', 'list_activities', 'prepare_handoff']
+    arguments: dict = Field(max_length=5)

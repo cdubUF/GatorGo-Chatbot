@@ -6,6 +6,7 @@ import logging
 import httpx
 
 from .config import ROOT
+from .personalities import conversation_instructions
 
 logger = logging.getLogger("gatorgo.provider")
 
@@ -48,11 +49,11 @@ class ModelAdapter:
             raise ProviderUnavailable("invalid_response")
         return list(dict.fromkeys(values))
 
-    async def answer(self, query, history, records, reservation_context=None):
+    async def answer(self, query, history, records, reservation_context=None, *, guide='desk'):
         ids = {record.id for record in records}
         payload = {
             "model": self.settings.model, "store": False, "max_output_tokens": 1200,
-            "instructions": self.prompt,
+            "instructions": self.prompt + '\n' + conversation_instructions(guide),
             "input": [{"role": "user", "content": json.dumps({
                 "question": query, "recent_context": history,
                 "evidence": [{"id": r.id, "topic": r.topic, "answer": r.answer,
@@ -75,7 +76,7 @@ class ModelAdapter:
         reply, values = result.get("reply"), result.get("source_ids")
         if (set(result) != {"reply", "source_ids"} or not isinstance(reply, str)
             or not reply.strip() or len(reply) > 3000 or not isinstance(values, list)
-            or len(values) > 3 or any(not isinstance(v, str) or v not in ids for v in values)):
+            or len(values) > 12 or any(not isinstance(v, str) or v not in ids for v in values)):
             raise ProviderUnavailable("invalid_response")
         return reply.strip(), list(dict.fromkeys(values))
 
